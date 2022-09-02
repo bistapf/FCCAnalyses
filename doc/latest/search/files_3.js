@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['mcparticle_2ecc_251',['MCParticle.cc',['../_m_c_particle_8cc.html',1,'']]],
-  ['mcparticle_2eh_252',['MCParticle.h',['../_m_c_particle_8h.html',1,'']]]
+  ['externalrecombiner_2ecc_0',['ExternalRecombiner.cc',['../_external_recombiner_8cc.html',1,'']]],
+  ['externalrecombiner_2eh_1',['ExternalRecombiner.h',['../_external_recombiner_8h.html',1,'']]]
 ];

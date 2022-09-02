@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['smearing_2ecc_260',['Smearing.cc',['../_smearing_8cc.html',1,'']]],
-  ['smearing_2eh_261',['Smearing.h',['../_smearing_8h.html',1,'']]]
+  ['linkdef_2eh_0',['LinkDef.h',['../case-studies_2include_2case-studies_2_link_def_8h.html',1,'(Global Namespace)'],['../_f_c_c_analyses_2_link_def_8h.html',1,'(Global Namespace)']]]
 ];
