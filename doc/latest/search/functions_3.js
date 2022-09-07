@@ -1,10 +1,20 @@
 var searchData=
 [
-  ['description_0',['description',['../class_external_recombiner.html#a5a7816ddeabf4cd63848fd5447fc269d',1,'ExternalRecombiner::description()'],['../classcontrib_1_1_valencia_plugin.html#ab75c117030f3a8b4f77ca4bb38ae87b8',1,'contrib::ValenciaPlugin::description()']]],
-  ['distance_1',['distance',['../classcontrib_1_1_valencia_brief_jet.html#a7bfb7f2e19ee5c1934d393e07f7251ad',1,'contrib::ValenciaBriefJet']]],
-  ['dot_2',['dot',['../struct_f_c_c_analyses_1_1_algorithms_1_1calculate__thrust.html#aa781c512d8db2a5a2544182ef6efc5b6',1,'FCCAnalyses::Algorithms::calculate_thrust']]],
-  ['dummy_3',['dummy',['../namespace_c_s_template.html#a5f164942015a387fd69cb8f3b9fb3950',1,'CSTemplate']]],
-  ['dummyloader_4',['dummyLoader',['../dummy_loader_8h.html#a13655070a3dd083e1c4d47ff51d3172e',1,'dummyLoader():&#160;dummyLoader.cc'],['../dummy_loader_8cc.html#a13655070a3dd083e1c4d47ff51d3172e',1,'dummyLoader():&#160;dummyLoader.cc']]],
-  ['dummyloadercs_5',['dummyLoaderCS',['../dummy_loader_c_s_8h.html#a2429729ac0518352f6d32f7146e4ae22',1,'dummyLoaderCS():&#160;dummyLoaderCS.cc'],['../dummy_loader_c_s_8cc.html#a2429729ac0518352f6d32f7146e4ae22',1,'dummyLoaderCS():&#160;dummyLoaderCS.cc']]],
-  ['dumpvars_6',['dumpVars',['../struct_weaver_interface_1_1_preprocess_params.html#a77c0608048b2e84238c621cc29b02d45',1,'WeaverInterface::PreprocessParams']]]
+  ['calculate_5fthrust_0',['calculate_thrust',['../struct_f_c_c_analyses_1_1_algorithms_1_1calculate__thrust.html#a4c133730f91cd78760a7da4b63397c60',1,'FCCAnalyses::Algorithms::calculate_thrust']]],
+  ['center_5fnorm_5fpad_1',['center_norm_pad',['../class_weaver_interface.html#a5eb0b2992183e75d4695c68ced807fdc',1,'WeaverInterface']]],
+  ['check_2',['check',['../namespace_f_c_c_analyses_1_1_jet_clustering_utils.html#a56d7bb552f83db3d09ab21a502e024f2',1,'FCCAnalyses::JetClusteringUtils']]],
+  ['checkwdecay_3',['checkWDecay',['../namespace_analysis_f_c_chh.html#a7134141bc725775e7e8e5bf5d94cf65b',1,'AnalysisFCChh']]],
+  ['checkzdecay_4',['checkZDecay',['../namespace_analysis_f_c_chh.html#a2616906d0a9161643fc396f9b04eb1c1',1,'AnalysisFCChh']]],
+  ['clustering_5fantikt_5',['clustering_antikt',['../struct_f_c_c_analyses_1_1_jet_clustering_1_1clustering__antikt.html#a060a82e617a8842eca20b54e718bf2d0',1,'FCCAnalyses::JetClustering::clustering_antikt']]],
+  ['clustering_5fcambridge_6',['clustering_cambridge',['../struct_f_c_c_analyses_1_1_jet_clustering_1_1clustering__cambridge.html#a46dc7827c14a0f9b269fba0c4d8a8bf9',1,'FCCAnalyses::JetClustering::clustering_cambridge']]],
+  ['clustering_5fee_5fgenkt_7',['clustering_ee_genkt',['../struct_f_c_c_analyses_1_1_jet_clustering_1_1clustering__ee__genkt.html#aa426becd44f8a2d0411832581d6b8dae',1,'FCCAnalyses::JetClustering::clustering_ee_genkt']]],
+  ['clustering_5fee_5fkt_8',['clustering_ee_kt',['../struct_f_c_c_analyses_1_1_jet_clustering_1_1clustering__ee__kt.html#a10515a06cc089f6ab01d59ca8ad93f88',1,'FCCAnalyses::JetClustering::clustering_ee_kt']]],
+  ['clustering_5fgenkt_9',['clustering_genkt',['../struct_f_c_c_analyses_1_1_jet_clustering_1_1clustering__genkt.html#a304feb28b5a547fb8f57a6a2dfb1d2e1',1,'FCCAnalyses::JetClustering::clustering_genkt']]],
+  ['clustering_5fjade_10',['clustering_jade',['../struct_f_c_c_analyses_1_1_jet_clustering_1_1clustering__jade.html#a1da79f108aad61c6b3900cb0f6832305',1,'FCCAnalyses::JetClustering::clustering_jade']]],
+  ['clustering_5fkt_11',['clustering_kt',['../struct_f_c_c_analyses_1_1_jet_clustering_1_1clustering__kt.html#a5954a5e5bb6f781e2ffb4463f8c6d8cd',1,'FCCAnalyses::JetClustering::clustering_kt']]],
+  ['clustering_5fvalencia_12',['clustering_valencia',['../struct_f_c_c_analyses_1_1_jet_clustering_1_1clustering__valencia.html#a3e490301c506ef6fb850eddff673c5d1',1,'FCCAnalyses::JetClustering::clustering_valencia']]],
+  ['compute_5fweights_13',['compute_weights',['../namespace_f_c_c_analyses_1_1_jet_flavour_utils.html#ae1425b3522216a55365708b85f62a605',1,'FCCAnalyses::JetFlavourUtils']]],
+  ['copy_14',['copy',['../struct_f_c_c_analyses_1_1_algorithms_1_1calculate__thrust.html#a1b760531c8b6c4c7d90114cdf9839c13',1,'FCCAnalyses::Algorithms::calculate_thrust']]],
+  ['covtoacts_15',['CovToACTS',['../namespace_f_c_c_analyses_1_1_vertexing_utils.html#a2d9a8e8d87409a8f6d22cbee921e0d16',1,'FCCAnalyses::VertexingUtils']]],
+  ['cross_16',['cross',['../struct_f_c_c_analyses_1_1_algorithms_1_1calculate__thrust.html#a228c5c14c629b915dd83201596e84dcb',1,'FCCAnalyses::Algorithms::calculate_thrust']]]
 ];
