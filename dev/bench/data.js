@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1665490074839,
+  "lastUpdate": 1665490076305,
   "repoUrl": "https://github.com/bistapf/FCCAnalyses",
   "entries": {
     "Benchmark": [
@@ -617,6 +617,45 @@ window.BENCHMARK_DATA = {
             "unit": "Seconds",
             "range": 10,
             "extra": "Analysis path: examples/FCCee/test"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "79460851+bistapf@users.noreply.github.com",
+            "name": "bistapf",
+            "username": "bistapf"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b54fc5d1c17f2d7a85e04850197653b40f82b8e5",
+          "message": "Update README.md",
+          "timestamp": "2022-10-11T13:58:10+02:00",
+          "tree_id": "ce81dc64e23ba3da6676e5609ab44f4307ef2386",
+          "url": "https://github.com/bistapf/FCCAnalyses/commit/b54fc5d1c17f2d7a85e04850197653b40f82b8e5"
+        },
+        "date": 1665490075853,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "prod | Events processed per second: examples/FCCee/higgs/mH-recoil/mumu",
+            "value": 8.137321017134086,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "prod | Events processed per second: examples/FCCee/flavour/Bc2TauNu",
+            "value": 6.131503110467059,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "prod | Events processed per second: examples/FCCee/test",
+            "value": 8.236041912406204,
+            "unit": "Evt/s"
           }
         ]
       }
