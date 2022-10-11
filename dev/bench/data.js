@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1665490270843,
+  "lastUpdate": 1665490436742,
   "repoUrl": "https://github.com/bistapf/FCCAnalyses",
   "entries": {
     "Benchmark": [
@@ -908,6 +908,51 @@ window.BENCHMARK_DATA = {
             "name": "prod | Events processed per second: examples/FCCee/test",
             "value": 8.751421637805205,
             "unit": "Evt/s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "79460851+bistapf@users.noreply.github.com",
+            "name": "bistapf",
+            "username": "bistapf"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f0087e749852c43a6b8b3d1b12a5bd81c6cd33db",
+          "message": "Update README.md",
+          "timestamp": "2022-10-11T13:59:40+02:00",
+          "tree_id": "be2f1df97e0862d24081f6fd51654ab9f8ee1331",
+          "url": "https://github.com/bistapf/FCCAnalyses/commit/f0087e749852c43a6b8b3d1b12a5bd81c6cd33db"
+        },
+        "date": 1665490433799,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "nightly | Time spent running the analysis: examples/FCCee/higgs/mH-recoil/mumu",
+            "value": 17.41336441040039,
+            "unit": "Seconds",
+            "range": 10,
+            "extra": "Analysis path: examples/FCCee/higgs/mH-recoil/mumu"
+          },
+          {
+            "name": "nightly | Time spent running the analysis: examples/FCCee/flavour/Bc2TauNu",
+            "value": 22.18907880783081,
+            "unit": "Seconds",
+            "range": 10,
+            "extra": "Analysis path: examples/FCCee/flavour/Bc2TauNu"
+          },
+          {
+            "name": "nightly | Time spent running the analysis: examples/FCCee/test",
+            "value": 17.676918983459473,
+            "unit": "Seconds",
+            "range": 10,
+            "extra": "Analysis path: examples/FCCee/test"
           }
         ]
       }
