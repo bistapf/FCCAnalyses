@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1669805641771,
+  "lastUpdate": 1669805644380,
   "repoUrl": "https://github.com/bistapf/FCCAnalyses",
   "entries": {
     "Benchmark": [
@@ -1702,6 +1702,48 @@ window.BENCHMARK_DATA = {
             "unit": "Seconds",
             "range": 10,
             "extra": "Analysis path: examples/FCCee/test"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "bstapf@nikhef.nl",
+            "name": "Birgit Stapf"
+          },
+          "committer": {
+            "email": "bstapf@nikhef.nl",
+            "name": "Birgit Stapf"
+          },
+          "distinct": true,
+          "id": "a570b2966cf8037578db2b9cb448602e5bcdf8c9",
+          "message": "Merge branch 'fcchh_tutorial' of github.com:bistapf/FCCAnalyses into fcchh_tutorial",
+          "timestamp": "2022-11-30T11:36:43+01:00",
+          "tree_id": "6af3fe7b5d359cafbcf894df09f5b5510b4c22e4",
+          "url": "https://github.com/bistapf/FCCAnalyses/commit/a570b2966cf8037578db2b9cb448602e5bcdf8c9"
+        },
+        "date": 1669805643465,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "nightly | Events processed per second: case-studies/analysis_example/scripts",
+            "value": 6.703378937352355,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "nightly | Events processed per second: examples/FCCee/higgs/mH-recoil/mumu",
+            "value": 6.056095799047604,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "nightly | Events processed per second: examples/FCCee/flavour/Bc2TauNu",
+            "value": 4.464821460110936,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "nightly | Events processed per second: examples/FCCee/test",
+            "value": 5.6112283859951,
+            "unit": "Evt/s"
           }
         ]
       }
