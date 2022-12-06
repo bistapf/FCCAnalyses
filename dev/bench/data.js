@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1670338715786,
+  "lastUpdate": 1670338717307,
   "repoUrl": "https://github.com/bistapf/FCCAnalyses",
   "entries": {
     "Benchmark": [
@@ -1890,6 +1890,48 @@ window.BENCHMARK_DATA = {
             "unit": "Seconds",
             "range": 10,
             "extra": "Analysis path: examples/FCCee/test"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "bstapf@nikhef.nl",
+            "name": "Birgit Stapf"
+          },
+          "committer": {
+            "email": "bstapf@nikhef.nl",
+            "name": "Birgit Stapf"
+          },
+          "distinct": true,
+          "id": "76ca1d4fc1c71e4756b98850548d9650279c20ae",
+          "message": "updating master and adding MC particles",
+          "timestamp": "2022-12-06T15:49:22+01:00",
+          "tree_id": "c27e582e404697d00b3f29d7e2b9675739b636d0",
+          "url": "https://github.com/bistapf/FCCAnalyses/commit/76ca1d4fc1c71e4756b98850548d9650279c20ae"
+        },
+        "date": 1670338716889,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "nightly | Events processed per second: case-studies/analysis_example/scripts",
+            "value": 10.324364119788306,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "nightly | Events processed per second: examples/FCCee/higgs/mH-recoil/mumu",
+            "value": 8.372570341510835,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "nightly | Events processed per second: examples/FCCee/flavour/Bc2TauNu",
+            "value": 6.535521522059698,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "nightly | Events processed per second: examples/FCCee/test",
+            "value": 9.015175111167817,
+            "unit": "Evt/s"
           }
         ]
       }
