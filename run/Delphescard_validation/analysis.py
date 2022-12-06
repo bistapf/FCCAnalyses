@@ -56,6 +56,21 @@ class analysis():
 		#the functions to calculate them are defined in the C++ code in FCCAnalyses/analyzers/dataframe
 		df_out = (self.df
 
+			########################################### MC PARTICLES ########################################### 
+
+			#Photons
+			.Define("MC_photons", ROOT.MCParticle.sel_pdgID(22, 0),["Particle"])
+            .Define("stable_MC_photons", ROOT.MCParticle.sel_genStatus(1),["MC_photons"])
+            .Define("n_MC_photons",  "FCCAnalyses::MCParticle::get_n(stable_MC_photons)")
+            .Define("pT_MC_photons",  "FCCAnalyses::MCParticle::get_pt(stable_MC_photons)")
+            .Define("eta_MC_photons",  "FCCAnalyses::MCParticle::get_eta(stable_MC_photons)")
+
+            #photons with pT > 1 GeV
+            .Define("MC_photons_selected", "FCCAnalyses::MCParticle::sel_pt(1.)(MC_photons)") 
+            .Define("n_MC_photons_sel",  "FCCAnalyses::MCParticle::get_n(MC_photons_selected)")
+            .Define("pT_MC_photons_sel",  "FCCAnalyses::MCParticle::get_pt(MC_photons_selected)")
+            .Define("eta_MC_photons_sel",  "FCCAnalyses::MCParticle::get_eta(MC_photons_selected)")
+
 			########################################### JETS ########################################### 
 			# #all jets
 			.Define("n_jets",  "FCCAnalyses::ReconstructedParticle::get_n(Jet)")
@@ -238,6 +253,13 @@ class analysis():
 			.Define("pT_photons_sel",  "FCCAnalyses::ReconstructedParticle::get_pt(selected_photons)")
 			.Define("eta_photons_sel",  "FCCAnalyses::ReconstructedParticle::get_eta(selected_photons)")
 
+			########################################### LINK BACK TO MC PARTICLES ########################################### 
+
+			.Alias("MCRecoAssociations0", "MCRecoAssociations#0.index")
+            .Alias("MCRecoAssociations1", "MCRecoAssociations#1.index")
+            .Define('RP_MC_index',            "ReconstructedParticle2MC::getRP2MC_index(MCRecoAssociations0,MCRecoAssociations1,ReconstructedParticles)") 
+
+
 
 			########################################### MET ########################################### 
 			.Define("MET", "FCCAnalyses::ReconstructedParticle::get_pt(MissingET)")
@@ -297,6 +319,9 @@ class analysis():
 		branchList = ROOT.vector('string')()
 
 		for branchName in [
+			# MC particles:
+			'n_MC_photons', 'pT_MC_photons', 'eta_MC_photons',
+			'n_MC_photons_sel', 'pT_MC_photons_sel', 'eta_MC_photons_sel',
 			# Jets:
 			"n_jets", "px_jets", "py_jets", "pz_jets", "E_jets", "pT_jets", "eta_jets",
 			"n_jets_sel", "px_jets_sel", "py_jets_sel", "pz_jets_sel", "E_jets_sel", "pT_jets_sel", "eta_jets_sel",
