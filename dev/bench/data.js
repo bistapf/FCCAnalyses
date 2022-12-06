@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1670338732062,
+  "lastUpdate": 1670338734238,
   "repoUrl": "https://github.com/bistapf/FCCAnalyses",
   "entries": {
     "Benchmark": [
@@ -1984,6 +1984,50 @@ window.BENCHMARK_DATA = {
             "unit": "Seconds",
             "range": 10,
             "extra": "Analysis path: examples/FCCee/test"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "79460851+bistapf@users.noreply.github.com",
+            "name": "bistapf",
+            "username": "bistapf"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b81129ed757d5df6750861571ac4a5683dc37712",
+          "message": "Merge branch 'HEP-FCC:master' into master",
+          "timestamp": "2022-12-06T15:47:34+01:00",
+          "tree_id": "c5dc2654c54051df5c9c2564eec8573c241b4979",
+          "url": "https://github.com/bistapf/FCCAnalyses/commit/b81129ed757d5df6750861571ac4a5683dc37712"
+        },
+        "date": 1670338733387,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "nightly | Events processed per second: case-studies/analysis_example/scripts",
+            "value": 7.64758235397039,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "nightly | Events processed per second: examples/FCCee/higgs/mH-recoil/mumu",
+            "value": 6.3245603934852035,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "nightly | Events processed per second: examples/FCCee/flavour/Bc2TauNu",
+            "value": 4.915924042640733,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "nightly | Events processed per second: examples/FCCee/test",
+            "value": 6.17206284482191,
+            "unit": "Evt/s"
           }
         ]
       }
