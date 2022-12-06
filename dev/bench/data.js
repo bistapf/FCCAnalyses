@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1670343971492,
+  "lastUpdate": 1670343973796,
   "repoUrl": "https://github.com/bistapf/FCCAnalyses",
   "entries": {
     "Benchmark": [
@@ -2638,6 +2638,48 @@ window.BENCHMARK_DATA = {
             "unit": "Seconds",
             "range": 10,
             "extra": "Analysis path: examples/FCCee/test"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "bstapf@nikhef.nl",
+            "name": "Birgit Stapf"
+          },
+          "committer": {
+            "email": "bstapf@nikhef.nl",
+            "name": "Birgit Stapf"
+          },
+          "distinct": true,
+          "id": "6f262510fb87fdf0bd594f052ceb72d99dc1293b",
+          "message": "update analysis.py to new format",
+          "timestamp": "2022-12-06T17:10:49+01:00",
+          "tree_id": "8413a256dc0bf2d12caee82f20c3fcc07d4bb9ae",
+          "url": "https://github.com/bistapf/FCCAnalyses/commit/6f262510fb87fdf0bd594f052ceb72d99dc1293b"
+        },
+        "date": 1670343972926,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "prod | Events processed per second: case-studies/analysis_example/scripts",
+            "value": 7.126179383007302,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "prod | Events processed per second: examples/FCCee/higgs/mH-recoil/mumu",
+            "value": 5.715515089746706,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "prod | Events processed per second: examples/FCCee/flavour/Bc2TauNu",
+            "value": 4.686827570981379,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "prod | Events processed per second: examples/FCCee/test",
+            "value": 6.373923576055996,
+            "unit": "Evt/s"
           }
         ]
       }
