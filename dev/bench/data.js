@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1670343954312,
+  "lastUpdate": 1670343971492,
   "repoUrl": "https://github.com/bistapf/FCCAnalyses",
   "entries": {
     "Benchmark": [
@@ -2588,6 +2588,56 @@ window.BENCHMARK_DATA = {
             "name": "nightly | Events processed per second: examples/FCCee/test",
             "value": 7.567919773306529,
             "unit": "Evt/s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "bstapf@nikhef.nl",
+            "name": "Birgit Stapf"
+          },
+          "committer": {
+            "email": "bstapf@nikhef.nl",
+            "name": "Birgit Stapf"
+          },
+          "distinct": true,
+          "id": "6f262510fb87fdf0bd594f052ceb72d99dc1293b",
+          "message": "update analysis.py to new format",
+          "timestamp": "2022-12-06T17:10:49+01:00",
+          "tree_id": "8413a256dc0bf2d12caee82f20c3fcc07d4bb9ae",
+          "url": "https://github.com/bistapf/FCCAnalyses/commit/6f262510fb87fdf0bd594f052ceb72d99dc1293b"
+        },
+        "date": 1670343968888,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "prod | Time spent running the analysis: case-studies/analysis_example/scripts",
+            "value": 14.032764911651611,
+            "unit": "Seconds",
+            "range": 10,
+            "extra": "Analysis path: case-studies/analysis_example/scripts"
+          },
+          {
+            "name": "prod | Time spent running the analysis: examples/FCCee/higgs/mH-recoil/mumu",
+            "value": 17.496235847473145,
+            "unit": "Seconds",
+            "range": 10,
+            "extra": "Analysis path: examples/FCCee/higgs/mH-recoil/mumu"
+          },
+          {
+            "name": "prod | Time spent running the analysis: examples/FCCee/flavour/Bc2TauNu",
+            "value": 21.33639407157898,
+            "unit": "Seconds",
+            "range": 10,
+            "extra": "Analysis path: examples/FCCee/flavour/Bc2TauNu"
+          },
+          {
+            "name": "prod | Time spent running the analysis: examples/FCCee/test",
+            "value": 15.688923597335815,
+            "unit": "Seconds",
+            "range": 10,
+            "extra": "Analysis path: examples/FCCee/test"
           }
         ]
       }
