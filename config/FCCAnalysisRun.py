@@ -376,9 +376,9 @@ def runRDF(rdfModule, inputlist, outFile, nevt, args):
 
     print("----> Init done, about to run {} events on {} CPUs".format(nevt, ncpus))
 
-    df2 = getElement(rdfModule.RDFanalysis, "analysers")(df)
+    df2 = getElement(rdfModule.RDFanalysis, "analysers")(df, outFile)
 
-    branchList = getElement(rdfModule.RDFanalysis, "output")()
+    branchList = getElement(rdfModule.RDFanalysis, "output")(outFile)
     branchListVec = ROOT.vector('string')()
     for branchName in branchList:
         branchListVec.push_back(branchName)
@@ -1064,7 +1064,8 @@ def run(mainparser, subparser=None):
         elif args.command == "final":  runFinal(rdfModule)
         elif args.command == "plots":  runPlots(analysisFile)
         return
-    except AttributeError:
+    except AttributeError as e:
+        raise e
         print("============running the old way")
 
 
