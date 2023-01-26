@@ -175,6 +175,7 @@ namespace AnalysisFCChh{
 	ROOT::VecOps::RVec<float> get_mbbtautau_col(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> bb_pair_merged, ROOT::VecOps::RVec<float> mtautau_col);
 
 	//truth matching:
+	// old function that can match only 1 particle -> TO REMOVE?
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> find_reco_matched(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_parts_all, float dR_thres=0.1);
 
 	//isolation criterion, delphes style. flag exclude_light_leps does not check for isolation of test_parts vs electrons or muons (using the mass) as seems to be done in FCC-hh delphes sim
@@ -187,6 +188,7 @@ namespace AnalysisFCChh{
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> getTruthMETObj(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids, TString type="hww_only");
 
 	//for checking signal efficiencies in delphes card validation
+	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> find_reco_matches(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_particles, float dR_thres=0.1);
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> find_reco_matched_particle(edm4hep::MCParticleData truth_part_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> check_reco_parts, float dR_thres=0.1);
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> find_true_signal_leps_reco_matches(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_leps_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_electrons, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_muons, float dR_thres=0.1);
 

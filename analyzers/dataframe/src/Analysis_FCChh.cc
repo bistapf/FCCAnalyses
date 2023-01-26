@@ -1829,7 +1829,7 @@ ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getLepsFromW(ROOT::Ve
 ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getPhotonsFromH(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids){
 	ROOT::VecOps::RVec<edm4hep::MCParticleData> gamma_list;
 
-	//loop over all truth particles and find light leptons from taus that came from higgs (the direction tau->light lepton as child appears to be missing in the tautau samples)
+	//loop over all truth particles and find stable photons that do not come (directly) from a hadron decay
 	for (auto & truth_part: truth_particles) {
 		if (isStablePhoton(truth_part)){
 			bool from_higgs = hasHiggsParent(truth_part, parent_ids, truth_particles);
@@ -2170,6 +2170,30 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_reco_
 	return out_vector;
 }
 
+// truth -> reco matching for a vector of generic truth particles - this doesnt check if the type of particles are the same! -> make sure you give the correct collections!
+ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_reco_matches(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_particles, float dR_thres){
+	
+	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> out_vector;
+
+	//if no input part, return nothing
+	if (truth_parts.size() < 1){
+		return out_vector;
+	}
+
+	for (auto & truth_part : truth_parts){
+
+		ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_match_vector = find_reco_matched_particle(truth_part, reco_particles, dR_thres);
+
+		if (reco_match_vector.size() > 1){
+			std::cout << "Warning in AnalysisFCChh::find_reco_matches() - Truth particle matched to more than one reco particle." << std::endl;
+		}
+
+		out_vector.append(reco_match_vector.begin(), reco_match_vector.end());
+	}
+
+	return out_vector;
+
+}
 
 //truth matching: take as input the truth leptons from e.g. HWW decay and check if they have a reco match within dR cone - Note: skip taus!
 ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_true_signal_leps_reco_matches(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_leps_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_electrons, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_muons, float dR_thres){

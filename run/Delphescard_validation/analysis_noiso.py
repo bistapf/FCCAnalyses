@@ -1,6 +1,6 @@
 processList = {
     # "pwp8_pp_hh_lambda100_5f_hhbbww":{"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbww"}, #put the name of your input file here (without .root), the output file will have the same name
-    "pwp8_pp_hh_lambda100_5f_hhbbaa":{"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa"}, #put the name of your input file here (without .root), the output file will have the same name
+    "pwp8_pp_hh_lambda100_5f_hhbbaa":{'chunks':300, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa"}, #put the name of your input file here (without .root), the output file will have the same name
 }
 
 #Mandatory: input directory when not running over centrally produced edm4hep events. 
@@ -14,8 +14,8 @@ outputDir   = "/eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/"
 nCPUS       = 8
 
 #Optional running on HTCondor, default is False
-runBatch    = False
-# runBatch    = True
+# runBatch    = False
+runBatch    = True
 
 #Mandatory: RDFanalysis class where the use defines the operations on the TTree
 class RDFanalysis():
@@ -369,6 +369,21 @@ class RDFanalysis():
                      .Define("pT_truth_ys_from_higgs", "MCParticle::get_pt(truth_ys_from_higgs)")
                      .Define("eta_truth_ys_from_higgs", "MCParticle::get_eta(truth_ys_from_higgs)")
                      .Define("E_truth_ys_from_higgs", "MCParticle::get_e(truth_ys_from_higgs)")
+
+                     #Check how many matched photons in the no-iso collection
+                     .Define("truthmatched_reco_ys_from_higgs_noiso", "AnalysisFCChh::find_reco_matches(truth_ys_from_higgs, photons_noiso)")
+                     .Define("n_truthmatched_ys_from_higgs_noiso", "ReconstructedParticle::get_n(truthmatched_reco_ys_from_higgs_noiso)")
+                     .Define("pT_truthmatched_ys_from_higgs_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(truthmatched_reco_ys_from_higgs_noiso)")
+                     .Define("eta_truthmatched_ys_from_higgs_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(truthmatched_reco_ys_from_higgs_noiso)") 
+                     .Define("E_truthmatched_ys_from_higgs_noiso",  "FCCAnalyses::ReconstructedParticle::get_e(truthmatched_reco_ys_from_higgs_noiso)") 
+
+                     #Check how many matched leptons in the collections after iso
+                     .Define("truthmatched_reco_ys_from_higgs", "AnalysisFCChh::find_reco_matches(truth_ys_from_higgs, photons)")
+                     .Define("n_truthmatched_ys_from_higgs", "ReconstructedParticle::get_n(truthmatched_reco_ys_from_higgs)") 
+                     .Define("pT_truthmatched_ys_from_higgs",  "FCCAnalyses::ReconstructedParticle::get_pt(truthmatched_reco_ys_from_higgs)")
+                     .Define("eta_truthmatched_ys_from_higgs",  "FCCAnalyses::ReconstructedParticle::get_eta(truthmatched_reco_ys_from_higgs)") 
+                     .Define("E_truthmatched_ys_from_higgs",  "FCCAnalyses::ReconstructedParticle::get_eta(truthmatched_reco_ys_from_higgs)") 
+                     
                      )
 
         return df2
@@ -452,6 +467,16 @@ class RDFanalysis():
               branchList.append("pT_truth_ys_from_higgs")
               branchList.append("eta_truth_ys_from_higgs")
               branchList.append("E_truth_ys_from_higgs")
+              #reco photons matched to truth in cone 0.1, before isolation
+              branchList.append("n_truthmatched_ys_from_higgs_noiso")
+              branchList.append("pT_truthmatched_ys_from_higgs_noiso")
+              branchList.append("eta_truthmatched_ys_from_higgs_noiso")
+              branchList.append("E_truthmatched_ys_from_higgs_noiso")
+              #reco photons matched to truth in cone 0.1, after isolation
+              branchList.append("n_truthmatched_ys_from_higgs")
+              branchList.append("pT_truthmatched_ys_from_higgs")
+              branchList.append("eta_truthmatched_ys_from_higgs")
+              branchList.append("E_truthmatched_ys_from_higgs")
 
 
         return branchList
