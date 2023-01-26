@@ -25,7 +25,8 @@ var searchData=
   ['isprimary_5ffortracks_22',['IsPrimary_forTracks',['../namespace_f_c_c_analyses_1_1_vertex_fitter_simple.html#a9f074d5475db3aab1ce870f281a4a8ba',1,'FCCAnalyses::VertexFitterSimple']]],
   ['ispv_23',['isPV',['../namespace_f_c_c_analyses_1_1my_utils.html#aa6c482d29e073751795648727a554892',1,'FCCAnalyses::myUtils']]],
   ['isquark_24',['isQuark',['../namespace_analysis_f_c_chh.html#a2910c7a82ff72d97aeba09570d073db8',1,'AnalysisFCChh']]],
-  ['istau_25',['isTau',['../namespace_analysis_f_c_chh.html#a46b1e9da306466ed2fbf727c664dcdc6',1,'AnalysisFCChh']]],
-  ['isw_26',['isW',['../namespace_analysis_f_c_chh.html#a08d536d838fe92fcfb661fc9234e1fa8',1,'AnalysisFCChh']]],
-  ['isz_27',['isZ',['../namespace_analysis_f_c_chh.html#a7f4d064af0bb694e1314aa47858a05ee',1,'AnalysisFCChh']]]
+  ['isstablephoton_25',['isStablePhoton',['../namespace_analysis_f_c_chh.html#a86e196dead8cc20c9755f45a33142ad2',1,'AnalysisFCChh']]],
+  ['istau_26',['isTau',['../namespace_analysis_f_c_chh.html#a46b1e9da306466ed2fbf727c664dcdc6',1,'AnalysisFCChh']]],
+  ['isw_27',['isW',['../namespace_analysis_f_c_chh.html#a08d536d838fe92fcfb661fc9234e1fa8',1,'AnalysisFCChh']]],
+  ['isz_28',['isZ',['../namespace_analysis_f_c_chh.html#a7f4d064af0bb694e1314aa47858a05ee',1,'AnalysisFCChh']]]
 ];
