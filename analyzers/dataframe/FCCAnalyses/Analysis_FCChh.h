@@ -67,6 +67,7 @@ namespace AnalysisFCChh{
 	bool WWlvlvFilter(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> daughter_ids, ROOT::VecOps::RVec<podio::ObjectID> parent_ids);
 
 	//helper functions for the ZZllv truth filter:
+	bool isStablePhoton(edm4hep::MCParticleData truth_part);
 	bool isLep(edm4hep::MCParticleData truth_part);
 	bool isLightLep(edm4hep::MCParticleData truth_part);
 	bool isNeutrino(edm4hep::MCParticleData truth_part);
@@ -162,6 +163,7 @@ namespace AnalysisFCChh{
 	bool isChildOfZFromHiggs(edm4hep::MCParticleData truth_part, ROOT::VecOps::RVec<podio::ObjectID> parent_ids, ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles);
 	ROOT::VecOps::RVec<edm4hep::MCParticleData> getLepsFromTau(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids);
 	ROOT::VecOps::RVec<edm4hep::MCParticleData> getLepsFromW(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids);
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> getPhotonsFromH(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids);
 	ROOT::VecOps::RVec<int> getTruthLepLepFlavour(ROOT::VecOps::RVec<edm4hep::MCParticleData> leps_from_tau);
 	ROOT::VecOps::RVec<edm4hep::MCParticleData> getTruthEle(ROOT::VecOps::RVec<edm4hep::MCParticleData> leps_from_tau);
 	ROOT::VecOps::RVec<edm4hep::MCParticleData> getTruthMu(ROOT::VecOps::RVec<edm4hep::MCParticleData> leps_from_tau);
@@ -184,7 +186,9 @@ namespace AnalysisFCChh{
 	ROOT::VecOps::RVec<edm4hep::MCParticleData> getNusFromW(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids);
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> getTruthMETObj(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids, TString type="hww_only");
 
-
+	//for checking signal efficiencies in delphes card validation
+	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> find_reco_matched_particle(edm4hep::MCParticleData truth_part_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> check_reco_parts, float dR_thres=0.1);
+	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> find_true_signal_leps_reco_matches(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_leps_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_electrons, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_muons, float dR_thres=0.1);
 
 }
 

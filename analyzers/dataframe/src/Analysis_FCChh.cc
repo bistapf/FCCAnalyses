@@ -7,6 +7,18 @@
 using namespace AnalysisFCChh;
 
 //truth filter helper functions:
+bool AnalysisFCChh::isStablePhoton(edm4hep::MCParticleData truth_part)
+{
+	auto pdg_id = truth_part.PDG;
+	//std::cout << "pdg id of truth part is" << pdg_id << std::endl;
+	if (abs(pdg_id) == 22 && truth_part.generatorStatus == 1){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
 bool AnalysisFCChh::isLep(edm4hep::MCParticleData truth_part)
 {
 	auto pdg_id = truth_part.PDG;
@@ -186,7 +198,7 @@ bool AnalysisFCChh::isFromHiggsDirect(edm4hep::MCParticleData truth_part, ROOT::
 	auto first_parent_index = truth_part.parents_begin;
 	auto last_parent_index = truth_part.parents_end;
 
-	//loop over all parents (usually onle 1, but sometimes more for reasons not understood?):
+	//loop over all parents (usually only 1, but sometimes more for reasons not understood?):
 	for(int parent_i = first_parent_index; parent_i < last_parent_index; parent_i++){
 		//first get the index from the parent
 		auto parent_MC_index = parent_ids.at(parent_i).index;
@@ -266,7 +278,7 @@ bool AnalysisFCChh::isChildOfWFromHiggs(edm4hep::MCParticleData truth_part, ROOT
 	auto first_parent_index = truth_part.parents_begin;
 	auto last_parent_index = truth_part.parents_end;
 
-	//loop over all parents (usually onle 1, but sometimes more for reasons not understood?):
+	//loop over all parents (usually only 1, but sometimes more for reasons not understood?):
 	for(int parent_i = first_parent_index; parent_i < last_parent_index; parent_i++){
 		//first get the index from the parent
 		auto parent_MC_index = parent_ids.at(parent_i).index;
@@ -1813,6 +1825,26 @@ ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getLepsFromW(ROOT::Ve
 	return leps_list;
 }
 
+//find photons that came from a H->yy decay
+ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getPhotonsFromH(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids){
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> gamma_list;
+
+	//loop over all truth particles and find light leptons from taus that came from higgs (the direction tau->light lepton as child appears to be missing in the tautau samples)
+	for (auto & truth_part: truth_particles) {
+		if (isStablePhoton(truth_part)){
+			bool from_higgs = hasHiggsParent(truth_part, parent_ids, truth_particles);
+			if (isFromHadron(truth_part, parent_ids, truth_particles)){
+				from_higgs = false;
+			}
+			if(from_higgs){
+				gamma_list.push_back(truth_part);
+			}
+		}
+	}
+	// std::cout << "Leps from tau-higgs " << counter << std::endl; 
+	return gamma_list;
+}
+
 //momentum fraction x for tau decays
 ROOT::VecOps::RVec<float> AnalysisFCChh::get_x_fraction(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> visible_particle, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> MET){
 	ROOT::VecOps::RVec<float> results_vec;
@@ -1938,6 +1970,7 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_reco_
 	return out_vector;
 
 }
+
 
 
 //manual implementation of the delphes isolation criterion
@@ -2085,6 +2118,121 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::getTruthME
 
 
 	out_vector.push_back(met_obj);
+
+	return out_vector;
+
+}
+
+
+// additonal code for validation of new delphes card: 
+
+//helper function to find dR matched reco particle for a single truth particle - returns vector of size 1 always, only the one that is closest in dR! (technically doesnt need to be vector at this stage ..)
+ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_reco_matched_particle(edm4hep::MCParticleData truth_part_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> check_reco_parts, float dR_thres){
+	
+	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> out_vector;
+
+	TLorentzVector truth_part_tlv = getTLV_MC(truth_part_to_match);
+
+	for (auto & check_reco_part: check_reco_parts){
+		TLorentzVector check_reco_part_tlv = getTLV_reco(check_reco_part);
+
+		float dR_val = truth_part_tlv.DeltaR(check_reco_part_tlv);
+
+		if (dR_val <= dR_thres){
+
+			//check if already sth in the vector - always want only exactly one match! 
+
+			if (out_vector.size() > 0 ){
+				// check which one is closer
+				float dR_val_old = truth_part_tlv.DeltaR(getTLV_reco(out_vector.at(0)));
+
+				float pT_diff_old = abs(truth_part_tlv.Pt() - getTLV_reco(out_vector.at(0)).Pt());
+
+
+				if (dR_val < dR_val_old){
+					out_vector.at(0) = check_reco_part;
+
+					if (pT_diff_old < abs(truth_part_tlv.Pt() - check_reco_part_tlv.Pt() )){
+						std::cout << "Found case where closest in pT is not closest in dR" << std::endl;
+					}
+				}
+			}
+
+			else {
+				out_vector.push_back(check_reco_part);
+			}
+			
+		}
+
+		check_reco_part_tlv.Clear();
+	}
+
+	return out_vector;
+}
+
+
+//truth matching: take as input the truth leptons from e.g. HWW decay and check if they have a reco match within dR cone - Note: skip taus!
+ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_true_signal_leps_reco_matches(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_leps_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_electrons, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_muons, float dR_thres){
+
+	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> out_vector;
+
+	//if no input part, return nothing
+	if (truth_leps_to_match.size() < 1){
+		return out_vector;
+	}
+
+	//check the flavour of the input truth particle, if it is a tau we skip it
+	for (auto & truth_lep : truth_leps_to_match){
+
+		if (!isLightLep(truth_lep)){
+			// std::cout << "Info: Problem in AnalysisFCChh::find_true_signal_leps_reco_matches() - Found truth tau (or other non light lepton) in attempt to match to reco, skipping." << std::endl;
+			continue;
+		}
+
+		// TLorentzVector truth_part_tlv = getTLV_MC(truth_lep);
+
+		// truth particle should thus be either an electron or a muon: 
+
+		//checking electrons:
+		if (abs(truth_lep.PDG) == 11 ){
+
+			ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> ele_match_vector = find_reco_matched_particle(truth_lep, reco_electrons, dR_thres);
+
+			//warning if match to more than one particle:
+			if (ele_match_vector.size() > 1){
+				std::cout << "Warning in AnalysisFCChh::find_true_signal_leps_reco_matches() - Truth electron matched to more than one reco electron." << std::endl;
+				std::cout << "Truth electron has pT = " << getTLV_MC(truth_lep).Pt() << " charge = " << truth_lep.charge << " pdg = " << truth_lep.PDG << std::endl;
+				//check the pTs of them: 
+				for (auto & matched_ele: ele_match_vector){
+					std::cout << "Matched electron with pT = " << getTLV_reco(matched_ele).Pt() << " charge = " << matched_ele.charge << " dR distance to truth = " << getTLV_MC(truth_lep).DeltaR(getTLV_reco(matched_ele)) << std::endl;
+				}
+			}
+
+			out_vector.append(ele_match_vector.begin(), ele_match_vector.end());
+
+		}
+
+		//checking muons:
+		else if (abs(truth_lep.PDG) == 13 ){
+
+			ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> mu_match_vector = find_reco_matched_particle(truth_lep, reco_muons, dR_thres);
+
+			//warning if match to more than one particle:
+			if (mu_match_vector.size() > 1){
+				std::cout << "Warning in AnalysisFCChh::find_true_signal_leps_reco_matches() - Truth muon matched to more than one reco muon." << std::endl;
+				std::cout << "Truth muon has pT = " << getTLV_MC(truth_lep).Pt() << " charge = " << truth_lep.charge << " pdg = " << truth_lep.PDG << std::endl;
+
+				//check the pTs of them: 
+				for (auto & matched_mu: mu_match_vector){
+					std::cout << "Matched muon with pT = " << getTLV_reco(matched_mu).Pt() << " charge = " << matched_mu.charge << "dR distance to truth = " << getTLV_MC(truth_lep).DeltaR(getTLV_reco(matched_mu)) << std::endl;
+				}
+			}
+
+			
+
+			out_vector.append(mu_match_vector.begin(), mu_match_vector.end());
+		}
+	}
 
 	return out_vector;
 
