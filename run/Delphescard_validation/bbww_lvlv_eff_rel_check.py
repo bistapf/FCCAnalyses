@@ -71,7 +71,7 @@ def check_res_per_bin_1lep(input_file, out_dir_base, flavour):
 		rdf_recomatch = input_rdf_flavor.Filter(cut_string_eta+" && n_truthmatched_leps_from_HWW_noiso == 1")
 		rdf_resolution = rdf_recomatch.Define('lep_resolution', '(E_truthmatched_leps_from_HWW_noiso[0] - E_truth_leps_from_HWW[0])/E_truth_leps_from_HWW[0]')
 		tmp_hist = rdf_resolution.Histo1D('lep_resolution')                
-		list_of_hists.append(tmp_hist)
+		list_of_hists.append(tmp_hist.GetValue())
 
 	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
 	canvas.cd()
