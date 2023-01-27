@@ -49,6 +49,8 @@ def get_rdf(input_filepath):
 
 def check_res_per_bin_1lep(input_file, out_dir_base, flavour):
 
+	model = ROOT.RDF.TH1DModel("resolution_model_hist", "resolution_model_hist", 40, -0.05, 0.05)
+
 	if not os.path.exists(out_dir_base):
 		os.mkdir(out_dir_base)
 
@@ -64,36 +66,45 @@ def check_res_per_bin_1lep(input_file, out_dir_base, flavour):
 
 	list_of_hists =[]
 	for i_eta_edge in range(len(eta_edges)-1):
+		hist_title = "{} < |#eta| < {}".format(eta_edges[i_eta_edge], eta_edges[i_eta_edge+1])
 		cut_string_eta = "abs(eta_truth_leps_from_HWW[0]) > {:.2f} && abs(eta_truth_leps_from_HWW[0]) <= {:.2f}".format(eta_edges[i_eta_edge], eta_edges[i_eta_edge+1])
 		rdf_recomatch = input_rdf_flavor.Filter(cut_string_eta+" && n_truthmatched_leps_from_HWW_noiso == 1")
 		rdf_resolution = rdf_recomatch.Define('lep_resolution', '(E_truthmatched_leps_from_HWW_noiso[0] - E_truth_leps_from_HWW[0])/E_truth_leps_from_HWW[0]')
-		tmp_hist = rdf_resolution.Histo1D('lep_resolution')                
-		list_of_hists.append(tmp_hist.GetValue())
+		tmp_hist = rdf_resolution.Histo1D(model, 'lep_resolution').GetValue()   
+		tmp_hist.SetTitle("{}, RMS = {:.2f}".format(hist_title, tmp_hist.GetRMS()) )            
+		list_of_hists.append(tmp_hist)
 
 	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
 	canvas.cd()
 	histfile_name = "{}_E_resolution.png".format(flavour)
 	histfile_path = os.path.join(out_dir_base, histfile_name)
 
-	leg = ROOT.TLegend(0.7, 0.2, 0.9, 0.4)
+	leg = ROOT.TLegend(0.55, 0.6, 0.9, 0.9)
 
 	for i_hist, hist in enumerate(list_of_hists):
 		print("Plotting hist", i_hist)
 		hist.SetLineWidth(2)
 		hist.SetLineColor(38+i_hist*4)
 
-		hist.SetMinimum(0.)
-		hist.SetMaximum(100.)
-		hist.GetYaxis().SetTitle("Events")
+		hist.GetYaxis().SetTitle("Fraction of events")
 		hist.GetXaxis().SetTitle("Delta(E)/E")
+		# hist.Draw("HIST SAME")
+
+		hist.Scale(1./hist.Integral()) #fraction of events
+		hist.SetMaximum(0.3)
 		hist.Draw("HIST SAME")
+		# hist.DrawNormalized("HIST SAME")
 
 		leg.AddEntry(hist, hist.GetTitle(), "l")
 
+
+	canvas.RedrawAxis()
+
 	leg.SetFillStyle( 0 )
 	leg.SetBorderSize( 0 )
+	leg.SetMargin( 0.1)
 	leg.SetTextFont( 43 )
-	leg.SetTextSize( 22 )
+	leg.SetTextSize( 20 )
 	leg.SetColumnSeparation(-0.05)
 	leg.Draw()
 
@@ -263,5 +274,6 @@ if __name__ == "__main__":
 	#check_lepton_eff(args.inPath, args.outDir)
 	# check_truth_brs(args.inPath, args.outDir)
 	check_res_per_bin_1lep(args.inPath, args.outDir, 13)
+	check_res_per_bin_1lep(args.inPath, args.outDir, 11)
 
 # python bbww_lvlv_eff_rel_check.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbww/chunk0.root -o ./bbww_eff_check/
