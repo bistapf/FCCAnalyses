@@ -52,11 +52,8 @@ def check_res_per_bin_1lep(input_file, out_dir_base, flavour):
 	if not os.path.exists(out_dir_base):
 		os.mkdir(out_dir_base)
 
-	#        input_rdf_flavor = get_rdf(input_file)
-
-	#        input_rdf_flavor = input_rdf.Filter("n_truth_leps_from_HWW == 1").Filter("abs(pdgID_truth_leps_from_HWW[0]) == {}".format(int(flavour)))
-
-	input_rdf_flavor = get_rdf(input_file)
+	input_rdf = get_rdf(input_file)
+	input_rdf_flavor = input_rdf.Filter("n_truth_leps_from_HWW == 1").Filter("abs(pdgID_truth_leps_from_HWW[0]) == {}".format(int(flavour)))
 
 	eta_edges = [0., 2.5, 4., 6]
 	p_edges = [0., 10., 20., 30., 50., 100., 200.]
