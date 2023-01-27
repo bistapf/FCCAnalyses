@@ -75,6 +75,8 @@ def check_res_per_bin_1lep(input_file, out_dir_base, flavour):
 
 	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
 	canvas.cd()
+	histfile_name = "{}_E_resolution.png".format(flavour)
+	histfile_path = os.path.join(out_dir_base, histfile_name)
 
 	leg = ROOT.TLegend(0.7, 0.2, 0.9, 0.4)
 
