@@ -111,6 +111,7 @@ def check_res_per_bin_1lep(input_file, out_dir_base, flavour):
 	canvas.SaveAs(histfile_path)
 
 
+
 def check_eff_per_bin_1lep(input_rdf, out_dir_base, flavour, with_iso=False, with_larger_dR=False):
 	eta_edges = [0., 2.5, 4., 6]
 	pT_edges = [0., 5., 10., 15., 20., 30., 40., 60., 80., 100., 150., 200., 300.,]
@@ -200,6 +201,94 @@ def check_eff_per_bin_1lep(input_rdf, out_dir_base, flavour, with_iso=False, wit
 
 	canvas.SaveAs(histfile_path)
 
+def check_eff_per_eta_bin_1lep(input_rdf, out_dir_base, flavour, with_iso=False, with_larger_dR=False):
+	eta_edges = [-6., -4., -2.5, -2.0, -1.5, -1.0, -0.5, 0., 0.5, 1.0, 1.5, 2.0, 2.5, 4., 6]
+	pT_edges = [0., 20., 40., 60., 80., 100., 200.]
+
+	#histogram properties based on the binning
+	hist_binEdges = array("d", eta_edges)
+	hist_nBins = len(eta_edges)-1
+
+	list_of_hists =[]
+
+	if with_iso and with_larger_dR:
+		raiseException("Error in check_eff_per_bin_1lep - with_iso and with_larger_dR cannot be true at the same time.")
+
+	recomatch_var = "n_truthmatched_leps_from_HWW_noiso"
+	if with_iso:
+		recomatch_var = "n_truthmatched_leps_from_HWW" 
+	if with_larger_dR:
+		recomatch_var = "n_truthmatched_leps_from_HWW_noiso_dr02"
+
+
+	for i_pt_edge in range(len(pT_edges)-1):
+		#write to file:
+		file_name = "{}_efficiencies_vs_eta_pT_bin_{}.txt".format(flavour, i_pt_edge)
+		file_path = os.path.join(out_dir_base, file_name)
+
+		#fill a histogram
+		hist_name = "hist_eff_vs_eta_pT_bin"+str(i_pt_edge)
+		hist_eff_vs_eta = ROOT.TH1D(hist_name, hist_name, hist_nBins, hist_binEdges)
+		hist_title = "{} < p_{{T}} < {}".format(pT_edges[i_pt_edge], pT_edges[i_pt_edge+1])
+
+		with open(file_path, 'w') as outfile:
+			eff_vs_eta = []
+			cut_string_pT = "pT_truth_leps_from_HWW[0] > {:.2f} && pT_truth_leps_from_HWW[0] <= {:.2f}".format(pT_edges[i_pt_edge], pT_edges[i_pt_edge+1])
+			for i_eta_edge in range(len(eta_edges)-1):
+				cut_string_bin = cut_string_pT+" && eta_truth_leps_from_HWW[0] > {:.2f} && eta_truth_leps_from_HWW[0] <= {:.2f}".format(eta_edges[i_eta_edge], eta_edges[i_eta_edge+1])
+				n_evts_bin_total = input_rdf.Filter(cut_string_bin).Count().GetValue()
+				# n_evts_bin_total = rdf_evts_bin.Count().GetValue()
+				n_evts_bin_recomatched = input_rdf.Filter(cut_string_bin+" && {} == 1".format(recomatch_var)).Count().GetValue()
+				# n_evts_bin_recomatched = input_rdf.Filter(cut_string_bin+" && n_truthmatched_leps_from_HWW_noiso == 1").Count().GetValue()
+				if n_evts_bin_total:
+					eff_bin = n_evts_bin_recomatched/n_evts_bin_total*100.
+				else:
+					eff_bin = 0.
+				eff_vs_eta.append(eff_bin)
+				print(eff_bin)
+				outfile.write("{} to {} GeV : {:.2f} \n".format(eta_edges[i_eta_edge], eta_edges[i_eta_edge+1], eff_bin))
+
+				#fill the hist
+				hist_eff_vs_eta.SetBinContent(i_eta_edge+1, eff_bin)
+
+		hist_eff_vs_eta.SetTitle(hist_title)
+		list_of_hists.append(hist_eff_vs_eta)
+
+	if with_iso:
+		histfile_name = "{}_efficiencies_vs_eta_afterIsolation.png".format(flavour)
+	elif with_larger_dR:
+		histfile_name = "{}_efficiencies_vs_eta_dR02.png".format(flavour)
+	else:
+		histfile_name = "{}_efficiencies_vs_eta.png".format(flavour)
+
+	histfile_path = os.path.join(out_dir_base, histfile_name)
+	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
+	canvas.cd()
+
+	leg = ROOT.TLegend(0.6, 0.2, 0.8, 0.4)
+
+	for i_hist, hist in enumerate(list_of_hists):
+		print("Plotting hist", i_hist)
+		hist.SetLineWidth(2)
+		hist.SetLineColor(30+i_hist*2)
+
+		hist.SetMinimum(0.)
+		hist.SetMaximum(105.)
+		hist.GetYaxis().SetTitle("{} efficiency in %".format(flavour))
+		hist.GetXaxis().SetTitle("#eta truth")
+		hist.Draw("HIST SAME")
+
+		leg.AddEntry(hist, hist.GetTitle(), "l")
+
+	leg.SetFillStyle( 0 )
+	leg.SetBorderSize( 0 )
+	leg.SetTextFont( 43 )
+	leg.SetTextSize( 22 )
+	leg.SetColumnSeparation(-0.05)
+	leg.Draw()
+
+	canvas.SaveAs(histfile_path)
+
 def check_lepton_eff(input_filepath, out_dir_base):
 
 	#how many of the 1 lepton events have 1 lepton? -> ideally link the truth particle to a reco particle!!
@@ -216,12 +305,12 @@ def check_lepton_eff(input_filepath, out_dir_base):
 		return
 
 	#check the 1 lepton case:
-	print("Checking lepton efficiencies for 1 lepton events")
+	# print("Checking lepton efficiencies for 1 lepton events")
 	rdf_lvqq_truth = rdf.Filter("n_truth_leps_from_HWW == 1") #Note this includes taus!!
-	rdf_lvqq_truth_notaus = rdf.Filter("abs(pdgID_truth_leps_from_HWW[0]) == 11 || abs(pdgID_truth_leps_from_HWW[0]) == 13 ")
-	n_evts_truth_1l_incl = rdf_lvqq_truth_notaus.Count().GetValue() #NO TAUS!
-	n_evts_recomatched_1l_incl = rdf_lvqq_truth_notaus.Filter("n_truthmatched_leps_from_HWW_noiso == 1").Count().GetValue() #recomatch does NOT include taus!!
-	print("Efficiency for 1 matched leps before iso: {:.2f}%".format(n_evts_recomatched_1l_incl/n_evts_truth_1l_incl*100.))
+	# rdf_lvqq_truth_notaus = rdf.Filter("abs(pdgID_truth_leps_from_HWW[0]) == 11 || abs(pdgID_truth_leps_from_HWW[0]) == 13 ")
+	# n_evts_truth_1l_incl = rdf_lvqq_truth_notaus.Count().GetValue() #NO TAUS!
+	# n_evts_recomatched_1l_incl = rdf_lvqq_truth_notaus.Filter("n_truthmatched_leps_from_HWW_noiso == 1").Count().GetValue() #recomatch does NOT include taus!!
+	# print("Efficiency for 1 matched leps before iso: {:.2f}%".format(n_evts_recomatched_1l_incl/n_evts_truth_1l_incl*100.))
 
 	#ELECTRONS
 	rdf_1electron_truth = rdf_lvqq_truth.Filter("abs(pdgID_truth_leps_from_HWW[0]) == 11 ")
@@ -231,8 +320,13 @@ def check_lepton_eff(input_filepath, out_dir_base):
 	print("Efficiency for 1 matched electron before iso: {:.2f}%".format(n_evts_1electron_recomatched/n_1electron_truth_total*100.))
 	print("Efficiency for 1 matched electron after iso: {:.2f}%".format(n_evts_1electron_recomatched_wIso/n_1electron_truth_total*100.))
 
-	check_eff_per_bin_1lep(rdf_1electron_truth, out_dir_base, "electron")
-	check_eff_per_bin_1lep(rdf_1electron_truth, out_dir_base, "electron", with_iso=True)
+	#vs PT
+	# check_eff_per_bin_1lep(rdf_1electron_truth, out_dir_base, "electron")
+	# check_eff_per_bin_1lep(rdf_1electron_truth, out_dir_base, "electron", with_iso=True)
+
+	#vs ETA
+	check_eff_per_eta_bin_1lep(rdf_1electron_truth, out_dir_base, "electron")
+	check_eff_per_eta_bin_1lep(rdf_1electron_truth, out_dir_base, "electron", with_iso=True)
 
 	#MUONS
 	rdf_1muon_truth = rdf_lvqq_truth.Filter("abs(pdgID_truth_leps_from_HWW[0]) == 13 ")
@@ -242,32 +336,35 @@ def check_lepton_eff(input_filepath, out_dir_base):
 	print("Efficiency for 1 matched muon before iso: {:.2f}%".format(n_evts_1muon_recomatched/n_1muon_truth_total*100.))
 	print("Efficiency for 1 matched muon after iso: {:.2f}%".format(n_evts_1muon_recomatched_wIso/n_1muon_truth_total*100.))
 
-	check_eff_per_bin_1lep(rdf_1muon_truth, out_dir_base, "muon")
-	check_eff_per_bin_1lep(rdf_1muon_truth, out_dir_base, "muon", with_iso=True)
+	# check_eff_per_bin_1lep(rdf_1muon_truth, out_dir_base, "muon")
+	# check_eff_per_bin_1lep(rdf_1muon_truth, out_dir_base, "muon", with_iso=True)
+
+	check_eff_per_eta_bin_1lep(rdf_1muon_truth, out_dir_base, "muon")
+	check_eff_per_eta_bin_1lep(rdf_1muon_truth, out_dir_base, "muon", with_iso=True)
 
 
-	#check for weird events first
-	print("Checking lepton efficiencies for 2 lepton events")
-	rdf_lvlv_truth = rdf.Filter("n_truth_leps_from_HWW == 2")
-	weird_events = rdf_lvlv_truth.Filter("n_truth_leps_from_HWW < n_truthmatched_leps_from_HWW_noiso").Count().GetValue()
-	weird_events_iso = rdf_lvlv_truth.Filter("n_truth_leps_from_HWW < n_truthmatched_leps_from_HWW").Count().GetValue()
-	if weird_events or weird_events_iso:
-		print("Warning! Found more recomatched leptons than truth leptons! This shouldnt happen.")
+	# #check for weird events first
+	# print("Checking lepton efficiencies for 2 lepton events")
+	# rdf_lvlv_truth = rdf.Filter("n_truth_leps_from_HWW == 2")
+	# weird_events = rdf_lvlv_truth.Filter("n_truth_leps_from_HWW < n_truthmatched_leps_from_HWW_noiso").Count().GetValue()
+	# weird_events_iso = rdf_lvlv_truth.Filter("n_truth_leps_from_HWW < n_truthmatched_leps_from_HWW").Count().GetValue()
+	# if weird_events or weird_events_iso:
+	# 	print("Warning! Found more recomatched leptons than truth leptons! This shouldnt happen.")
 
-	#count how many of those also have 2 reco matched leptons:
-	n_evts_truth_2l = rdf_lvlv_truth.Count().GetValue()
-	n_evts_recomatched_2l_noiso = rdf_lvlv_truth.Filter("n_truthmatched_leps_from_HWW_noiso == 2").Count().GetValue()
-	n_evts_recomatched_2l_iso = rdf_lvlv_truth.Filter("n_truthmatched_leps_from_HWW == 2").Count().GetValue()
-	print(n_evts_truth_2l, n_evts_recomatched_2l_noiso, n_evts_recomatched_2l_iso)
+	# #count how many of those also have 2 reco matched leptons:
+	# n_evts_truth_2l = rdf_lvlv_truth.Count().GetValue()
+	# n_evts_recomatched_2l_noiso = rdf_lvlv_truth.Filter("n_truthmatched_leps_from_HWW_noiso == 2").Count().GetValue()
+	# n_evts_recomatched_2l_iso = rdf_lvlv_truth.Filter("n_truthmatched_leps_from_HWW == 2").Count().GetValue()
+	# print(n_evts_truth_2l, n_evts_recomatched_2l_noiso, n_evts_recomatched_2l_iso)
 
-	print("Efficiency for 2 matched leps before iso: {:.2f}%".format(n_evts_recomatched_2l_noiso/n_evts_truth_2l*100.))
-	print("Efficiency for 2 matched leps after iso: {:.2f}%".format(n_evts_recomatched_2l_iso/n_evts_truth_2l*100.))
+	# print("Efficiency for 2 matched leps before iso: {:.2f}%".format(n_evts_recomatched_2l_noiso/n_evts_truth_2l*100.))
+	# print("Efficiency for 2 matched leps after iso: {:.2f}%".format(n_evts_recomatched_2l_iso/n_evts_truth_2l*100.))
 
-	#require that the truth leptons have some pT and in eta range
-	rdf_truth_2l_selected = rdf_lvlv_truth.Filter("abs(eta_truth_leps_from_HWW[0]) < 2.5 && abs(eta_truth_leps_from_HWW[1]) < 2.5")
-	n_evts_truth_2l_selected = rdf_truth_2l_selected.Count().GetValue()
-	n_evts_truth_2l_selected_recomatched_noiso = rdf_truth_2l_selected.Filter("n_truthmatched_leps_from_HWW_noiso == 2").Count().GetValue()
-	print("Efficiency for 2 matched leps before iso, and |eta| truth < 2.5: {:.2f}%".format(n_evts_truth_2l_selected_recomatched_noiso/n_evts_truth_2l_selected*100.))
+	# #require that the truth leptons have some pT and in eta range
+	# rdf_truth_2l_selected = rdf_lvlv_truth.Filter("abs(eta_truth_leps_from_HWW[0]) < 2.5 && abs(eta_truth_leps_from_HWW[1]) < 2.5")
+	# n_evts_truth_2l_selected = rdf_truth_2l_selected.Count().GetValue()
+	# n_evts_truth_2l_selected_recomatched_noiso = rdf_truth_2l_selected.Filter("n_truthmatched_leps_from_HWW_noiso == 2").Count().GetValue()
+	# print("Efficiency for 2 matched leps before iso, and |eta| truth < 2.5: {:.2f}%".format(n_evts_truth_2l_selected_recomatched_noiso/n_evts_truth_2l_selected*100.))
 
 
 
