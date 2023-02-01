@@ -33,6 +33,44 @@ def get_rdf(input_filepath):
 
 	return rdf
 
+def plot_list_of_hists_normalized(list_of_hists, histbasename, out_dir_base, xaxis_label, file_format="png"):
+	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
+	canvas.cd()
+	histfile_name = "{}.{}".format(histbasename, file_format)
+	histfile_path = os.path.join(out_dir_base, histfile_name)
+
+	leg = ROOT.TLegend(0.55, 0.6, 0.9, 0.9)
+
+	for i_hist, hist in enumerate(list_of_hists):
+		print("Plotting hist", i_hist, "with name", hist.GetTitle() )
+		hist.SetLineWidth(2)
+		hist.SetLineColor(38+i_hist*4)
+
+		hist.GetYaxis().SetTitle("Fraction of events")
+		hist.GetXaxis().SetTitle(xaxis_label)
+		# hist.Draw("HIST SAME")
+
+		hist.Scale(1./hist.Integral()) #fraction of events
+		hist.SetMaximum(0.3)
+		hist.Draw("HIST SAME")
+		# hist.DrawNormalized("HIST SAME")
+
+		leg.AddEntry(hist, hist.GetTitle(), "l")
+
+
+	canvas.RedrawAxis()
+
+	leg.SetFillStyle( 0 )
+	leg.SetBorderSize( 0 )
+	leg.SetMargin( 0.1)
+	leg.SetTextFont( 43 )
+	leg.SetTextSize( 20 )
+	leg.SetColumnSeparation(-0.05)
+	leg.Draw()
+
+	canvas.SaveAs(histfile_path)
+
+
 
 def check_myy_gen(input_filepath, out_dir_base):
 	
@@ -51,6 +89,60 @@ def check_myy_gen(input_filepath, out_dir_base):
 	myy_hist.Draw("HIST SAME")
 	canvas.SaveAs("m_yy_gen_hist.png")
 
+def check_photon_eff(input_filepath, out_dir_base):
+
+	if not os.path.exists(out_dir_base):
+		os.mkdir(out_dir_base)
+
+	rdf = get_rdf(input_filepath)
+
+	rdf_yy_truth = rdf.Filter("n_truth_ys_from_higgs == 2") #finding the H-yy decay doesnt always work, need to filter
+	n_yy_truth_total = rdf_yy_truth.Count().GetValue()
+	n_evts_yy_recomatched = rdf_yy_truth.Filter("n_truthmatched_ys_from_higgs_noiso == 2").Count().GetValue()
+	n_evts_yy_recomatched_wIso = rdf_yy_truth.Filter("n_truthmatched_ys_from_higgs == 2").Count().GetValue()
+	print("Efficiency for 2 matched photons before iso: {:.2f}%".format(n_evts_yy_recomatched/n_yy_truth_total*100.))
+	print("Efficiency for 1 matched photons after iso: {:.2f}%".format(n_evts_yy_recomatched_wIso/n_evts_yy_recomatched*100.))
+
+def check_photon_res_per_bin(input_rdf, cutstring_bin, hist_name, out_dir_base):
+
+	model = ROOT.RDF.TH1DModel("resolution_model_hist", "resolution_model_hist", 40, -0.05, 0.05)
+
+	rdf_resolution = input_rdf.Define('y_resolution', '(E_truthmatched_ys_from_higgs_noiso[0] - E_truth_ys_from_higgs[0])/E_truth_ys_from_higgs[0]')
+	tmp_hist = rdf_resolution.Histo1D(model, 'y_resolution').GetValue()   
+	tmp_hist.SetTitle("{}, RMS = {:.2f}".format(hist_name, tmp_hist.GetRMS()) )     
+	return tmp_hist   
+
+def check_photon_resolutions_and_eff(input_filepath, out_dir_base):
+
+	if not os.path.exists(out_dir_base):
+		os.mkdir(out_dir_base)
+
+	rdf = get_rdf(input_filepath)
+
+	#total efficiencies for overview:
+	rdf_yy_truth = rdf.Filter("n_truth_ys_from_higgs == 2") 
+	n_yy_truth_total = rdf_yy_truth.Count().GetValue()
+	rdf_yy_recomatched = rdf_yy_truth.Filter("n_truthmatched_ys_from_higgs_noiso == 2")
+	rdf_yy_recomatched_wIso = rdf_yy_truth.Filter("n_truthmatched_ys_from_higgs == 2")
+	n_evts_yy_recomatched = rdf_yy_recomatched.Count().GetValue()
+	n_evts_yy_recomatched_wIso = rdf_yy_recomatched_wIso.Count().GetValue()
+	print("Efficiency for 2 matched photons before iso: {:.2f}%".format(n_evts_yy_recomatched/n_yy_truth_total*100.))
+	print("Efficiency for 2 matched photons after iso: {:.2f}%".format(n_evts_yy_recomatched_wIso/n_evts_yy_recomatched*100.))
+
+	#check resolutions
+
+	#first only in bins of eta:
+	list_of_hists =[]
+	eta_edges = [0., 2.5, 4., 6]
+	for i_eta_edge in range(len(eta_edges)-1):
+		hist_title = "{} < |#eta| < {}".format(eta_edges[i_eta_edge], eta_edges[i_eta_edge+1])
+		cut_string_eta = "abs(eta_truth_ys_from_higgs[0]) > {:.2f} && abs(eta_truth_ys_from_higgs[0]) <= {:.2f}".format(eta_edges[i_eta_edge], eta_edges[i_eta_edge+1])
+		hist_bin = check_photon_res_per_bin(rdf_yy_recomatched, cut_string_eta, hist_title, out_dir_base)
+		list_of_hists.append(hist_bin)
+
+	plot_list_of_hists_normalized(list_of_hists, "y_E_resolution", out_dir_base, "#Delta E/E", file_format="png")
+
+
 
 
 if __name__ == "__main__":
@@ -60,8 +152,12 @@ if __name__ == "__main__":
 	parser.add_argument('--outdir', '-o', metavar="OUTPUTDIR", dest="outDir", required=True, help="Output directory.")
 	args = parser.parse_args()
 
-	check_myy_gen(args.inPath, args.outDir)
+	check_photon_resolutions_and_eff(args.inPath, args.outDir)
+	# check_photon_eff(args.inPath, args.outDir)
+	# check_myy_gen(args.inPath, args.outDir)
 
 
 # python bbyy_eff_res_check.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbaa/chunk0.root -o ./bbyy_checks/
+
+#for checking the myy
 # python bbyy_eff_res_check.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa.root -o ./bbyy_checks/
