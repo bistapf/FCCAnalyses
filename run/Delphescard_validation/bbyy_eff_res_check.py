@@ -62,11 +62,31 @@ def plot_single_hist(hist, filename, out_dir_base, xaxis_label, colour_code=38, 
 	histfile_name = "{}.{}".format(filename, file_format)
 	histfile_path = os.path.join(out_dir_base, histfile_name)
 
+	#fit the histogram with a gaus:
+	gauss = ROOT.TF1("gauss","gaus", -1., 1.)
+	hist.Fit(gauss)
+	fit_result= hist.GetFunction("gauss")
+
+	
 	hist.SetLineWidth(2)
 	hist.SetLineColor(colour_code)
 	hist.GetYaxis().SetTitle("Events")
 	hist.GetXaxis().SetTitle(xaxis_label)
-	hist.Draw("HIST")
+
+	gaus_pars = []
+	if fit_result: #avoid crashes from fitting empty histograms
+		fit_result.SetLineColor(ROOT.kBlack)
+		fit_result.SetLineWidth(2)
+		fit_result.Draw()
+
+		#get the parameter values:
+		gaus_mean = fit_result.GetParameter(1)
+		gaus_mean_error = fit_result.GetParError(1)
+		gaus_width = fit_result.GetParameter(2)
+		gaus_width_error = fit_result.GetParError(2)
+		gaus_pars = [gaus_mean, gaus_mean_error, gaus_width, gaus_width_error]
+
+	hist.Draw("HIST SAME")
 
 	leg = ROOT.TLegend(0.55, 0.6, 0.9, 0.9)
 	leg.SetFillStyle( 0 )
@@ -79,6 +99,8 @@ def plot_single_hist(hist, filename, out_dir_base, xaxis_label, colour_code=38, 
 	leg.Draw()
 
 	canvas.SaveAs(histfile_path)
+
+	return gaus_pars
 
 def plot_list_of_hists_normalized(list_of_hists, histbasename, out_dir_base, xaxis_label, file_format="png"):
 	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
@@ -133,7 +155,7 @@ def plot_list_of_hists(list_of_hists, histbasename, out_dir_base, xaxis_label, y
 
 		hist.GetYaxis().SetTitle(yaxis_label)
 		hist.GetXaxis().SetTitle(xaxis_label)
-		hist.Draw("HIST SAME")
+		hist.Draw("HISTE SAME")
 		leg.AddEntry(hist, hist.GetTitle(), "l")
 
 
@@ -203,9 +225,12 @@ def check_photon_res_per_eta_bin(input_rdf, cutstring_base, E_edges, hist_name, 
 		tmp_hist = rdf_bin.Histo1D(model, 'y_resolution').GetValue()   
 		histfilename = "{}_E_{}_to_{}".format(filebasename, E_edges[i_E_edge], E_edges[i_E_edge+1])
 		tmp_hist.SetTitle("{}, RMS = {:.4f}".format(hist_name, tmp_hist.GetRMS()) )     
-		plot_single_hist(tmp_hist, histfilename, out_dir_base, "#DeltaE/E", colour_code=38, file_format="png")
-
-		hist_res_vs_E.SetBinContent(i_E_edge+1, tmp_hist.GetRMS())
+		gaus_pars = plot_single_hist(tmp_hist, histfilename, out_dir_base, "#sigma(E)/E", colour_code=38, file_format="png")
+		
+		# hist_res_vs_E.SetBinContent(i_E_edge+1, tmp_hist.GetRMS())
+		if gaus_pars:
+			hist_res_vs_E.SetBinContent(i_E_edge+1, gaus_pars[2])
+			hist_res_vs_E.SetBinError(i_E_edge+1, gaus_pars[3])
 
 	plot_single_hist(hist_res_vs_E, filebasename, out_dir_base, "E_{true} in GeV", colour_code=38, file_format="png")
 	# plot_2D(rdf_resolution, 'pT_truthmatched_ys_from_higgs_noiso', 'y_resolution', out_dir_base)	
