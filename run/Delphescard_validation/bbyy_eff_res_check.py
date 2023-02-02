@@ -117,9 +117,10 @@ def plot_list_of_hists_normalized(list_of_hists, histbasename, out_dir_base, xax
 
 	canvas.SaveAs(histfile_path)
 
-def plot_list_of_hists(list_of_hists, histbasename, out_dir_base, xaxis_label, file_format="png"):
+def plot_list_of_hists(list_of_hists, histbasename, out_dir_base, xaxis_label, yaxis_label="Events", file_format="png"):
 	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
 	canvas.cd()
+	canvas.SetLeftMargin(0.15)
 	histfile_name = "{}.{}".format(histbasename, file_format)
 	histfile_path = os.path.join(out_dir_base, histfile_name)
 
@@ -130,7 +131,7 @@ def plot_list_of_hists(list_of_hists, histbasename, out_dir_base, xaxis_label, f
 		hist.SetLineWidth(2)
 		hist.SetLineColor(38+i_hist*4)
 
-		hist.GetYaxis().SetTitle("Fraction of events")
+		hist.GetYaxis().SetTitle(yaxis_label)
 		hist.GetXaxis().SetTitle(xaxis_label)
 		hist.Draw("HIST SAME")
 		leg.AddEntry(hist, hist.GetTitle(), "l")
@@ -218,6 +219,7 @@ def check_photon_resolutions_and_eff(input_filepath, out_dir_base):
 		os.mkdir(out_dir_base)
 
 	rdf = get_rdf(input_filepath)
+	# print("Total events in dataframe:", rdf.Count().GetValue() )
 
 	#total efficiencies for overview:
 	rdf_yy_truth = rdf.Filter("n_truth_ys_from_higgs == 2") 
@@ -228,6 +230,10 @@ def check_photon_resolutions_and_eff(input_filepath, out_dir_base):
 	n_evts_yy_recomatched_wIso = rdf_yy_recomatched_wIso.Count().GetValue()
 	print("Efficiency for 2 matched photons before iso: {:.2f}%".format(n_evts_yy_recomatched/n_yy_truth_total*100.))
 	print("Efficiency for 2 matched photons after iso: {:.2f}%".format(n_evts_yy_recomatched_wIso/n_evts_yy_recomatched*100.))
+
+	# print("Events with 2 truth photons", n_yy_truth_total )
+	# print("Events with 2 reco matched photons", n_evts_yy_recomatched )
+	# print("Events with 2 reco matched photons after iso", n_evts_yy_recomatched_wIso )
 
 	#check resolutions
 
@@ -253,7 +259,7 @@ def check_photon_resolutions_and_eff(input_filepath, out_dir_base):
 		# tmp_hist.SetTitle("{}, RMS = {:.4f}".format(hist_title, tmp_hist.GetRMS()) )     
 		list_of_hists.append(hist_bin)
 
-	plot_list_of_hists(list_of_hists, "y_E_resolution", out_dir_base, "#Delta E/E", file_format="png")
+	plot_list_of_hists(list_of_hists, "y_E_resolution", out_dir_base, "E_{truth} in GeV", "#Delta E/E", file_format="png")
 
 
 
@@ -271,6 +277,7 @@ if __name__ == "__main__":
 
 
 # python bbyy_eff_res_check.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbaa/chunk0.root -o ./bbyy_checks/
+# python bbyy_eff_res_check.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbaa/ -o ./bbyy_checks/ #all chunks
 
 #for checking the myy
 # python bbyy_eff_res_check.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa.root -o ./bbyy_checks/
