@@ -47,6 +47,40 @@ def get_rdf(input_filepath):
 		return
 	return rdf
 
+
+def check_photon_res_per_eta_bin(input_rdf, cutstring_base, E_edges, hist_name, filebasename, out_dir_base):
+
+	model = ROOT.RDF.TH1DModel("resolution_model_hist", "resolution_model_hist", 40, -0.05, 0.05)
+
+	#histogram vs E
+	hist_binEdges = array("d", E_edges)
+	hist_nBins = len(E_edges)-1
+	hist_res_vs_E = ROOT.TH1D(filebasename, filebasename, hist_nBins, hist_binEdges)
+
+	rdf_bin = input_rdf.Filter(cutstring_base)
+	rdf_resolution = rdf_recomatch.Define('lep_resolution', '(E_truthmatched_leps_from_HWW_noiso[0] - E_truth_leps_from_HWW[0])/E_truth_leps_from_HWW[0]')
+
+	for i_E_edge in range(len(E_edges)-1):
+		cutstring_bin = "E_truthmatched_leps_from_HWW_noiso[0] > {:.2f} && E_truthmatched_leps_from_HWW_noiso[0] <= {:.2f}".format(E_edges[i_E_edge], E_edges[i_E_edge+1])
+		rdf_bin = rdf_resolution.Filter(cutstring_bin)
+
+		#store a histogram of the resolution 
+		tmp_hist = rdf_bin.Histo1D(model, 'lep_resolution').GetValue()   
+		histfilename = "{}_E_{}_to_{}".format(filebasename, E_edges[i_E_edge], E_edges[i_E_edge+1])
+		tmp_hist.SetTitle("{}, RMS = {:.4f}".format(hist_name, tmp_hist.GetRMS()) )     
+		gaus_pars = plot_single_hist(tmp_hist, histfilename, out_dir_base, "#sigma(E)/E", colour_code=38, file_format="png")
+		
+		# hist_res_vs_E.SetBinContent(i_E_edge+1, tmp_hist.GetRMS())
+		if gaus_pars:
+			hist_res_vs_E.SetBinContent(i_E_edge+1, gaus_pars[2])
+			hist_res_vs_E.SetBinError(i_E_edge+1, gaus_pars[3])
+
+	plot_single_hist(hist_res_vs_E, filebasename, out_dir_base, "E_{true} in GeV", colour_code=38, file_format="png")
+	# plot_2D(rdf_resolution, 'pT_truthmatched_ys_from_higgs_noiso', 'y_resolution', out_dir_base)	
+
+	
+	return hist_res_vs_E
+
 def check_res_per_bin_1lep(input_file, out_dir_base, flavour):
 
 	model = ROOT.RDF.TH1DModel("resolution_model_hist", "resolution_model_hist", 40, -0.05, 0.05)
@@ -71,7 +105,8 @@ def check_res_per_bin_1lep(input_file, out_dir_base, flavour):
 		rdf_recomatch = input_rdf_flavor.Filter(cut_string_eta+" && n_truthmatched_leps_from_HWW_noiso == 1")
 		rdf_resolution = rdf_recomatch.Define('lep_resolution', '(E_truthmatched_leps_from_HWW_noiso[0] - E_truth_leps_from_HWW[0])/E_truth_leps_from_HWW[0]')
 		tmp_hist = rdf_resolution.Histo1D(model, 'lep_resolution').GetValue()   
-		tmp_hist.SetTitle("{}, RMS = {:.2f}".format(hist_title, tmp_hist.GetRMS()) )            
+		tmp_hist.SetTitle("{}, RMS = {:.2f}".format(hist_title, tmp_hist.GetRMS()) ) 
+		gaus_pars = plot_single_hist(tmp_hist, histfilename, out_dir_base, "#sigma(E)/E", colour_code=38, file_format="png")           
 		list_of_hists.append(tmp_hist)
 
 	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
@@ -289,7 +324,121 @@ def check_eff_per_eta_bin_1lep(input_rdf, out_dir_base, flavour, with_iso=False,
 
 	canvas.SaveAs(histfile_path)
 
-def check_lepton_eff(input_filepath, out_dir_base):
+def check_photon_res_per_eta_bin(input_rdf, cutstring_base, E_edges, hist_name, filebasename, out_dir_base):
+
+	model = ROOT.RDF.TH1DModel("resolution_model_hist", "resolution_model_hist", 40, -0.05, 0.05)
+
+	#histogram vs E
+	hist_binEdges = array("d", E_edges)
+	hist_nBins = len(E_edges)-1
+	hist_res_vs_E = ROOT.TH1D(filebasename, filebasename, hist_nBins, hist_binEdges)
+
+	rdf_bin = input_rdf.Filter(cutstring_base)
+	#rdf_resolution = rdf_bin.Define('lep_resolution', '(E_truthmatched_ys_from_higgs_noiso[0] - E_truth_ys_from_higgs[0])/E_truth_ys_from_higgs[0]')
+	rdf_resolution = rdf_bin.Define('lep_resolution', '(E_truthmatched_leps_from_HWW_noiso[0] - E_truth_leps_from_HWW[0])/E_truth_leps_from_HWW[0]')
+
+	for i_E_edge in range(len(E_edges)-1):
+		cutstring_bin = "E_truthmatched_leps_from_HWW_noiso[0] > {:.2f} && E_truthmatched_leps_from_HWW_noiso[0] <= {:.2f}".format(E_edges[i_E_edge], E_edges[i_E_edge+1])
+		rdf_bin = rdf_resolution.Filter(cutstring_bin)
+
+		#store a histogram of the resolution 
+		tmp_hist = rdf_bin.Histo1D(model, 'lep_resolution').GetValue()   
+		histfilename = "{}_E_{}_to_{}".format(filebasename, E_edges[i_E_edge], E_edges[i_E_edge+1])
+		tmp_hist.SetTitle("{}, RMS = {:.4f}".format(hist_name, tmp_hist.GetRMS()) )     
+		gaus_pars = plot_single_hist(tmp_hist, histfilename, out_dir_base, "#sigma(E)/E", colour_code=38, file_format="png")
+		
+		# hist_res_vs_E.SetBinContent(i_E_edge+1, tmp_hist.GetRMS())
+		if gaus_pars:
+			hist_res_vs_E.SetBinContent(i_E_edge+1, gaus_pars[2])
+			hist_res_vs_E.SetBinError(i_E_edge+1, gaus_pars[3])
+
+	plot_single_hist(hist_res_vs_E, filebasename, out_dir_base, "E_{true} in GeV", colour_code=38, file_format="png")
+	# plot_2D(rdf_resolution, 'pT_truthmatched_ys_from_higgs_noiso', 'y_resolution', out_dir_base)	
+
+	
+	return hist_res_vs_E   
+
+
+def plot_single_hist(hist, filename, out_dir_base, xaxis_label, colour_code=38, file_format="png"):
+
+	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
+	canvas.cd()
+	histfile_name = "{}.{}".format(filename, file_format)
+	histfile_path = os.path.join(out_dir_base, histfile_name)
+
+	#fit the histogram with a gaus:
+	gauss = ROOT.TF1("gauss","gaus", -1., 1.)
+	hist.Fit(gauss)
+	fit_result= hist.GetFunction("gauss")
+
+	
+	hist.SetLineWidth(2)
+	hist.SetLineColor(colour_code)
+	hist.GetYaxis().SetTitle("Events")
+	hist.GetXaxis().SetTitle(xaxis_label)
+
+	gaus_pars = []
+	if fit_result: #avoid crashes from fitting empty histograms
+		fit_result.SetLineColor(ROOT.kBlack)
+		fit_result.SetLineWidth(2)
+		fit_result.Draw()
+
+		#get the parameter values:
+		gaus_mean = fit_result.GetParameter(1)
+		gaus_mean_error = fit_result.GetParError(1)
+		gaus_width = fit_result.GetParameter(2)
+		gaus_width_error = fit_result.GetParError(2)
+		gaus_pars = [gaus_mean, gaus_mean_error, gaus_width, gaus_width_error]
+
+	hist.Draw("HIST SAME")
+
+	leg = ROOT.TLegend(0.55, 0.6, 0.9, 0.9)
+	leg.SetFillStyle( 0 )
+	leg.SetBorderSize( 0 )
+	leg.SetMargin( 0.1)
+	leg.SetTextFont( 43 )
+	leg.SetTextSize( 20 )
+	leg.SetColumnSeparation(-0.05)
+	leg.AddEntry(hist, hist.GetTitle(), "l")
+	leg.Draw()
+
+	canvas.SaveAs(histfile_path)
+
+	return gaus_pars
+
+def plot_list_of_hists(list_of_hists, histbasename, out_dir_base, xaxis_label, yaxis_label="Events", file_format="png"):
+	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
+	canvas.cd()
+	canvas.SetLeftMargin(0.15)
+	histfile_name = "{}.{}".format(histbasename, file_format)
+	histfile_path = os.path.join(out_dir_base, histfile_name)
+
+	leg = ROOT.TLegend(0.55, 0.6, 0.9, 0.9)
+
+	for i_hist, hist in enumerate(list_of_hists):
+		print("Plotting hist", i_hist, "with name", hist.GetTitle() )
+		hist.SetLineWidth(2)
+		hist.SetLineColor(38+i_hist*4)
+
+		hist.GetYaxis().SetTitle(yaxis_label)
+		hist.GetXaxis().SetTitle(xaxis_label)
+		hist.Draw("HISTE SAME")
+		leg.AddEntry(hist, hist.GetTitle(), "l")
+
+
+	canvas.RedrawAxis()
+
+	leg.SetFillStyle( 0 )
+	leg.SetBorderSize( 0 )
+	leg.SetMargin( 0.1)
+	leg.SetTextFont( 43 )
+	leg.SetTextSize( 20 )
+	leg.SetColumnSeparation(-0.05)
+	leg.Draw()
+
+	canvas.SaveAs(histfile_path)
+
+def check_lepton_resolution_and_eff(input_filepath, out_dir_base):
 
 	#how many of the 1 lepton events have 1 lepton? -> ideally link the truth particle to a reco particle!!
 
@@ -304,43 +453,47 @@ def check_lepton_eff(input_filepath, out_dir_base):
 		print("Empty file for:", input_filepath, " Exiting.")
 		return
 
-	#check the 1 lepton case:
-	# print("Checking lepton efficiencies for 1 lepton events")
-	rdf_lvqq_truth = rdf.Filter("n_truth_leps_from_HWW == 1") #Note this includes taus!!
-	# rdf_lvqq_truth_notaus = rdf.Filter("abs(pdgID_truth_leps_from_HWW[0]) == 11 || abs(pdgID_truth_leps_from_HWW[0]) == 13 ")
-	# n_evts_truth_1l_incl = rdf_lvqq_truth_notaus.Count().GetValue() #NO TAUS!
-	# n_evts_recomatched_1l_incl = rdf_lvqq_truth_notaus.Filter("n_truthmatched_leps_from_HWW_noiso == 1").Count().GetValue() #recomatch does NOT include taus!!
-	# print("Efficiency for 1 matched leps before iso: {:.2f}%".format(n_evts_recomatched_1l_incl/n_evts_truth_1l_incl*100.))
+	rdf_lvqq_truth = rdf.Filter("n_truth_leps_from_HWW == 1") 
 
-	#ELECTRONS
-	rdf_1electron_truth = rdf_lvqq_truth.Filter("abs(pdgID_truth_leps_from_HWW[0]) == 11 ")
+	rdf_1electron_truth = rdf_lvqq_truth.Filter("abs(pdgID_truth_leps_from_HWW[0]) == 13 ")
+	rdf_lep_recomatched = rdf_1electron_truth.Filter("n_truthmatched_leps_from_HWW == 1")
+	rdf_lep_recomatched_wIso = rdf_1electron_truth.Filter("n_truthmatched_leps_from_HWW_noiso == 1")
 	n_1electron_truth_total = rdf_1electron_truth.Count().GetValue()
 	n_evts_1electron_recomatched = rdf_1electron_truth.Filter("n_truthmatched_leps_from_HWW_noiso == 1").Count().GetValue()
 	n_evts_1electron_recomatched_wIso = rdf_1electron_truth.Filter("n_truthmatched_leps_from_HWW == 1").Count().GetValue()
 	print("Efficiency for 1 matched electron before iso: {:.2f}%".format(n_evts_1electron_recomatched/n_1electron_truth_total*100.))
 	print("Efficiency for 1 matched electron after iso: {:.2f}%".format(n_evts_1electron_recomatched_wIso/n_1electron_truth_total*100.))
 
-	#vs PT
-	# check_eff_per_bin_1lep(rdf_1electron_truth, out_dir_base, "electron")
-	# check_eff_per_bin_1lep(rdf_1electron_truth, out_dir_base, "electron", with_iso=True)
+	list_of_hists =[]
+	eta_edges = [0., 2.5, 4., 6]
+	E_edges = [0., 10., 20., 30., 50., 100., 200.]
 
-	#vs ETA
-	check_eff_per_eta_bin_1lep(rdf_1electron_truth, out_dir_base, "electron")
-	check_eff_per_eta_bin_1lep(rdf_1electron_truth, out_dir_base, "electron", with_iso=True)
+	#check_photon_res_per_eta_bin(rdf_1electron_truth, out_dir_base, "{}".format(lep_flav))
+	#check_photon_res_per_eta_bin(rdf_1electron_truth, out_dir_base, "{}".format(lep_flav), with_iso=True)
+
+	for i_eta_edge in range(len(eta_edges)-1):
+			hist_title = "{} < |#eta| < {}".format(eta_edges[i_eta_edge], eta_edges[i_eta_edge+1])
+			hist_filebase = "E_resolution_eta_bin{}".format(i_eta_edge)
+			cut_string_eta = "abs(eta_truth_leps_from_HWW[0]) > {:.2f} && abs(eta_truth_leps_from_HWW[0]) <= {:.2f}".format(eta_edges[i_eta_edge], eta_edges[i_eta_edge+1])
+			print(cut_string_eta)
+			hist_bin = check_photon_res_per_eta_bin(rdf_lep_recomatched, cut_string_eta, E_edges, hist_title, hist_filebase, out_dir_base)
+			list_of_hists.append(hist_bin)
+
+	plot_list_of_hists(list_of_hists, "lep_E_resolution", out_dir_base, "E_{truth} in GeV", "#Delta E/E", file_format="png")
 
 	#MUONS
-	rdf_1muon_truth = rdf_lvqq_truth.Filter("abs(pdgID_truth_leps_from_HWW[0]) == 13 ")
-	n_1muon_truth_total = rdf_1muon_truth.Count().GetValue()
-	n_evts_1muon_recomatched = rdf_1muon_truth.Filter("n_truthmatched_leps_from_HWW_noiso == 1").Count().GetValue()
-	n_evts_1muon_recomatched_wIso = rdf_1muon_truth.Filter("n_truthmatched_leps_from_HWW == 1").Count().GetValue()
-	print("Efficiency for 1 matched muon before iso: {:.2f}%".format(n_evts_1muon_recomatched/n_1muon_truth_total*100.))
-	print("Efficiency for 1 matched muon after iso: {:.2f}%".format(n_evts_1muon_recomatched_wIso/n_1muon_truth_total*100.))
+	#rdf_1muon_truth = rdf_lvqq_truth.Filter("abs(pdgID_truth_leps_from_HWW[0]) == 13 ")
+	#n_1muon_truth_total = rdf_1muon_truth.Count().GetValue()
+	#n_evts_1muon_recomatched = rdf_1muon_truth.Filter("n_truthmatched_leps_from_HWW_noiso == 1").Count().GetValue()
+	#n_evts_1muon_recomatched_wIso = rdf_1muon_truth.Filter("n_truthmatched_leps_from_HWW == 1").Count().GetValue()
+	#print("Efficiency for 1 matched muon before iso: {:.2f}%".format(n_evts_1muon_recomatched/n_1muon_truth_total*100.))
+	#print("Efficiency for 1 matched muon after iso: {:.2f}%".format(n_evts_1muon_recomatched_wIso/n_1muon_truth_total*100.))
 
 	# check_eff_per_bin_1lep(rdf_1muon_truth, out_dir_base, "muon")
 	# check_eff_per_bin_1lep(rdf_1muon_truth, out_dir_base, "muon", with_iso=True)
 
-	check_eff_per_eta_bin_1lep(rdf_1muon_truth, out_dir_base, "muon")
-	check_eff_per_eta_bin_1lep(rdf_1muon_truth, out_dir_base, "muon", with_iso=True)
+	#check_res_per_bin_1lep(rdf_1muon_truth, out_dir_base, "muon")
+	#check_res_per_bin_1lep(rdf_1muon_truth, out_dir_base, "muon", with_iso=True)
 
 
 	# #check for weird events first
@@ -376,7 +529,7 @@ if __name__ == "__main__":
 	parser.add_argument('--outdir', '-o', metavar="OUTPUTDIR", dest="outDir", required=True, help="Output directory.")
 	args = parser.parse_args()
 
-	check_lepton_eff(args.inPath, args.outDir)
+	check_lepton_resolution_and_eff(args.inPath, args.outDir)
 	# check_truth_brs(args.inPath, args.outDir)
 	# check_res_per_bin_1lep(args.inPath, args.outDir, 13)
 	# check_res_per_bin_1lep(args.inPath, args.outDir, 11)
