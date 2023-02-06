@@ -1825,6 +1825,28 @@ ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getLepsFromW(ROOT::Ve
 	return leps_list;
 }
 
+//find leptons (including taus?) that came from a H->ZZ decay
+ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getLepsFromZ(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids){
+	//test by simply counting first:
+	// int counter = 0; 
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> leps_list;
+
+	//loop over all truth particles and find light leptons from taus that came from higgs (the direction tau->light lepton as child appears to be missing in the tautau samples)
+	for (auto & truth_part: truth_particles) {
+		if (isLep(truth_part)){//switch to isLightLep for tau veto!
+			bool from_Z_higgs = isChildOfZFromHiggs(truth_part, parent_ids, truth_particles);
+			if(from_Z_higgs){
+				// counter+=1;
+				leps_list.push_back(truth_part);
+			}
+		}
+	}
+	// std::cout << "Leps from tau-higgs " << counter << std::endl; 
+	return leps_list;
+}
+
+
+
 //find photons that came from a H->yy decay
 ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getPhotonsFromH(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids){
 	ROOT::VecOps::RVec<edm4hep::MCParticleData> gamma_list;

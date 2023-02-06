@@ -163,6 +163,7 @@ namespace AnalysisFCChh{
 	bool isChildOfZFromHiggs(edm4hep::MCParticleData truth_part, ROOT::VecOps::RVec<podio::ObjectID> parent_ids, ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles);
 	ROOT::VecOps::RVec<edm4hep::MCParticleData> getLepsFromTau(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids);
 	ROOT::VecOps::RVec<edm4hep::MCParticleData> getLepsFromW(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids);
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> getLepsFromZ(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids);
 	ROOT::VecOps::RVec<edm4hep::MCParticleData> getPhotonsFromH(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids);
 	ROOT::VecOps::RVec<int> getTruthLepLepFlavour(ROOT::VecOps::RVec<edm4hep::MCParticleData> leps_from_tau);
 	ROOT::VecOps::RVec<edm4hep::MCParticleData> getTruthEle(ROOT::VecOps::RVec<edm4hep::MCParticleData> leps_from_tau);
