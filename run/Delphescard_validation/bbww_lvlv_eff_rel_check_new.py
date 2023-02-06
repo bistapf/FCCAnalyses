@@ -335,7 +335,7 @@ def check_lep_res_per_eta_bin(input_rdf, cutstring_base, E_edges, hist_name, fil
 		rdf_resolution = rdf_bin.Define('lep_resolution', '(E_truthmatched_leps_from_HWW_noiso[0] - E_truth_leps_from_HWW[0])/E_truth_leps_from_HWW[0]')
 
 	for i_E_edge in range(len(E_edges)-1):
-		cutstring_bin = "E_truthmatched_leps_from_HWW_noiso[0] > {:.2f} && E_truthmatched_leps_from_HWW_noiso[0] <= {:.2f}".format(E_edges[i_E_edge], E_edges[i_E_edge+1])
+		cutstring_bin = "E_truth_leps_from_HWW[0] > {:.2f} && E_truth_leps_from_HWW[0] <= {:.2f}".format(E_edges[i_E_edge], E_edges[i_E_edge+1])
 		rdf_bin = rdf_resolution.Filter(cutstring_bin)
 
 		#store a histogram of the resolution 
@@ -438,8 +438,6 @@ def plot_list_of_hists(list_of_hists, histbasename, out_dir_base, xaxis_label, y
 def check_lepton_resolution_and_eff(input_filepath, out_dir_base, flavor, iso):
 
 	#how many of the 1 lepton events have 1 lepton? -> ideally link the truth particle to a reco particle!!
-
-	#first check: 2 lepton events, how many have at least 2 leptons? no truth links 
 	get_pdg_id(flavor)
 
 	if not os.path.exists(out_dir_base):
@@ -460,6 +458,8 @@ def check_lepton_resolution_and_eff(input_filepath, out_dir_base, flavor, iso):
 	n_1electron_truth_total = rdf_1electron_truth.Count().GetValue()
 	n_evts_1electron_recomatched = rdf_1electron_truth.Filter("n_truthmatched_leps_from_HWW_noiso == 1").Count().GetValue()
 	n_evts_1electron_recomatched_wIso = rdf_1electron_truth.Filter("n_truthmatched_leps_from_HWW == 1").Count().GetValue()
+
+	print("Running on file with", n_1electron_truth_total, "total true bbWW(lvqq) events")
 	
 	print("Efficiency for 1 matched electron before iso: {:.2f}%".format(n_evts_1electron_recomatched/n_1electron_truth_total*100.))
 	print("Efficiency for 1 matched electron after iso: {:.2f}%".format(n_evts_1electron_recomatched_wIso/n_1electron_truth_total*100.))
@@ -504,8 +504,11 @@ if __name__ == "__main__":
 	#iso or not iso
 	parser.add_argument('--iso', '-iso', metavar="isolation", dest="iso", required=True, help="isolated or not isolated", type=str2bool)
 
-
 	args = parser.parse_args()
+
+	#TESTING:
+	# check_truth_brs(args.inPath, args.outDir)
+	# exit()
 
 	if(args.op == 'resolution'):
 		check_res_per_bin_1lep(args.inPath, args.outDir, args.lep, args.iso)

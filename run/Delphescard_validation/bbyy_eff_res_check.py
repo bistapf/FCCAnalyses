@@ -218,7 +218,7 @@ def check_photon_res_per_eta_bin(input_rdf, cutstring_base, E_edges, hist_name, 
 	rdf_resolution = rdf_bin.Define('y_resolution', '(E_truthmatched_ys_from_higgs_noiso[0] - E_truth_ys_from_higgs[0])/E_truth_ys_from_higgs[0]')
 
 	for i_E_edge in range(len(E_edges)-1):
-		cutstring_bin = "E_truthmatched_ys_from_higgs_noiso[0] > {:.2f} && E_truthmatched_ys_from_higgs_noiso[0] <= {:.2f}".format(E_edges[i_E_edge], E_edges[i_E_edge+1])
+		cutstring_bin = "E_truth_ys_from_higgs[0] > {:.2f} && E_truth_ys_from_higgs[0] <= {:.2f}".format(E_edges[i_E_edge], E_edges[i_E_edge+1])
 		rdf_bin = rdf_resolution.Filter(cutstring_bin)
 
 		#store a histogram of the resolution 
