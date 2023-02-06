@@ -340,9 +340,10 @@ def check_lep_res_per_eta_bin(input_rdf, cutstring_base, E_edges, hist_name, fil
 
 		#store a histogram of the resolution 
 		tmp_hist = rdf_bin.Histo1D(model, 'lep_resolution').GetValue()   
-		histfilename = "{}_E_{}_to_{}".format(filebasename, E_edges[i_E_edge], E_edges[i_E_edge+1])
-		tmp_hist.SetTitle("{}, RMS = {:.4f}".format(hist_name, tmp_hist.GetRMS()) )     
+		histfilename = "{}_E_{}_to_{}".format(filebasename, E_edges[i_E_edge], E_edges[i_E_edge+1])  
 		gaus_pars = plot_single_hist(tmp_hist, histfilename, out_dir_base, "#sigma(E)/E", colour_code=38, file_format="png")
+		if gaus_pars:
+			tmp_hist.SetTitle("{}, #sigma(E)/E = {:.4f}".format(hist_name, gaus_pars[2]) )   
 		
 		# hist_res_vs_E.SetBinContent(i_E_edge+1, tmp_hist.GetRMS())
 		if gaus_pars:
@@ -477,7 +478,7 @@ def check_lepton_resolution_and_eff(input_filepath, out_dir_base, flavor, iso):
 			hist_bin = check_lep_res_per_eta_bin(rdf_lep_recomatched, cut_string_eta, E_edges, hist_title, hist_filebase, out_dir_base, iso)
 			list_of_hists.append(hist_bin)
 
-	plot_list_of_hists(list_of_hists, "{}_E_vs_resolution".format(flavor), out_dir_base, "E_{truth} in GeV", "#Delta E/E", file_format="png")
+	plot_list_of_hists(list_of_hists, "{}_E_vs_resolution".format(flavor), out_dir_base, "E_{truth} in GeV", "#sigma E/E", file_format="png")
 
 
 def str2bool(v):
