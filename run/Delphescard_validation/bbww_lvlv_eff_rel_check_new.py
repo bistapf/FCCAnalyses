@@ -76,7 +76,8 @@ def check_res_per_bin_1lep(input_file, out_dir_base, flavor, iso):
 	input_rdf_flavor = input_rdf.Filter("n_truth_leps_from_HWW == 1").Filter("abs(pdgID_truth_leps_from_HWW[0]) == {}".format(pdg_id))
 
 	eta_edges = [0., 2.5, 4., 6]
-	p_edges = [0., 10., 20., 30., 50., 100., 200.]
+	p_edges = [0., 50., 100., 200.]
+	# p_edges = [0., 10., 20., 30., 50., 100., 200.]
 
 	#histogram properties based on the binning
 	hist_binEdges = array("d", p_edges)
@@ -342,8 +343,8 @@ def check_lep_res_per_eta_bin(input_rdf, cutstring_base, E_edges, hist_name, fil
 		tmp_hist = rdf_bin.Histo1D(model, 'lep_resolution').GetValue()   
 		histfilename = "{}_E_{}_to_{}".format(filebasename, E_edges[i_E_edge], E_edges[i_E_edge+1])  
 		gaus_pars = plot_single_hist(tmp_hist, histfilename, out_dir_base, "#sigma(E)/E", colour_code=38, file_format="png")
-		if gaus_pars:
-			tmp_hist.SetTitle("{}, #sigma(E)/E = {:.4f}".format(hist_name, gaus_pars[2]) )   
+		# if gaus_pars:
+		# 	tmp_hist.SetTitle("{}, #sigma(E)/E = {:.4f}".format(hist_name, gaus_pars[2]) )   
 		
 		# hist_res_vs_E.SetBinContent(i_E_edge+1, tmp_hist.GetRMS())
 		if gaus_pars:
@@ -387,6 +388,7 @@ def plot_single_hist(hist, filename, out_dir_base, xaxis_label, colour_code=38, 
 		gaus_width = fit_result.GetParameter(2)
 		gaus_width_error = fit_result.GetParError(2)
 		gaus_pars = [gaus_mean, gaus_mean_error, gaus_width, gaus_width_error]
+		hist.SetTitle("#sigma E/E = {:.4f} +/- {:.4f}".format(gaus_width, gaus_width_error))
 
 	hist.Draw("HIST SAME")
 
@@ -411,6 +413,8 @@ def plot_list_of_hists(list_of_hists, histbasename, out_dir_base, xaxis_label, y
 	histfile_name = "{}.{}".format(histbasename, file_format)
 	histfile_path = os.path.join(out_dir_base, histfile_name)
 
+	hist_stack = ROOT.THStack("hist_stack", "hist_stack")
+
 	leg = ROOT.TLegend(0.55, 0.6, 0.9, 0.9)
 
 	for i_hist, hist in enumerate(list_of_hists):
@@ -420,10 +424,15 @@ def plot_list_of_hists(list_of_hists, histbasename, out_dir_base, xaxis_label, y
 
 		hist.GetYaxis().SetTitle(yaxis_label)
 		hist.GetXaxis().SetTitle(xaxis_label)
-		hist.Draw("HISTE SAME")
+		# hist.Draw("HISTE SAME")
 		leg.AddEntry(hist, hist.GetTitle(), "l")
+		hist_stack.Add(hist)
 
 
+	hist_stack.Draw("HISTE NOSTACK")
+
+	hist_stack.GetYaxis().SetTitle(yaxis_label)
+	hist_stack.GetXaxis().SetTitle(xaxis_label)
 	canvas.RedrawAxis()
 
 	leg.SetFillStyle( 0 )
@@ -467,15 +476,17 @@ def check_lepton_resolution_and_eff(input_filepath, out_dir_base, flavor, iso):
 
 	list_of_hists =[]
 	eta_edges = [0., 2.5, 4., 6]
-	E_edges = [0., 10., 20., 30., 50., 100., 200.]
+	# E_edges = [0., 10., 20., 30., 50., 100., 200.]
+	E_edges = [0., 50., 100., 200.]
 
 	for i_eta_edge in range(len(eta_edges)-1):
-			hist_title = "{}_{} < |#eta| < {}".format(str(flavor), eta_edges[i_eta_edge], eta_edges[i_eta_edge+1])
+			hist_title = "{} < |#eta| < {}".format(eta_edges[i_eta_edge], eta_edges[i_eta_edge+1])
 			hist_filebase = "E_{}_resolution_eta_bin{}".format(str(flavor), i_eta_edge)
 			cut_string_eta = "abs(eta_truth_leps_from_HWW[0]) > {:.2f} && abs(eta_truth_leps_from_HWW[0]) <= {:.2f}".format(eta_edges[i_eta_edge], eta_edges[i_eta_edge+1])
 			print(cut_string_eta)
 	
 			hist_bin = check_lep_res_per_eta_bin(rdf_lep_recomatched, cut_string_eta, E_edges, hist_title, hist_filebase, out_dir_base, iso)
+			hist_bin.SetTitle(hist_title)
 			list_of_hists.append(hist_bin)
 
 	plot_list_of_hists(list_of_hists, "{}_E_vs_resolution".format(flavor), out_dir_base, "E_{truth} in GeV", "#sigma E/E", file_format="png")
