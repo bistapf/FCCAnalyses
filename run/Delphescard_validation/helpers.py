@@ -15,3 +15,54 @@ def get_rdf(input_filepath):
 		return
 
 	return rdf
+
+def plot_single_hist(hist, filename, out_dir_base, xaxis_label, do_gauss_fit=False, colour_code=38, file_format="png"):
+
+	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
+	canvas.cd()
+	histfile_name = "{}.{}".format(filename, file_format)
+	histfile_path = os.path.join(out_dir_base, histfile_name)
+
+	#fit the histogram with a gaus:
+	if do_gauss_fit:
+		gauss = ROOT.TF1("gauss","gaus", -1., 1.)
+		hist.Fit(gauss)
+		fit_result= hist.GetFunction("gauss")
+
+	
+	hist.SetLineWidth(2)
+	hist.SetLineColor(colour_code)
+	hist.GetYaxis().SetTitle("Events")
+	hist.GetXaxis().SetTitle(xaxis_label)
+
+	if do_gauss_fit:
+		gaus_pars = []
+		if fit_result: #avoid crashes from fitting empty histograms
+			fit_result.SetLineColor(ROOT.kBlack)
+			fit_result.SetLineWidth(2)
+			fit_result.Draw()
+
+			#get the parameter values:
+			gaus_mean = fit_result.GetParameter(1)
+			gaus_mean_error = fit_result.GetParError(1)
+			gaus_width = fit_result.GetParameter(2)
+			gaus_width_error = fit_result.GetParError(2)
+			gaus_pars = [gaus_mean, gaus_mean_error, gaus_width, gaus_width_error]
+			hist.SetTitle("#sigma E/E = {:.4f} +/- {:.4f}".format(gaus_width, gaus_width_error))
+
+	hist.Draw("HIST SAME")
+
+	leg = ROOT.TLegend(0.55, 0.6, 0.9, 0.9)
+	leg.SetFillStyle( 0 )
+	leg.SetBorderSize( 0 )
+	leg.SetMargin( 0.1)
+	leg.SetTextFont( 43 )
+	leg.SetTextSize( 20 )
+	leg.SetColumnSeparation(-0.05)
+	leg.AddEntry(hist, hist.GetTitle(), "l")
+	leg.Draw()
+
+	canvas.SaveAs(histfile_path)
+
+	if do_gauss_fit:
+		return gaus_pars
