@@ -66,3 +66,42 @@ def plot_single_hist(hist, filename, out_dir_base, xaxis_label, do_gauss_fit=Fal
 
 	if do_gauss_fit:
 		return gaus_pars
+
+def plot_list_of_hists(list_of_hists, histbasename, out_dir_base, xaxis_label, yaxis_label="Events", file_format="png"):
+	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
+	canvas.cd()
+	canvas.SetLeftMargin(0.15)
+	histfile_name = "{}.{}".format(histbasename, file_format)
+	histfile_path = os.path.join(out_dir_base, histfile_name)
+
+	hist_stack = ROOT.THStack("hist_stack", "hist_stack")
+
+	leg = ROOT.TLegend(0.55, 0.6, 0.9, 0.9)
+
+	for i_hist, hist in enumerate(list_of_hists):
+		print("Plotting hist", i_hist, "with name", hist.GetTitle() )
+		hist.SetLineWidth(2)
+		hist.SetLineColor(38+i_hist*4)
+
+		hist.GetYaxis().SetTitle(yaxis_label)
+		hist.GetXaxis().SetTitle(xaxis_label)
+		# hist.Draw("HISTE SAME")
+		leg.AddEntry(hist, hist.GetTitle(), "l")
+		hist_stack.Add(hist)
+
+
+	hist_stack.Draw("HISTE NOSTACK")
+
+	hist_stack.GetYaxis().SetTitle(yaxis_label)
+	hist_stack.GetXaxis().SetTitle(xaxis_label)
+	canvas.RedrawAxis()
+
+	leg.SetFillStyle( 0 )
+	leg.SetBorderSize( 0 )
+	leg.SetMargin( 0.1)
+	leg.SetTextFont( 43 )
+	leg.SetTextSize( 20 )
+	leg.SetColumnSeparation(-0.05)
+	leg.Draw()
+
+	canvas.SaveAs(histfile_path)

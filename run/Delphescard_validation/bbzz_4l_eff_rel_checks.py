@@ -58,7 +58,6 @@ def check_lep_res_per_eta_bin_4l(input_rdf, eta_edges, E_edges, filebasename, ou
 
 	model = ROOT.RDF.TH1DModel("resolution_model_hist", "resolution_model_hist", 40, -0.05, 0.05)
 
-
 	#histogram vs E
 	hist_binEdges = array("d", E_edges)
 	hist_nBins = len(E_edges)-1
@@ -127,11 +126,21 @@ def check_lepton_resolutions(flavour, input_filepath, out_dir_base):
 		rdf_true_4m = rdf_true_4l.Filter("abs(pdgID_truth_leps_from_HZZ[0]) == 13 && abs(pdgID_truth_leps_from_HZZ[1]) == 13 && abs(pdgID_truth_leps_from_HZZ[2]) == 13 && abs(pdgID_truth_leps_from_HZZ[3]) == 13 ")
 		rdf_true_4l_recomatched = rdf_true_4m.Filter("n_truthmatched_leps_from_HZZ_noiso == 4" )
 
-	eta_edges =[0., 2.5] #TODO: ADD OTHER BINS
+	#first only in bins of eta:
+	list_of_hists =[]
+	eta_edges = [0., 2.5, 4., 6]
 	E_edges = [0., 50., 100., 200.] #TODO: CHECK IF CAN BE FINER
-	hist_filebase = "{}_E_resolution_eta_bin{}".format(flavour, 0.)
-	
-	hist_eta_bin = check_lep_res_per_eta_bin_4l(rdf_true_4l_recomatched, eta_edges, E_edges, hist_filebase, out_dir_base, False)
+
+	for i_eta_edge in range(len(eta_edges)-1):
+		hist_title = "{} < |#eta| < {}".format(eta_edges[i_eta_edge], eta_edges[i_eta_edge+1])
+		hist_filebase = "{}_E_resolution_eta_bin{}".format(flavour, i_eta_edge)
+		eta_edges_tuple = [eta_edges[i_eta_edge], eta_edges[i_eta_edge+1]]
+		hist_eta_bin = check_lep_res_per_eta_bin_4l(rdf_true_4l_recomatched, eta_edges_tuple, E_edges, hist_filebase, out_dir_base, False)
+		hist_eta_bin.SetTitle(hist_title)
+		list_of_hists.append(hist_eta_bin)
+
+	#TO EDIT
+	helpers.plot_list_of_hists(list_of_hists, "{}_E_resolution".format(flavour), out_dir_base, "E_{truth} in GeV", "#sigma(E)/E", file_format="png")
 
 
 if __name__ == "__main__":
