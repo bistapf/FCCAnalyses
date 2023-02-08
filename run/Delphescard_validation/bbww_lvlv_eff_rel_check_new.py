@@ -6,6 +6,7 @@ import argparse
 import os 
 import matplotlib.pyplot as plt
 from array import array
+import helpers
 
 ROOT.gROOT.SetBatch()
 ROOT.gStyle.SetOptTitle(0)
@@ -231,7 +232,21 @@ def check_eff_per_bin_1lep(input_rdf, out_dir_base, flavour, with_iso=False, wit
 
 	canvas.SaveAs(histfile_path)
 
-def check_eff_per_eta_bin_1lep(input_rdf, out_dir_base, flavour, with_iso=False, with_larger_dR=False):
+def check_eff_per_eta_bin_1lep(input_filepath, out_dir_base, flavor, with_iso, with_larger_dR):#(input_rdf, out_dir_base, flavour, with_iso=False, with_larger_dR=False):
+
+	#how many of the 1 lepton events have 1 lepton? -> ideally link the truth particle to a reco particle!!
+	get_pdg_id(flavor)
+
+	if not os.path.exists(out_dir_base):
+		os.mkdir(out_dir_base)
+
+	#rdf = ROOT.RDataFrame("events", input_filepath)
+	input_rdf = helpers.get_rdf(input_filepath)
+
+	if not input_rdf:
+		print("Empty file for:", input_filepath, " Exiting.")
+		return
+
 	eta_edges = [-6., -4., -2.5, -2.0, -1.5, -1.0, -0.5, 0., 0.5, 1.0, 1.5, 2.0, 2.5, 4., 6]
 	pT_edges = [0., 20., 40., 60., 80., 100., 200.]
 
@@ -253,7 +268,7 @@ def check_eff_per_eta_bin_1lep(input_rdf, out_dir_base, flavour, with_iso=False,
 
 	for i_pt_edge in range(len(pT_edges)-1):
 		#write to file:
-		file_name = "{}_efficiencies_vs_eta_pT_bin_{}.txt".format(flavour, i_pt_edge)
+		file_name = "{}_efficiencies_vs_eta_pT_bin_{}.txt".format(flavor, i_pt_edge)
 		file_path = os.path.join(out_dir_base, file_name)
 
 		#fill a histogram
@@ -285,11 +300,11 @@ def check_eff_per_eta_bin_1lep(input_rdf, out_dir_base, flavour, with_iso=False,
 		list_of_hists.append(hist_eff_vs_eta)
 
 	if with_iso:
-		histfile_name = "{}_efficiencies_vs_eta_afterIsolation.png".format(flavour)
+		histfile_name = "{}_efficiencies_vs_eta_afterIsolation.png".format(flavor)
 	elif with_larger_dR:
-		histfile_name = "{}_efficiencies_vs_eta_dR02.png".format(flavour)
+		histfile_name = "{}_efficiencies_vs_eta_dR02.png".format(flavor)
 	else:
-		histfile_name = "{}_efficiencies_vs_eta.png".format(flavour)
+		histfile_name = "{}_efficiencies_vs_eta.png".format(flavor)
 
 	histfile_path = os.path.join(out_dir_base, histfile_name)
 	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
@@ -304,7 +319,7 @@ def check_eff_per_eta_bin_1lep(input_rdf, out_dir_base, flavour, with_iso=False,
 
 		hist.SetMinimum(0.)
 		hist.SetMaximum(105.)
-		hist.GetYaxis().SetTitle("{} efficiency in %".format(flavour))
+		hist.GetYaxis().SetTitle("{} efficiency in %".format(flavor))
 		hist.GetXaxis().SetTitle("#eta truth")
 		hist.Draw("HIST SAME")
 
@@ -522,7 +537,9 @@ if __name__ == "__main__":
 	# check_truth_brs(args.inPath, args.outDir)
 	# exit()
 
+	#check_eff_per_bin_1lep(input_rdf, out_dir_base, flavour, with_iso=False, with_larger_dR=False)
 	if(args.op == 'resolution'):
 		check_res_per_bin_1lep(args.inPath, args.outDir, args.lep, args.iso)
 	elif(args.op == 'resolution_eff'):
-		check_lepton_resolution_and_eff(args.inPath, args.outDir, args.lep, args.iso)
+		#check_lepton_resolution_and_eff(args.inPath, args.outDir, args.lep, args.iso)
+		check_eff_per_eta_bin_1lep(args.inPath, args.outDir, args.lep, args.iso, False)
