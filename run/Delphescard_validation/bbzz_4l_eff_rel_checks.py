@@ -157,9 +157,17 @@ if __name__ == "__main__":
 
 	#test the class method:
 	res_plotter = resolutionPlotter.ResolutionPlotter(args.inPath, args.outDir, args.lep)
-	res_plotter.filter_input_rdf("n_truth_leps_from_HZZ == 4") #use only a subset of events
+	res_plotter.filter_input_rdf("n_truth_leps_from_HZZ == 4 && n_truthmatched_leps_from_HZZ_noiso == 4") #use only a subset of events
 
-	#start with energy resolutions vs E in bins of eta :
+	#pick the lepton flavour
+	if args.lep == "electron" or args.lep == "Electron":
+		flavour_filter = "abs(pdgID_truth_leps_from_HZZ[0]) == 11 && abs(pdgID_truth_leps_from_HZZ[1]) == 11 && abs(pdgID_truth_leps_from_HZZ[2]) == 11 && abs(pdgID_truth_leps_from_HZZ[3]) == 11 "
+	elif args.lep == "muon"  or args.lep == "Muon":
+		flavour_filter = "abs(pdgID_truth_leps_from_HZZ[0]) == 13 && abs(pdgID_truth_leps_from_HZZ[1]) == 13 && abs(pdgID_truth_leps_from_HZZ[2]) == 13 && abs(pdgID_truth_leps_from_HZZ[3]) == 13 "
+
+	res_plotter.filter_input_rdf(flavour_filter) #use only a subset of events
+
+	#start with energy resolutions vs E in bins of eta:
 	res_plotter.set_binning("eta_truth_leps_from_HZZ", [0., 2.5, 4., 6], "|#eta_{truth}|", "E_truth_leps_from_HZZ", [0., 50., 100., 200.], "E_{truth} in GeV")
 	res_plotter.plot_resolution_histograms("E_res_eta_bins_vs_E", "E_truthmatched_leps_from_HZZ_noiso", "E_truth_leps_from_HZZ", "#sigmaE/E",  4)
 

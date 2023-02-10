@@ -16,10 +16,11 @@ def get_rdf(input_filepath):
 
 	return rdf
 
-def plot_single_hist(hist, filename, out_dir_base, xaxis_label, do_gauss_fit=False, colour_code=38, file_format="png"):
+def plot_single_hist(hist, filename, out_dir_base, xaxis_label, yaxis_label, do_gauss_fit=False, colour_code=38, file_format="png"):
 
 	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
 	canvas.cd()
+	canvas.SetLeftMargin(0.16)
 	histfile_name = "{}.{}".format(filename, file_format)
 	histfile_path = os.path.join(out_dir_base, histfile_name)
 
@@ -32,7 +33,7 @@ def plot_single_hist(hist, filename, out_dir_base, xaxis_label, do_gauss_fit=Fal
 	
 	hist.SetLineWidth(2)
 	hist.SetLineColor(colour_code)
-	hist.GetYaxis().SetTitle("Events")
+	hist.GetYaxis().SetTitle(yaxis_label)
 	hist.GetXaxis().SetTitle(xaxis_label)
 
 	if do_gauss_fit:

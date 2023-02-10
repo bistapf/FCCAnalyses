@@ -46,6 +46,7 @@ class ResolutionPlotter:
 	def filter_input_rdf(self, cutstring):
 
 		filtered_rdf = self.rdf.Filter(cutstring)
+		print("Filtering rdf with:", cutstring)
 
 		self.rdf = filtered_rdf
 
@@ -74,6 +75,9 @@ class ResolutionPlotter:
 
 		if not self.var1 or not self.var1_edges or not self.var2 or not self.var2_edges:
 			raiseException("Error in plotting resolution histograms - no binning info provided, please call set_binning(primary_var_name, primary_var_bin_edges, secondary_var_name, secondary_var_bin_edges) before running this.") 
+
+		list_of_hists_vs_var2 = []
+		hist_base_name = "{}_{}".format(self.object_name, hist_base_name)
 
 		#loop over the primary var and then make histograms w.r.t secondary var:
 		for var1_edge in range(len(self.var1_edges)-1):
@@ -107,16 +111,17 @@ class ResolutionPlotter:
 					tmp_hist = rdf_resolution.Histo1D(model, "resolution").GetValue()   
 					res_hist_bin.Add(tmp_hist)
 
-				histfilename = "{}_{}_{}_x_{}".format(self.object_name, hist_base_name, var1_edge, var2_edge)  
+				histfilename = "{}_{}_x_{}".format(hist_base_name, var1_edge, var2_edge)  
 				gaus_pars = helpers.plot_single_hist(res_hist_bin, histfilename, self.output_dir, "#sigma(E)/E", "Events", do_gauss_fit=True, colour_code=38, file_format="png")
 
 				if gaus_pars:
 					hist_vs_var2.SetBinContent(var2_edge+1, gaus_pars[2])
 					hist_vs_var2.SetBinError(var2_edge+1, gaus_pars[3])
 
-				helpers.plot_single_hist(hist_vs_var2, hist_vs_var2_name, self.output_dir, self.var2_label, res_label, do_gauss_fit=False, colour_code=38, file_format="png")
+			helpers.plot_single_hist(hist_vs_var2, hist_vs_var2_name, self.output_dir, self.var2_label, res_label, do_gauss_fit=False, colour_code=38, file_format="png")
+			list_of_hists_vs_var2.append(hist_vs_var2)
 
-
+		helpers.plot_list_of_hists(list_of_hists_vs_var2, hist_base_name, self.output_dir, self.var2_label, res_label, file_format="png")
 
 
 	# def get_resolution_in_bin(self, reco_var_name, truth_var_name,  number_of_objects):
