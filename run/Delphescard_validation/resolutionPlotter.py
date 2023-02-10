@@ -45,10 +45,14 @@ class ResolutionPlotter:
 	#apply some cut to the rdf before calculating resolutions - overwrites the original
 	def filter_input_rdf(self, cutstring):
 
+		print("Evts in rdf before filter:", self.rdf.Count().GetValue())
+
 		filtered_rdf = self.rdf.Filter(cutstring)
 		print("Filtering rdf with:", cutstring)
 
 		self.rdf = filtered_rdf
+
+		print("Evts in rdf after filter:", self.rdf.Count().GetValue())
 
 	def set_binning(self, primary_var_name, primary_var_bin_edges, primary_var_label, secondary_var_name, secondary_var_bin_edges, secondary_var_label):
 
@@ -79,6 +83,8 @@ class ResolutionPlotter:
 		list_of_hists_vs_var2 = []
 		hist_base_name = "{}_{}".format(self.object_name, hist_base_name)
 
+		print("Evts passed to resolution histogram plotting:", self.rdf.Count().GetValue())
+
 		#loop over the primary var and then make histograms w.r.t secondary var:
 		for var1_edge in range(len(self.var1_edges)-1):
 			#histogram vs var2
@@ -107,12 +113,18 @@ class ResolutionPlotter:
 
 					#now define the relative resolution ! of (reco-truth)/truth:you dont 
 					rel_res_def_string = "({}[{}] - {}[{}])/{}[{}]".format(reco_var_name, object_i, truth_var_name, object_i, truth_var_name, object_i)
+					print("Defined resolution as:", rel_res_def_string)
 					rdf_resolution = rdf_bin.Define("resolution", rel_res_def_string)
 					tmp_hist = rdf_resolution.Histo1D(model, "resolution").GetValue()   
 					res_hist_bin.Add(tmp_hist)
 
+
+					# print("#Entries in the histogram for object {}: {}".format(object_i, tmp_hist.GetEntries() ))
+
 				histfilename = "{}_{}_x_{}".format(hist_base_name, var1_edge, var2_edge)  
 				gaus_pars = helpers.plot_single_hist(res_hist_bin, histfilename, self.output_dir, "#sigma(E)/E", "Events", do_gauss_fit=True, colour_code=38, file_format="png")
+				
+				# print("#Entries in the histogram for all 4 leptons: {}".format(res_hist_bin.GetEntries() ))
 
 				if gaus_pars:
 					hist_vs_var2.SetBinContent(var2_edge+1, gaus_pars[2])

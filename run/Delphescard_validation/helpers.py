@@ -60,6 +60,7 @@ def plot_single_hist(hist, filename, out_dir_base, xaxis_label, yaxis_label, do_
 	leg.SetTextFont( 43 )
 	leg.SetTextSize( 20 )
 	leg.SetColumnSeparation(-0.05)
+	# leg.SetHeader("#evts = {}".format(hist.GetEntries())) #FOR DEBUG
 	leg.AddEntry(hist, hist.GetTitle(), "l")
 	leg.Draw()
 
