@@ -6,7 +6,8 @@ import argparse
 import os 
 import matplotlib.pyplot as plt
 from array import array
-import helpers
+import helpers 
+import resolutionPlotter
 
 ROOT.gROOT.SetBatch()
 ROOT.gStyle.SetOptTitle(0)
@@ -394,9 +395,35 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Plot distributions for validation of new signal files")
 	parser.add_argument('--input', '-i', metavar="INPUTFILE", dest="inPath", required=True, help="Path to the input directory")
 	parser.add_argument('--outdir', '-o', metavar="OUTPUTDIR", dest="outDir", required=True, help="Output directory.")
+	parser.add_argument('--op', '-op', metavar="task you want to do", dest="op", required=True, help="task you want to do")
 	args = parser.parse_args()
 
-	check_eff_per_eta_bin_1lep(args.inPath, args.outDir, False, False)
+	res_plotter = resolutionPlotter.ResolutionPlotter(args.inPath, args.outDir, "photon")
+	res_plotter.filter_input_rdf("n_truth_ys_from_higgs == 2 && n_truthmatched_ys_from_higgs_noiso == 2") #use only a subset of events
+
+	if args.op == "resolution_dE_vs_E":
+		print("Plotting relative energy resolution vs E in bins of eta.")
+		res_plotter.set_binning("eta_truth_ys_from_higgs", [0., 2.5, 4., 6], "|#eta_{truth}|", "E_truth_ys_from_higgs", [0., 50., 100., 200.], "E_{truth} in GeV")
+		res_plotter.set_use_abs_eta(True)
+		res_plotter.plot_resolution_histograms("E_res_eta_bins_vs_E", "E_truthmatched_ys_from_higgs_noiso", "E_truth_ys_from_higgs", "#sigmaE/E",  2)
+	elif args.op == "resolution_dE_vs_eta":
+		print("Plotting relative energy resolution vs eta in bins of E")
+		res_plotter.set_binning("E_truth_ys_from_higgs", [0., 50., 100., 200.], "E_{truth} in GeV", "eta_truth_ys_from_higgs", [-6., -4., -2.5, -2.0, -1.5, -1.0, -0.5, 0., 0.5, 1.0, 1.5, 2.0, 2.5, 4., 6], "#eta_{truth}")
+		res_plotter.set_use_abs_eta(False)
+		res_plotter.plot_resolution_histograms("E_res_E_bins_vs_eta", "E_truthmatched_ys_from_higgs_noiso", "E_truth_ys_from_higgs", "#sigmaE/E",  2)
+	elif args.op == "resolution_dP_vs_pT":
+		print("Plotting relative momentum resolution vs pT in bins of eta")
+		res_plotter.set_binning("eta_truth_ys_from_higgs", [0., 2.5, 4., 6], "|#eta_{truth}|", "pT_truth_ys_from_higgs", [0., 50., 100., 200.], "pT_{truth} in GeV")
+		res_plotter.set_use_abs_eta(True)
+		res_plotter.plot_resolution_histograms("P_res_eta_bins_vs_pT", "P_truthmatched_ys_from_higgs_noiso", "P_truth_ys_from_higgs", "#sigmaP/P",  2)
+	elif args.op == "resolution_dP_vs_eta":
+		print("Plotting relative momentum resolution vs eta in bins of pT")
+		res_plotter.set_binning("pT_truth_ys_from_higgs", [0., 50., 100., 200.], "pT_{truth} in GeV", "eta_truth_ys_from_higgs", [-6., -4., -2.5, -2.0, -1.5, -1.0, -0.5, 0., 0.5, 1.0, 1.5, 2.0, 2.5, 4., 6], "#eta_{truth}")
+		res_plotter.set_use_abs_eta(False)
+		res_plotter.plot_resolution_histograms("P_res_pT_bins_vs_eta", "P_truthmatched_ys_from_higgs_noiso", "P_truth_ys_from_higgs", "#sigmaP/P",  2)
+
+	#old fct/code
+	# check_eff_per_eta_bin_1lep(args.inPath, args.outDir, False, False)
 	#check_photon_resolutions_and_eff(args.inPath, args.outDir)
 	# check_photon_eff(args.inPath, args.outDir)
 	# check_myy_gen(args.inPath, args.outDir)
@@ -406,4 +433,4 @@ if __name__ == "__main__":
 # python bbyy_eff_res_check.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbaa/ -o ./bbyy_checks/ #all chunks
 
 #for checking the myy
-# python bbyy_eff_res_check.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa.root -o ./bbyy_checks/
+# python bbyy_eff_res_check.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbaa/ -o ./bbyy_checks/ -op resolution_dE_vs_E
