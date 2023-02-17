@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from array import array
 import helpers
 
+import efficiencyPlotter
+
 ROOT.gROOT.SetBatch()
 ROOT.gStyle.SetOptTitle(0)
 ROOT.gStyle.SetOptStat(0)
@@ -533,6 +535,17 @@ if __name__ == "__main__":
 
 	args = parser.parse_args()
 
+	#test the class method:
+	eff_plotter = efficiencyPlotter.EfficiencyPlotter(args.inPath, args.outDir, args.lep)
+	eff_plotter.filter_input_rdf("n_truth_leps_from_HWW == 1") #using only 1lepton events to check for efficiencies
+
+	#filter by flavour
+	eff_plotter.filter_by_pdgID("pdgID_truth_leps_from_HWW", 1)
+	eff_plotter.set_binning("eta_truth_leps_from_HWW", [0., 2.5, 4., 6], "|#eta_{truth}|", "pT_truth_leps_from_HWW", [0., 5., 10., 15., 20., 30., 40., 60., 80., 100., 150., 200., 300.,], "pT_{truth} in GeV")
+	eff_plotter.set_use_abs_eta(True)
+	eff_plotter.plot_efficiencies("eff_vs_pT_eta_bins", "n_truthmatched_leps_from_HWW", "Efficiency",  1)
+	exit()
+
 	#TESTING:
 	# check_truth_brs(args.inPath, args.outDir)
 	# exit()
@@ -543,3 +556,6 @@ if __name__ == "__main__":
 	elif(args.op == 'resolution_eff'):
 		#check_lepton_resolution_and_eff(args.inPath, args.outDir, args.lep, args.iso)
 		check_eff_per_eta_bin_1lep(args.inPath, args.outDir, args.lep, args.iso, False)
+
+
+#python bbww_lvlv_eff_rel_check_new.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbww/ -o ./bbww_checks_class/ -l muon -op test -iso False
