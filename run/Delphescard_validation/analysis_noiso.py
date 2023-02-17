@@ -134,6 +134,17 @@ class RDFanalysis():
               .Define("pT_electrons_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(electrons_noiso)")
               .Define("eta_electrons_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(electrons_noiso)")
 
+              #after isolation, but without OR (=unique object finder)
+              .Alias("ElectronNoOR", "ElectronNoOR#0.index")
+              .Define("electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get(ElectronNoOR, ReconstructedParticles)")
+              .Define("n_electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get_n(electrons_noOR)")
+              .Define("px_electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get_px(electrons_noOR)")
+              .Define("py_electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get_py(electrons_noOR)")
+              .Define("pz_electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get_pz(electrons_noOR)")
+              .Define("E_electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get_e(electrons_noOR)")
+              .Define("pT_electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get_pt(electrons_noOR)")
+              .Define("eta_electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get_eta(electrons_noOR)")
+
               #all isolated 
               .Alias("Electron0", "Electron#0.index")
               .Define("electrons",  "FCCAnalyses::ReconstructedParticle::get(Electron0, ReconstructedParticles)")
@@ -176,6 +187,17 @@ class RDFanalysis():
               .Define("E_muons_noiso",  "FCCAnalyses::ReconstructedParticle::get_e(muons_noiso)")
               .Define("pT_muons_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(muons_noiso)")
               .Define("eta_muons_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(muons_noiso)")
+
+              #after isolation, but without OR (=unique object finder)
+              .Alias("MuonNoOR", "MuonNoOR#0.index")
+              .Define("muons_noOR",  "FCCAnalyses::ReconstructedParticle::get(MuonNoOR, ReconstructedParticles)") 
+              .Define("n_muons_noOR",  "FCCAnalyses::ReconstructedParticle::get_n(muons_noOR)")
+              .Define("px_muons_noOR",  "FCCAnalyses::ReconstructedParticle::get_px(muons_noOR)")
+              .Define("py_muons_noOR",  "FCCAnalyses::ReconstructedParticle::get_py(muons_noOR)")
+              .Define("pz_muons_noOR",  "FCCAnalyses::ReconstructedParticle::get_pz(muons_noOR)")
+              .Define("E_muons_noOR",  "FCCAnalyses::ReconstructedParticle::get_e(muons_noOR)")
+              .Define("pT_muons_noOR",  "FCCAnalyses::ReconstructedParticle::get_pt(muons_noOR)")
+              .Define("eta_muons_noOR",  "FCCAnalyses::ReconstructedParticle::get_eta(muons_noOR)")
 
               # all isolated
               .Alias("Muon0", "Muon#0.index")
@@ -220,6 +242,18 @@ class RDFanalysis():
               .Define("E_photons_noiso",  "FCCAnalyses::ReconstructedParticle::get_e(photons_noiso)")
               .Define("pT_photons_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(photons_noiso)")
               .Define("eta_photons_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(photons_noiso)")
+
+              #after isolation, but without OR (=unique object finder)
+              .Alias("PhotonNoOR", "PhotonNoOR#0.index") 
+              .Define("photons_noOR",  "FCCAnalyses::ReconstructedParticle::get(PhotonNoOR, ReconstructedParticles)") 
+              .Define("n_photons_noOR",  "FCCAnalyses::ReconstructedParticle::get_n(photons_noOR)") 
+              .Define("px_photons_noOR",  "FCCAnalyses::ReconstructedParticle::get_px(photons_noOR)")
+              .Define("py_photons_noOR",  "FCCAnalyses::ReconstructedParticle::get_py(photons_noOR)")
+              .Define("pz_photons_noOR",  "FCCAnalyses::ReconstructedParticle::get_pz(photons_noOR)")
+              .Define("E_photons_noOR",  "FCCAnalyses::ReconstructedParticle::get_e(photons_noOR)")
+              .Define("pT_photons_noOR",  "FCCAnalyses::ReconstructedParticle::get_pt(photons_noOR)")
+              .Define("eta_photons_noOR",  "FCCAnalyses::ReconstructedParticle::get_eta(photons_noOR)")
+
 
               #all, after isolation
 
@@ -463,16 +497,19 @@ class RDFanalysis():
                       "n_tau_jets_tight", "px_tau_jets_tight", "py_tau_jets_tight", "pz_tau_jets_tight", "E_tau_jets_tight", "pT_tau_jets_tight", "eta_tau_jets_tight",
                       # Electrons:
                       "n_electrons_noiso", "px_electrons_noiso", "py_electrons_noiso", "pz_electrons_noiso", "E_electrons_noiso", "pT_electrons_noiso", "eta_electrons_noiso",
+                      "n_electrons_noOR", "px_electrons_noOR", "py_electrons_noOR", "pz_electrons_noOR", "E_electrons_noOR", "pT_electrons_noOR", "eta_electrons_noOR",
                       "n_electrons", "px_electrons", "py_electrons", "pz_electrons", "E_electrons", "pT_electrons", "eta_electrons",
                       "n_electrons_iso", "px_electrons_iso", "py_electrons_iso", "pz_electrons_iso", "E_electrons_iso", "pT_electrons_iso", "eta_electrons_iso",
                       "n_electrons_sel", "px_electrons_sel", "py_electrons_sel", "pz_electrons_sel", "E_electrons_sel", "pT_electrons_sel", "eta_electrons_sel",
                       # Muons:
                       "n_muons_noiso", "px_muons_noiso", "py_muons_noiso", "pz_muons_noiso", "E_muons_noiso", "pT_muons_noiso", "eta_muons_noiso",
+                      "n_muons_noOR", "px_muons_noOR", "py_muons_noOR", "pz_muons_noOR", "E_muons_noOR", "pT_muons_noOR", "eta_muons_noOR",
                       "n_muons", "px_muons", "py_muons", "pz_muons", "E_muons", "pT_muons", "eta_muons",
                       "n_muons_iso", "px_muons_iso", "py_muons_iso", "pz_muons_iso", "E_muons_iso", "pT_muons_iso", "eta_muons_iso",
                       "n_muons_sel", "px_muons_sel", "py_muons_sel", "pz_muons_sel", "E_muons_sel", "pT_muons_sel", "eta_muons_sel",
                       # Photons:
                       "n_photons_noiso", "px_photons_noiso", "py_photons_noiso", "pz_photons_noiso", "E_photons_noiso", "pT_photons_noiso", "eta_photons_noiso",
+                      "n_photons_noOR", "px_photons_noOR", "py_photons_noOR", "pz_photons_noOR", "E_photons_noOR", "pT_photons_noOR", "eta_photons_noOR",
                       "n_photons", "px_photons", "py_photons", "pz_photons", "E_photons", "pT_photons", "eta_photons",
                       "n_photons_iso", "px_photons_iso", "py_photons_iso", "pz_photons_iso", "E_photons_iso", "pT_photons_iso", "eta_photons_iso",
                       "n_photons_sel", "px_photons_sel", "py_photons_sel", "pz_photons_sel", "E_photons_sel", "pT_photons_sel", "eta_photons_sel",
