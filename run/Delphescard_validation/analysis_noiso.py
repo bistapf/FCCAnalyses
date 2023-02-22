@@ -382,7 +382,7 @@ class RDFanalysis():
                      .Define("phi_truth_leps_from_HWW", "MCParticle::get_phi(truth_leps_from_higgs)")
                      .Define("P_truth_leps_from_HWW", "MCParticle::get_p(truth_leps_from_higgs)")
 
-                     #Check how many matched leptons in the no-iso collections
+                     #Check how many matched leptons in the no-iso, no OR collections
                      .Define("truthmatched_reco_leps_from_higgs_noiso", "AnalysisFCChh::find_true_signal_leps_reco_matches(truth_leps_from_higgs, electrons_noiso, muons_noiso)")
                      .Define("n_truthmatched_leps_from_HWW_noiso", "ReconstructedParticle::get_n(truthmatched_reco_leps_from_higgs_noiso)")
                      .Define("pT_truthmatched_leps_from_HWW_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(truthmatched_reco_leps_from_higgs_noiso)")
@@ -399,6 +399,15 @@ class RDFanalysis():
                      .Define("E_truthmatched_leps_from_HWW_noiso_dr02",  "FCCAnalyses::ReconstructedParticle::get_e(truthmatched_reco_leps_from_higgs_noiso_dr02)") 
                      .Define("phi_truthmatched_leps_from_HWW_noiso_dr02",  "FCCAnalyses::ReconstructedParticle::get_phi(truthmatched_reco_leps_from_higgs_noiso_dr02)") 
                      .Define("P_truthmatched_leps_from_HWW_noiso_dr02",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_leps_from_higgs_noiso_dr02)") 
+
+                     #Check how many matched leptons in the no OR, but iso applied collections
+                     .Define("truthmatched_reco_leps_from_higgs_noOR", "AnalysisFCChh::find_true_signal_leps_reco_matches(truth_leps_from_higgs, electrons_noOR, muons_noOR)")
+                     .Define("n_truthmatched_leps_from_HWW_noOR", "ReconstructedParticle::get_n(truthmatched_reco_leps_from_higgs_noOR)")
+                     .Define("pT_truthmatched_leps_from_HWW_noOR",  "FCCAnalyses::ReconstructedParticle::get_pt(truthmatched_reco_leps_from_higgs_noOR)")
+                     .Define("eta_truthmatched_leps_from_HWW_noOR",  "FCCAnalyses::ReconstructedParticle::get_eta(truthmatched_reco_leps_from_higgs_noOR)") 
+                     .Define("E_truthmatched_leps_from_HWW_noOR",  "FCCAnalyses::ReconstructedParticle::get_e(truthmatched_reco_leps_from_higgs_noOR)") 
+                     .Define("phi_truthmatched_leps_from_HWW_noOR",  "FCCAnalyses::ReconstructedParticle::get_phi(truthmatched_reco_leps_from_higgs_noOR)") 
+                     .Define("P_truthmatched_leps_from_HWW_noOR",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_leps_from_higgs_noOR)") 
 
                      #Check how many matched leptons in the collections after iso
                      .Define("truthmatched_reco_leps_from_higgs", "AnalysisFCChh::find_true_signal_leps_reco_matches(truth_leps_from_higgs, electrons, muons)")
@@ -432,6 +441,15 @@ class RDFanalysis():
                      .Define("phi_truthmatched_ys_from_higgs_noiso",  "FCCAnalyses::ReconstructedParticle::get_phi(truthmatched_reco_ys_from_higgs_noiso)") 
                      .Define("P_truthmatched_ys_from_higgs_noiso",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_ys_from_higgs_noiso)") 
 
+                     #Check how many matched leptons in the no OR, but iso applied collections
+                     .Define("truthmatched_reco_ys_from_higgs_noOR", "AnalysisFCChh::find_reco_matches(truth_ys_from_higgs, photons_noOR)")
+                     .Define("n_truthmatched_ys_from_higgs_noOR", "ReconstructedParticle::get_n(truthmatched_reco_ys_from_higgs_noOR)")
+                     .Define("pT_truthmatched_ys_from_higgs_noOR",  "FCCAnalyses::ReconstructedParticle::get_pt(truthmatched_reco_ys_from_higgs_noOR)")
+                     .Define("eta_truthmatched_ys_from_higgs_noOR",  "FCCAnalyses::ReconstructedParticle::get_eta(truthmatched_reco_ys_from_higgs_noOR)") 
+                     .Define("E_truthmatched_ys_from_higgs_noOR",  "FCCAnalyses::ReconstructedParticle::get_e(truthmatched_reco_ys_from_higgs_noOR)") 
+                     .Define("phi_truthmatched_ys_from_higgs_noOR",  "FCCAnalyses::ReconstructedParticle::get_phi(truthmatched_reco_ys_from_higgs_noOR)") 
+                     .Define("P_truthmatched_ys_from_higgs_noOR",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_ys_from_higgs_noOR)") 
+
 
                      #Check how many matched leptons in the collections after iso
                      .Define("truthmatched_reco_ys_from_higgs", "AnalysisFCChh::find_reco_matches(truth_ys_from_higgs, photons)")
@@ -464,6 +482,15 @@ class RDFanalysis():
                      .Define("E_truthmatched_leps_from_HZZ_noiso",  "FCCAnalyses::ReconstructedParticle::get_e(truthmatched_reco_leps_from_higgs_noiso)") 
                      .Define("phi_truthmatched_leps_from_HZZ_noiso",  "FCCAnalyses::ReconstructedParticle::get_phi(truthmatched_reco_leps_from_higgs_noiso)") 
                      .Define("P_truthmatched_leps_from_HZZ_noiso",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_leps_from_higgs_noiso)") 
+
+                     #Check how many matched leptons in the no OR, but iso applied collections
+                     .Define("truthmatched_reco_leps_from_higgs_noOR", "AnalysisFCChh::find_true_signal_leps_reco_matches(truth_leps_from_higgs, electrons_noOR, muons_noOR)")
+                     .Define("n_truthmatched_leps_from_HZZ_noOR", "ReconstructedParticle::get_n(truthmatched_reco_leps_from_higgs_noOR)")
+                     .Define("pT_truthmatched_leps_from_HZZ_noOR",  "FCCAnalyses::ReconstructedParticle::get_pt(truthmatched_reco_leps_from_higgs_noOR)")
+                     .Define("eta_truthmatched_leps_from_HZZ_noOR",  "FCCAnalyses::ReconstructedParticle::get_eta(truthmatched_reco_leps_from_higgs_noOR)") 
+                     .Define("E_truthmatched_leps_from_HZZ_noOR",  "FCCAnalyses::ReconstructedParticle::get_e(truthmatched_reco_leps_from_higgs_noOR)") 
+                     .Define("phi_truthmatched_leps_from_HZZ_noOR",  "FCCAnalyses::ReconstructedParticle::get_phi(truthmatched_reco_leps_from_higgs_noOR)") 
+                     .Define("P_truthmatched_leps_from_HZZ_noOR",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_leps_from_higgs_noOR)") 
 
                      #Check how many matched leptons in the collections after iso
                      .Define("truthmatched_reco_leps_from_higgs", "AnalysisFCChh::find_true_signal_leps_reco_matches(truth_leps_from_higgs, electrons, muons)")
@@ -553,6 +580,13 @@ class RDFanalysis():
               branchList.append("E_truthmatched_leps_from_HWW_noiso_dr02")
               branchList.append("phi_truthmatched_leps_from_HWW_noiso_dr02")
               branchList.append("P_truthmatched_leps_from_HWW_noiso_dr02")
+              #wiuth iso, but no OR
+              branchList.append("n_truthmatched_leps_from_HWW_noOR")
+              branchList.append("pT_truthmatched_leps_from_HWW_noOR")
+              branchList.append("eta_truthmatched_leps_from_HWW_noOR")
+              branchList.append("E_truthmatched_leps_from_HWW_noOR")
+              branchList.append("phi_truthmatched_leps_from_HWW_noOR")
+              branchList.append("P_truthmatched_leps_from_HWW_noOR")
               #reco leptons matched to truth in cone 0.1, after isolation
               branchList.append("n_truthmatched_leps_from_HWW")
               branchList.append("pT_truthmatched_leps_from_HWW")
@@ -576,6 +610,14 @@ class RDFanalysis():
               branchList.append("E_truthmatched_ys_from_higgs_noiso")
               branchList.append("phi_truthmatched_ys_from_higgs_noiso")
               branchList.append("P_truthmatched_ys_from_higgs_noiso")
+              #with iso but no OR
+              branchList.append("n_truthmatched_ys_from_higgs_noOR")
+              branchList.append("pT_truthmatched_ys_from_higgs_noOR")
+              branchList.append("eta_truthmatched_ys_from_higgs_noOR")
+              branchList.append("E_truthmatched_ys_from_higgs_noOR")
+              branchList.append("phi_truthmatched_ys_from_higgs_noOR")
+              branchList.append("P_truthmatched_ys_from_higgs_noOR")
+
               #reco photons matched to truth in cone 0.1, after isolation
               branchList.append("n_truthmatched_ys_from_higgs")
               branchList.append("pT_truthmatched_ys_from_higgs")
@@ -600,6 +642,13 @@ class RDFanalysis():
               branchList.append("E_truthmatched_leps_from_HZZ_noiso")
               branchList.append("phi_truthmatched_leps_from_HZZ_noiso")
               branchList.append("P_truthmatched_leps_from_HZZ_noiso")
+              #with iso but no OR
+              branchList.append("n_truthmatched_leps_from_HZZ_noOR")
+              branchList.append("pT_truthmatched_leps_from_HZZ_noOR")
+              branchList.append("eta_truthmatched_leps_from_HZZ_noOR")
+              branchList.append("E_truthmatched_leps_from_HZZ_noOR")
+              branchList.append("phi_truthmatched_leps_from_HZZ_noOR")
+              branchList.append("P_truthmatched_leps_from_HZZ_noOR")
               #reco leptons matched to truth in cone 0.1, after isolation
               branchList.append("n_truthmatched_leps_from_HZZ")
               branchList.append("pT_truthmatched_leps_from_HZZ")
