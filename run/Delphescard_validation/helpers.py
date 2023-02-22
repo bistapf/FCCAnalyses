@@ -69,7 +69,7 @@ def plot_single_hist(hist, filename, out_dir_base, xaxis_label, yaxis_label, do_
 	if do_gauss_fit:
 		return gaus_pars
 
-def plot_list_of_hists(list_of_hists, histbasename, out_dir_base, xaxis_label, yaxis_label="Events", file_format="png"):
+def plot_list_of_hists(list_of_hists, histbasename, out_dir_base, xaxis_label, yaxis_label="Events", file_format="png", draw_error=False, fixed_y_range=None):
 	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
 	canvas.cd()
 	canvas.SetLeftMargin(0.15)
@@ -91,8 +91,18 @@ def plot_list_of_hists(list_of_hists, histbasename, out_dir_base, xaxis_label, y
 		leg.AddEntry(hist, hist.GetTitle(), "l")
 		hist_stack.Add(hist)
 
+	if fixed_y_range:
+		hist_stack.SetMinimum(fixed_y_range[0])
+		hist_stack.SetMaximum(fixed_y_range[1])
 
-	hist_stack.Draw("HISTE NOSTACK")
+
+	if draw_error:
+		hist_stack.Draw("HISTE NOSTACK")
+	else:
+		hist_stack.Draw("HIST NOSTACK")
+
+
+
 
 	hist_stack.GetYaxis().SetTitle(yaxis_label)
 	hist_stack.GetXaxis().SetTitle(xaxis_label)

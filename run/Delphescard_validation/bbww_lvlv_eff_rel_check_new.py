@@ -531,19 +531,53 @@ if __name__ == "__main__":
 	#lepton
 	parser.add_argument('--lep', '-l', metavar="lepton", dest="lep", required=True, help="lepton")
 	#iso or not iso
-	parser.add_argument('--iso', '-iso', metavar="isolation", dest="iso", required=True, help="isolated or not isolated", type=str2bool)
+	parser.add_argument('--iso', '-iso', action="store_true", dest="do_iso", required=False, help="With isolation applied")
+	parser.add_argument('-OR', '--OR', action="store_true", dest="do_OR", required=False, help="With OR applied")
 
 	args = parser.parse_args()
+
+	#for debug: check for evts that have leptons before OR != after OR
+	# rdf = helpers.get_rdf(args.inPath)
+	# tot_events = rdf.Count().GetValue()
+	# evts_with_OR_effect = rdf.Filter("n_truthmatched_leps_from_HWW_noOR != n_truthmatched_leps_from_HWW").Count().GetValue()
+	# print("Fraction of events where n_leps before OR != after OR", evts_with_OR_effect/tot_events)
+	# exit()
+
+
+	#pick the collection of reco leptons to use, depending on whether iso and OR are requested
+
+	#no iso and no OR
+	if not args.do_iso and not args.do_OR:
+		print("Checking efficiencies before isolation and OR")
+		lep_reco_var = "n_truthmatched_leps_from_HWW_noiso"
+		basename_suffix = "no_iso_no_OR_"
+		eff_label = "Efficiency, no iso, no OR"
+	#with iso, but before OR
+	elif args.do_iso and not args.do_OR:
+		print("Checking efficiencies after isolation but before OR")
+		lep_reco_var = "n_truthmatched_leps_from_HWW_noOR"
+		basename_suffix = "no_OR_"
+		eff_label = "Efficiency, with iso, no OR"
+	#with iso and OR
+	elif args.do_iso and args.do_OR:
+		print("Checking efficiencies after isolation and OR")
+		lep_reco_var = "n_truthmatched_leps_from_HWW"
+		basename_suffix = ""
+		eff_label = "Efficiency, with iso & OR"
+	else:
+		raiseException("Error - combination of --OR true but --iso false not possible, OR is always applied after iso.")
 
 	#test the class method:
 	eff_plotter = efficiencyPlotter.EfficiencyPlotter(args.inPath, args.outDir, args.lep)
 	eff_plotter.filter_input_rdf("n_truth_leps_from_HWW == 1") #using only 1lepton events to check for efficiencies
+	eff_plotter.filter_by_pdgID("pdgID_truth_leps_from_HWW", 1) #filter by flavour
 
-	#filter by flavour
-	eff_plotter.filter_by_pdgID("pdgID_truth_leps_from_HWW", 1)
-	eff_plotter.set_binning("eta_truth_leps_from_HWW", [0., 2.5, 4., 6], "|#eta_{truth}|", "pT_truth_leps_from_HWW", [0., 5., 10., 15., 20., 30., 40., 60., 80., 100., 150., 200., 300.,], "pT_{truth} in GeV")
-	eff_plotter.set_use_abs_eta(True)
-	eff_plotter.plot_efficiencies("eff_vs_pT_eta_bins", "n_truthmatched_leps_from_HWW", "Efficiency",  1)
+	#different parametrizations via the operations options
+	if args.op == "eff_vs_pT_eta_bins":
+		eff_hist_name = "eff_vs_pT_eta_bins_{}".format(basename_suffix)
+		eff_plotter.set_binning("eta_truth_leps_from_HWW", [0., 2.5, 4., 6], "|#eta_{truth}|", "pT_truth_leps_from_HWW", [0., 5., 10., 15., 20., 30., 40., 60., 80., 100., 150., 200., 300.,], "pT_{truth} in GeV")
+		eff_plotter.set_use_abs_eta(True)
+		eff_plotter.plot_efficiencies(eff_hist_name, lep_reco_var, eff_label,  1)
 	exit()
 
 	#TESTING:
@@ -557,5 +591,10 @@ if __name__ == "__main__":
 		#check_lepton_resolution_and_eff(args.inPath, args.outDir, args.lep, args.iso)
 		check_eff_per_eta_bin_1lep(args.inPath, args.outDir, args.lep, args.iso, False)
 
-
-#python bbww_lvlv_eff_rel_check_new.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbww/ -o ./bbww_checks_class/ -l muon -op test -iso False
+#commands to run for muons:
+#no iso, no OR
+#python bbww_lvlv_eff_rel_check_new.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbww/ -o ./bbww_checks_class/ -l muon -op eff_vs_pT_eta_bins 
+# with iso, but no OR
+#python bbww_lvlv_eff_rel_check_new.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbww/ -o ./bbww_checks_class/ -l muon -op eff_vs_pT_eta_bins --iso
+#both iso and OR applied
+#python bbww_lvlv_eff_rel_check_new.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbww/ -o ./bbww_checks_class/ -l muon -op eff_vs_pT_eta_bins --iso --OR

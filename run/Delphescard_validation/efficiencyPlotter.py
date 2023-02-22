@@ -84,7 +84,8 @@ class EfficiencyPlotter:
 			cut_string_flav = ""
 			for obj_i in range(number_of_objects):
 				cut_string_flav += "abs({}[{}]) == {}".format(pdg_var_name, obj_i, self.pdg_id)
-			print(cut_string_flav)
+			filtered_rdf = self.rdf.Filter(cut_string_flav)
+			self.rdf = filtered_rdf
 		else:
 			raiseException("Error in filter_by_pdgID - PDG ID not given")
 
@@ -145,5 +146,5 @@ class EfficiencyPlotter:
 			helpers.plot_single_hist(hist_vs_var2, hist_vs_var2_name, self.output_dir, self.var2_label, eff_label, do_gauss_fit=False, colour_code=38, file_format="png")
 			list_of_hists_vs_var2.append(hist_vs_var2)
 
-		helpers.plot_list_of_hists(list_of_hists_vs_var2, hist_base_name, self.output_dir, self.var2_label, eff_label, file_format="png")
+		helpers.plot_list_of_hists(list_of_hists_vs_var2, hist_base_name, self.output_dir, self.var2_label, eff_label, file_format="png", draw_error=False, fixed_y_range=(0., 100.))
 				
