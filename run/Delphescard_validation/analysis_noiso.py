@@ -12,19 +12,27 @@ processList = {
 #     "pwp8_pp_hh_lambda100_5f_hhbbzz_4l":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbzz_4l"}, #put the name of your input file here (without .root), the output file will have the same name
 # }
 
+#for testing the isoVar:
+processList = { 
+    "testing_iso_var_bbww":{'output':"FCChh_testingIsoVar_hhbbww"},
+    } 
+
 #Mandatory: input directory when not running over centrally produced edm4hep events. 
-inputDir    = "/eos/experiment/fcc/hh/generation/DelphesEvents/fcc_v05_scenarioI/" #your directory with the input file
+# inputDir    = "/eos/experiment/fcc/hh/generation/DelphesEvents/fcc_v05_scenarioI/" #your directory with the input file
 # inputDir    = "/eos/user/b/bistapf/FCChh_EvtGen/" #your directory with the input file
 
+inputDir    = "/afs/cern.ch/user/b/bistapf/Dev_k4SimDelphes/k4SimDelphes/" #TESTING READING THE ISOVAR
+
 #Optional: output directory, default is local dir
-outputDir   = "/eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/"
+outputDir   = "/eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/testing_isoVar/"
+# outputDir   = "/eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/"
 
 #Optional: ncpus, default is 4
 nCPUS       = 8
 
 #Optional running on HTCondor, default is False
-# runBatch    = False
-runBatch    = True
+runBatch    = False
+# runBatch    = True
 
 #Mandatory: RDFanalysis class where the use defines the operations on the TTree
 class RDFanalysis():
@@ -54,6 +62,8 @@ class RDFanalysis():
               .Define("E_jets_sel",  "FCCAnalyses::ReconstructedParticle::get_e(selected_jets)")
               .Define("pT_jets_sel",  "FCCAnalyses::ReconstructedParticle::get_pt(selected_jets)")
               .Define("eta_jets_sel",  "FCCAnalyses::ReconstructedParticle::get_eta(selected_jets)")
+
+              # .Define("px_jets_sel_new",  "Jet.momentum.x")
 
               # #b-tagged jets:
               .Alias("Jet3","Jet#3.index") 
@@ -419,6 +429,16 @@ class RDFanalysis():
                      .Define("P_truthmatched_leps_from_HWW",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_leps_from_higgs)") 
 
                      # .Filter("n_truth_leps_from_HWW == 2", "WW_dilep_filter")  #dont use yet, can check if BRs are correct that way! 
+
+                     #TESTING ADDING THE ISOVAR (as a usercollection) : need to split by electrons/muons and use the indices to link to the userdatacollection
+    
+                     .Define("indices_truthmatched_reco_ele_from_higgs_noiso", "AnalysisFCChh::find_truth_to_reco_matches_indices(truth_leps_from_higgs, electrons_noiso, 11)")
+                     .Define("isoVar_reco_eles_from_higgs", "AnalysisFCChh::get(indices_truthmatched_reco_ele_from_higgs_noiso, ElectronNoIso_IsolationVar)")
+                     .Define("sel_ele_from_higgs_no_iso_objs", "AnalysisFCChh::get(indices_truthmatched_reco_ele_from_higgs_noiso, electrons_noiso)") #getting the actual objects!
+                    
+                      #old for reference: using MCParticle filter by pdg id functionality
+                      # .Define("truth_ele_from_higgs", "FCCAnalyses::MCParticle::filter_pdgID(13, true)(truth_leps_from_higgs)") #this doesnt work
+                      # .Define("truth_ele_from_higgs", ROOT.MCParticle.filter_pdgID(13, True),["truth_leps_from_higgs"]) #neither does this
                      )
 
        #additional (truth based) information to filter for bbyy events for the efficiency checks: 
@@ -594,6 +614,10 @@ class RDFanalysis():
               branchList.append("E_truthmatched_leps_from_HWW")
               branchList.append("phi_truthmatched_leps_from_HWW")
               branchList.append("P_truthmatched_leps_from_HWW")
+
+              #TESTING ADDING ISOVAR
+              branchList.append("indices_truthmatched_reco_ele_from_higgs_noiso")
+              branchList.append("isoVar_reco_eles_from_higgs")
 
         if "hhbbaa" in out_name:
               #truth photons from higgs
