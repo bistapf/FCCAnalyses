@@ -190,8 +190,27 @@ namespace AnalysisFCChh{
 
 	//for checking signal efficiencies in delphes card validation
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> find_reco_matches(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_particles, float dR_thres=0.1);
+	ROOT::VecOps::RVec<int> find_reco_match_indices(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_particles, float dR_thres=0.1);
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> find_reco_matched_particle(edm4hep::MCParticleData truth_part_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> check_reco_parts, float dR_thres=0.1);
+	ROOT::VecOps::RVec<int> find_reco_matched_index(edm4hep::MCParticleData truth_part_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> check_reco_parts, float dR_thres=0.1);
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> find_true_signal_leps_reco_matches(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_leps_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_electrons, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_muons, float dR_thres=0.1);
+	ROOT::VecOps::RVec<int> find_truth_to_reco_matches_indices(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_leps_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_parts, int pdg_ID, float dR_thres=0.1);
+	
+	//retrieving isoVar from delphes:
+	// ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> get_isoVar(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_parts_to_check, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> all_reco_parts);
+
+	// template function for getting vector via indices - needed to read e.g. UserDataCollections
+	template<typename T>
+	ROOT::VecOps::RVec<T> get(const ROOT::VecOps::RVec<int>& index, const ROOT::VecOps::RVec<T>& in){
+	  ROOT::VecOps::RVec<T> result;
+	  result.reserve(index.size());
+	  for (size_t i = 0; i < index.size(); ++i) {
+	    if (index[i]>-1)
+	      result.push_back(in[index[i]]);
+	  }
+	  return result;
+	}
+
 
 }
 

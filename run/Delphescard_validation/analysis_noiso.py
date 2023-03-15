@@ -31,8 +31,8 @@ outputDir   = "/eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/testin
 nCPUS       = 8
 
 #Optional running on HTCondor, default is False
-runBatch    = False
-# runBatch    = True
+# runBatch    = False
+runBatch    = True
 
 #Mandatory: RDFanalysis class where the use defines the operations on the TTree
 class RDFanalysis():
@@ -392,8 +392,33 @@ class RDFanalysis():
                      .Define("phi_truth_leps_from_HWW", "MCParticle::get_phi(truth_leps_from_higgs)")
                      .Define("P_truth_leps_from_HWW", "MCParticle::get_p(truth_leps_from_higgs)")
 
-                     #Check how many matched leptons in the no-iso, no OR collections
-                     .Define("truthmatched_reco_leps_from_higgs_noiso", "AnalysisFCChh::find_true_signal_leps_reco_matches(truth_leps_from_higgs, electrons_noiso, muons_noiso)")
+                     # .Filter("n_truth_leps_from_HWW == 2", "WW_dilep_filter")  #dont use yet, can check if BRs are correct that way! 
+
+                     #Adapted truth matching code to be able to extract the isoVar as computed by Delphes: Truth matching returns indices rather than the particles
+                      #electrons
+                     .Define("indices_truthmatched_reco_ele_from_higgs_noiso", "AnalysisFCChh::find_truth_to_reco_matches_indices(truth_leps_from_higgs, electrons_noiso, 11)")
+                     .Define("isoVar_truthmatched_ele_from_higgs", "AnalysisFCChh::get(indices_truthmatched_reco_ele_from_higgs_noiso, ElectronNoIso_IsolationVar)")
+                     .Define("truthmatched_reco_ele_from_higgs_noiso", "AnalysisFCChh::get(indices_truthmatched_reco_ele_from_higgs_noiso, electrons_noiso)") #getting the actual objects!
+                     .Define("n_truthmatched_ele_from_HWW", "ReconstructedParticle::get_n(truthmatched_reco_ele_from_higgs_noiso)") 
+                     .Define("pT_truthmatched_ele_from_HWW", "ReconstructedParticle::get_pt(truthmatched_reco_ele_from_higgs_noiso)") 
+                     .Define("eta_truthmatched_ele_from_HWW", "ReconstructedParticle::get_eta(truthmatched_reco_ele_from_higgs_noiso)") 
+                     .Define("phi_truthmatched_ele_from_HWW", "ReconstructedParticle::get_phi(truthmatched_reco_ele_from_higgs_noiso)") 
+                     .Define("P_truthmatched_ele_from_HWW", "ReconstructedParticle::get_p(truthmatched_reco_ele_from_higgs_noiso)") 
+                     .Define("E_truthmatched_ele_from_HWW", "ReconstructedParticle::get_e(truthmatched_reco_ele_from_higgs_noiso)") 
+
+                     #same for muons 
+                     .Define("indices_truthmatched_reco_mu_from_higgs_noiso", "AnalysisFCChh::find_truth_to_reco_matches_indices(truth_leps_from_higgs, muons_noiso, 13)")
+                     .Define("isoVar_truthmatched_mu_from_higgs", "AnalysisFCChh::get(indices_truthmatched_reco_mu_from_higgs_noiso, MuonNoIso_IsolationVar)")
+                     .Define("truthmatched_reco_mu_from_higgs_noiso", "AnalysisFCChh::get(indices_truthmatched_reco_mu_from_higgs_noiso, muons_noiso)") #getting the actual objects!
+                     .Define("n_truthmatched_mu_from_HWW", "ReconstructedParticle::get_n(truthmatched_reco_mu_from_higgs_noiso)") 
+                     .Define("pT_truthmatched_mu_from_HWW", "ReconstructedParticle::get_pt(truthmatched_reco_mu_from_higgs_noiso)") 
+                     .Define("eta_truthmatched_mu_from_HWW", "ReconstructedParticle::get_eta(truthmatched_reco_mu_from_higgs_noiso)") 
+                     .Define("phi_truthmatched_mu_from_HWW", "ReconstructedParticle::get_phi(truthmatched_reco_mu_from_higgs_noiso)") 
+                     .Define("P_truthmatched_mu_from_HWW", "ReconstructedParticle::get_p(truthmatched_reco_mu_from_higgs_noiso)") 
+                     .Define("E_truthmatched_mu_from_HWW", "ReconstructedParticle::get_e(truthmatched_reco_mu_from_higgs_noiso)") 
+
+                     #merge the collections: 
+                     .Define("truthmatched_reco_leps_from_higgs_noiso", "ReconstructedParticle::merge(truthmatched_reco_ele_from_higgs_noiso, truthmatched_reco_mu_from_higgs_noiso)")
                      .Define("n_truthmatched_leps_from_HWW_noiso", "ReconstructedParticle::get_n(truthmatched_reco_leps_from_higgs_noiso)")
                      .Define("pT_truthmatched_leps_from_HWW_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(truthmatched_reco_leps_from_higgs_noiso)")
                      .Define("eta_truthmatched_leps_from_HWW_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(truthmatched_reco_leps_from_higgs_noiso)") 
@@ -401,6 +426,7 @@ class RDFanalysis():
                      .Define("phi_truthmatched_leps_from_HWW_noiso",  "FCCAnalyses::ReconstructedParticle::get_phi(truthmatched_reco_leps_from_higgs_noiso)") 
                      .Define("P_truthmatched_leps_from_HWW_noiso",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_leps_from_higgs_noiso)") 
 
+                     #use the old method of truth matching, where electrons and muons are used at the same time and objects retrieved directly, for the other cases:
                      #try with larger dR cone to see if it changes things:
                      .Define("truthmatched_reco_leps_from_higgs_noiso_dr02", "AnalysisFCChh::find_true_signal_leps_reco_matches(truth_leps_from_higgs, electrons_noiso, muons_noiso, 0.2)")
                      .Define("n_truthmatched_leps_from_HWW_noiso_dr02", "ReconstructedParticle::get_n(truthmatched_reco_leps_from_higgs_noiso_dr02)")
@@ -428,14 +454,6 @@ class RDFanalysis():
                      .Define("phi_truthmatched_leps_from_HWW",  "FCCAnalyses::ReconstructedParticle::get_phi(truthmatched_reco_leps_from_higgs)") 
                      .Define("P_truthmatched_leps_from_HWW",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_leps_from_higgs)") 
 
-                     # .Filter("n_truth_leps_from_HWW == 2", "WW_dilep_filter")  #dont use yet, can check if BRs are correct that way! 
-
-                     #TESTING ADDING THE ISOVAR (as a usercollection) : need to split by electrons/muons and use the indices to link to the userdatacollection
-    
-                     .Define("indices_truthmatched_reco_ele_from_higgs_noiso", "AnalysisFCChh::find_truth_to_reco_matches_indices(truth_leps_from_higgs, electrons_noiso, 11)")
-                     .Define("isoVar_reco_eles_from_higgs", "AnalysisFCChh::get(indices_truthmatched_reco_ele_from_higgs_noiso, ElectronNoIso_IsolationVar)")
-                     .Define("sel_ele_from_higgs_no_iso_objs", "AnalysisFCChh::get(indices_truthmatched_reco_ele_from_higgs_noiso, electrons_noiso)") #getting the actual objects!
-                    
                       #old for reference: using MCParticle filter by pdg id functionality
                       # .Define("truth_ele_from_higgs", "FCCAnalyses::MCParticle::filter_pdgID(13, true)(truth_leps_from_higgs)") #this doesnt work
                       # .Define("truth_ele_from_higgs", ROOT.MCParticle.filter_pdgID(13, True),["truth_leps_from_higgs"]) #neither does this
@@ -615,9 +633,25 @@ class RDFanalysis():
               branchList.append("phi_truthmatched_leps_from_HWW")
               branchList.append("P_truthmatched_leps_from_HWW")
 
-              #TESTING ADDING ISOVAR
-              branchList.append("indices_truthmatched_reco_ele_from_higgs_noiso")
-              branchList.append("isoVar_reco_eles_from_higgs")
+              #split truth - reco matching for the isoVar extraction:
+              #electrons
+              branchList.append("isoVar_truthmatched_ele_from_higgs")
+              branchList.append("n_truthmatched_ele_from_HWW")
+              branchList.append("pT_truthmatched_ele_from_HWW")
+              branchList.append("eta_truthmatched_ele_from_HWW")
+              branchList.append("phi_truthmatched_ele_from_HWW")
+              branchList.append("P_truthmatched_ele_from_HWW")
+              branchList.append("E_truthmatched_ele_from_HWW")
+              #muons
+              branchList.append("isoVar_truthmatched_mu_from_higgs")
+              branchList.append("n_truthmatched_mu_from_HWW")
+              branchList.append("pT_truthmatched_mu_from_HWW")
+              branchList.append("eta_truthmatched_mu_from_HWW")
+              branchList.append("phi_truthmatched_mu_from_HWW")
+              branchList.append("P_truthmatched_mu_from_HWW")
+              branchList.append("E_truthmatched_mu_from_HWW")
+
+
 
         if "hhbbaa" in out_name:
               #truth photons from higgs

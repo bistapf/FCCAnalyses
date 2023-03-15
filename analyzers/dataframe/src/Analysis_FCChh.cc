@@ -2192,6 +2192,55 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_reco_
 	return out_vector;
 }
 
+// same as above but returns the index of the matched particle instead
+ROOT::VecOps::RVec<int> AnalysisFCChh::find_reco_matched_index(edm4hep::MCParticleData truth_part_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> check_reco_parts, float dR_thres){
+	
+	ROOT::VecOps::RVec<int> out_vector;
+
+	TLorentzVector truth_part_tlv = getTLV_MC(truth_part_to_match);
+
+	for (int i = 0; i < check_reco_parts.size(); ++i){
+
+		edm4hep::ReconstructedParticleData check_reco_part = check_reco_parts[i];
+
+		TLorentzVector check_reco_part_tlv = getTLV_reco(check_reco_part);
+
+		float dR_val = truth_part_tlv.DeltaR(check_reco_part_tlv);
+
+		if (dR_val <= dR_thres){
+
+			//check if already sth in the vector - always want only exactly one match! 
+
+			if (out_vector.size() > 0 ){
+				// check which one is closer
+				edm4hep::ReconstructedParticleData match_old = check_reco_parts[out_vector[0]]; //edit this to be TLV directly
+
+				float dR_val_old = truth_part_tlv.DeltaR(getTLV_reco(match_old));
+
+				float pT_diff_old = abs(truth_part_tlv.Pt() - getTLV_reco(match_old).Pt());
+
+
+				if (dR_val < dR_val_old){
+					out_vector.at(0) = i;
+
+					if (pT_diff_old < abs(truth_part_tlv.Pt() - check_reco_part_tlv.Pt() )){
+						std::cout << "Found case where closest in pT is not closest in dR" << std::endl;
+					}
+				}
+			}
+
+			else {
+				out_vector.push_back(i);
+			}
+			
+		}
+
+		check_reco_part_tlv.Clear();
+	}
+
+	return out_vector;
+}
+
 // truth -> reco matching for a vector of generic truth particles - this doesnt check if the type of particles are the same! -> make sure you give the correct collections!
 ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_reco_matches(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_particles, float dR_thres){
 	
@@ -2205,6 +2254,31 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_reco_
 	for (auto & truth_part : truth_parts){
 
 		ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_match_vector = find_reco_matched_particle(truth_part, reco_particles, dR_thres);
+
+		if (reco_match_vector.size() > 1){
+			std::cout << "Warning in AnalysisFCChh::find_reco_matches() - Truth particle matched to more than one reco particle." << std::endl;
+		}
+
+		out_vector.append(reco_match_vector.begin(), reco_match_vector.end());
+	}
+
+	return out_vector;
+
+}
+
+//same as above just with indices
+ROOT::VecOps::RVec<int> AnalysisFCChh::find_reco_match_indices(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_particles, float dR_thres){
+	
+	ROOT::VecOps::RVec<int> out_vector;
+
+	//if no input part, return nothing
+	if (truth_parts.size() < 1){
+		return out_vector;
+	}
+
+	for (auto & truth_part : truth_parts){
+
+		ROOT::VecOps::RVec<int> reco_match_vector = find_reco_matched_index(truth_part, reco_particles, dR_thres);
 
 		if (reco_match_vector.size() > 1){
 			std::cout << "Warning in AnalysisFCChh::find_reco_matches() - Truth particle matched to more than one reco particle." << std::endl;
@@ -2283,4 +2357,55 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_true_
 	return out_vector;
 
 }
+
+//find the indices of reco matched particles, assume here that pdg id filtering of the input mc particles is already done and only the matching reco collection is passed
+ROOT::VecOps::RVec<int> AnalysisFCChh::find_truth_to_reco_matches_indices(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_leps_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_parts, int pdg_ID, float dR_thres){
+
+	ROOT::VecOps::RVec<int> out_vector;
+
+	//if no input part, return nothing
+	if (truth_leps_to_match.size() < 1){
+		return out_vector;
+	}
+
+	//check the flavour of the input truth particle, if it is a tau we skip it
+	for (auto & truth_lep : truth_leps_to_match){
+
+		// std::cout << "Matching truth particle with pdgID: " << abs(truth_lep.PDG) << std::endl;
+
+		//match only a certain requested type of particle
+		if (abs(truth_lep.PDG) != pdg_ID ){
+			// std::cout << "Skipping" << std::endl;
+			continue;
+		} 
+
+		// std::cout << "Running the match" << std::endl;
+
+		ROOT::VecOps::RVec<int> reco_match_indices_vector = find_reco_matched_index(truth_lep, reco_parts, dR_thres);
+
+		if (reco_match_indices_vector.size() > 1){
+			std::cout << "Warning in AnalysisFCChh::find_truth_to_reco_matches_indices() - Truth particle matched to more than one reco particle." << std::endl;
+		}
+
+		out_vector.append(reco_match_indices_vector.begin(), reco_match_indices_vector.end());
+	}
+
+	return out_vector;
+}
+
+
+//try to get the isoVar when its filled as a usercollection
+// ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::get_isoVar(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_parts_to_check, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> all_reco_parts){
+// 	// first check the index of the particle we want to get the iso var for
+
+// 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> out_vector;
+
+// 	for (auto & reco_check_part : reco_parts_to_check){
+// 		std::cout << "index of the particle is:" << reco_check_part.index << std::endl;
+
+// 	}
+
+// 	return out_vector;
+
+// }
 
