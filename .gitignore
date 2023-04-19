@@ -38,6 +38,7 @@ MANIFEST
 
 # Output
 outputs/
+BatchOutputs/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -99,3 +100,6 @@ benchmark*json
 
 #mac temp files
 ._*
+
+# Local configuration
+.fccana/*
