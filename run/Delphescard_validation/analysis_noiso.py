@@ -1,3 +1,5 @@
+#NOTE: isovar branches temporarily commented out!!
+
 #for batch submission
 processList = {
     "pwp8_pp_hh_lambda100_5f_hhbbww":{'chunks':200, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbww"}, #put the name of your input file here (without .root), the output file will have the same name
@@ -6,33 +8,32 @@ processList = {
 }
 
 #for local testing:
-# processList= {
-#     # "pwp8_pp_hh_lambda100_5f_hhbbww":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbww"}, #put the name of your input file here (without .root), the output file will have the same name
-#     # "pwp8_pp_hh_lambda100_5f_hhbbaa":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa"}, #put the name of your input file here (without .root), the output file will have the same name
-#     "pwp8_pp_hh_lambda100_5f_hhbbzz_4l":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbzz_4l"}, #put the name of your input file here (without .root), the output file will have the same name
-# }
+processList= {
+    "pwp8_pp_hh_lambda100_5f_hhbbww":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbww"}, #put the name of your input file here (without .root), the output file will have the same name
+    # "pwp8_pp_hh_lambda100_5f_hhbbaa":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa"}, #put the name of your input file here (without .root), the output file will have the same name
+    # "pwp8_pp_hh_lambda100_5f_hhbbzz_4l":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbzz_4l"}, #put the name of your input file here (without .root), the output file will have the same name
+}
 
-#for testing the isoVar:
-processList = { 
-    "testing_iso_var_bbww":{'output':"FCChh_testingIsoVar_hhbbww"},
-    } 
+#for testing the isoVar/isoInputcollections:
+# processList = { 
+    # # "testing_isoInput_bbww":{'output':"FCChh_testingIsoInput_hhbbww"},
+    # "testing_isoVar_Zmumu":{'output':"FCChh_testing_isoVar_Zmumu"},
+    # } 
 
 #Mandatory: input directory when not running over centrally produced edm4hep events. 
-# inputDir    = "/eos/experiment/fcc/hh/generation/DelphesEvents/fcc_v05_scenarioI/" #your directory with the input file
+inputDir    = "/eos/experiment/fcc/hh/generation/DelphesEvents/fcc_v05_scenarioI/" #your directory with the input file
 # inputDir    = "/eos/user/b/bistapf/FCChh_EvtGen/" #your directory with the input file
-
-inputDir    = "/afs/cern.ch/user/b/bistapf/Dev_k4SimDelphes/k4SimDelphes/" #TESTING READING THE ISOVAR
+# inputDir    = "/afs/cern.ch/user/b/bistapf/Dev_k4SimDelphes/k4SimDelphes/" #TESTING READING THE ISOVAR
 
 #Optional: output directory, default is local dir
-outputDir   = "/eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/testing_isoVar/"
-# outputDir   = "/eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/"
+outputDir   = "/eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/"
 
 #Optional: ncpus, default is 4
 nCPUS       = 8
 
 #Optional running on HTCondor, default is False
-# runBatch    = False
-runBatch    = True
+runBatch    = False
+# runBatch    = True
 
 #Mandatory: RDFanalysis class where the use defines the operations on the TTree
 class RDFanalysis():
@@ -44,7 +45,30 @@ class RDFanalysis():
 
         df2 = (df
               ########################################### JETS ########################################### 
-              # #all jets
+              # all jets - before any object overlap removal
+              # .Define("n_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_n(ParticleFlowJet04)")
+              # .Define("px_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_px(ParticleFlowJet04)")
+              # .Define("py_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_py(ParticleFlowJet04)")
+              # .Define("pz_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_pz(ParticleFlowJet04)")
+              # .Define("E_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_e(ParticleFlowJet04)")
+              # .Define("pT_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(ParticleFlowJet04)")
+              # .Define("eta_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(ParticleFlowJet04)")
+
+              # # get the flavour tags for those jets:
+              # .Alias("ParticleFlowJet04_pids","ParticleFlowJet04#3.index") 
+
+              # #LOOSE WP
+              # .Define("b_tagged_jets_loose_noiso", "AnalysisFCChh::get_tagged_jets(ParticleFlowJet04, ParticleFlowJet04_pids, ParticleIDs, ParticleIDs_0, 0)") #bit 0 = loose WP, see: https://github.com/delphes/delphes/blob/master/cards/FCC/scenarios/FCChh_I.tcl
+              # .Define("n_b_jets_loose_noiso", "FCCAnalyses::ReconstructedParticle::get_n(b_tagged_jets_loose_noiso)")
+              # .Define("px_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_px(b_tagged_jets_loose_noiso)")
+              # .Define("py_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_py(b_tagged_jets_loose_noiso)")
+              # .Define("pz_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_pz(b_tagged_jets_loose_noiso)")
+              # .Define("E_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_e(b_tagged_jets_loose_noiso)")
+              # .Define("pT_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(b_tagged_jets_loose_noiso)")
+              # .Define("eta_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(b_tagged_jets_loose_noiso)")
+
+
+              # jets after overlap removal is performed between jets and isolated electrons, muons and photons
               .Define("n_jets",  "FCCAnalyses::ReconstructedParticle::get_n(Jet)")
               .Define("px_jets",  "FCCAnalyses::ReconstructedParticle::get_px(Jet)")
               .Define("py_jets",  "FCCAnalyses::ReconstructedParticle::get_py(Jet)")
@@ -144,16 +168,9 @@ class RDFanalysis():
               .Define("pT_electrons_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(electrons_noiso)")
               .Define("eta_electrons_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(electrons_noiso)")
 
-              #after isolation, but without OR (=unique object finder)
-              .Alias("ElectronNoOR", "ElectronNoOR#0.index")
-              .Define("electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get(ElectronNoOR, ReconstructedParticles)")
-              .Define("n_electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get_n(electrons_noOR)")
-              .Define("px_electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get_px(electrons_noOR)")
-              .Define("py_electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get_py(electrons_noOR)")
-              .Define("pz_electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get_pz(electrons_noOR)")
-              .Define("E_electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get_e(electrons_noOR)")
-              .Define("pT_electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get_pt(electrons_noOR)")
-              .Define("eta_electrons_noOR",  "FCCAnalyses::ReconstructedParticle::get_eta(electrons_noOR)")
+              #isolation variable
+              # .Define("isoVar_electrons_noiso", "ElectronNoIso_IsolationVar")
+              # .Define("recalc_isoVar_electrons_noiso", "AnalysisFCChh::get_IP_delphes(electrons_noiso, ParticleFlowCandidates)")
 
               #all isolated 
               .Alias("Electron0", "Electron#0.index")
@@ -198,16 +215,9 @@ class RDFanalysis():
               .Define("pT_muons_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(muons_noiso)")
               .Define("eta_muons_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(muons_noiso)")
 
-              #after isolation, but without OR (=unique object finder)
-              .Alias("MuonNoOR", "MuonNoOR#0.index")
-              .Define("muons_noOR",  "FCCAnalyses::ReconstructedParticle::get(MuonNoOR, ReconstructedParticles)") 
-              .Define("n_muons_noOR",  "FCCAnalyses::ReconstructedParticle::get_n(muons_noOR)")
-              .Define("px_muons_noOR",  "FCCAnalyses::ReconstructedParticle::get_px(muons_noOR)")
-              .Define("py_muons_noOR",  "FCCAnalyses::ReconstructedParticle::get_py(muons_noOR)")
-              .Define("pz_muons_noOR",  "FCCAnalyses::ReconstructedParticle::get_pz(muons_noOR)")
-              .Define("E_muons_noOR",  "FCCAnalyses::ReconstructedParticle::get_e(muons_noOR)")
-              .Define("pT_muons_noOR",  "FCCAnalyses::ReconstructedParticle::get_pt(muons_noOR)")
-              .Define("eta_muons_noOR",  "FCCAnalyses::ReconstructedParticle::get_eta(muons_noOR)")
+              #isolation variable
+              # .Define("isoVar_muons_noiso", "MuonNoIso_IsolationVar")
+              # .Define("recalc_isoVar_muons_noiso", "AnalysisFCChh::get_IP_delphes(muons_noiso, ParticleFlowCandidates)")
 
               # all isolated
               .Alias("Muon0", "Muon#0.index")
@@ -253,17 +263,9 @@ class RDFanalysis():
               .Define("pT_photons_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(photons_noiso)")
               .Define("eta_photons_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(photons_noiso)")
 
-              #after isolation, but without OR (=unique object finder)
-              .Alias("PhotonNoOR", "PhotonNoOR#0.index") 
-              .Define("photons_noOR",  "FCCAnalyses::ReconstructedParticle::get(PhotonNoOR, ReconstructedParticles)") 
-              .Define("n_photons_noOR",  "FCCAnalyses::ReconstructedParticle::get_n(photons_noOR)") 
-              .Define("px_photons_noOR",  "FCCAnalyses::ReconstructedParticle::get_px(photons_noOR)")
-              .Define("py_photons_noOR",  "FCCAnalyses::ReconstructedParticle::get_py(photons_noOR)")
-              .Define("pz_photons_noOR",  "FCCAnalyses::ReconstructedParticle::get_pz(photons_noOR)")
-              .Define("E_photons_noOR",  "FCCAnalyses::ReconstructedParticle::get_e(photons_noOR)")
-              .Define("pT_photons_noOR",  "FCCAnalyses::ReconstructedParticle::get_pt(photons_noOR)")
-              .Define("eta_photons_noOR",  "FCCAnalyses::ReconstructedParticle::get_eta(photons_noOR)")
-
+              #isolation variable
+              # .Define("isoVar_photons_noiso", "PhotonNoIso_IsolationVar")
+              # .Define("recalc_isoVar_photons_noiso", "AnalysisFCChh::get_IP_delphes(photons_noiso, ParticleFlowCandidates)")
 
               #all, after isolation
 
@@ -376,6 +378,10 @@ class RDFanalysis():
               .Define("pT_MC_photons_sel",  "FCCAnalyses::MCParticle::get_pt(MC_photons_selected)")
               .Define("eta_MC_photons_sel",  "FCCAnalyses::MCParticle::get_eta(MC_photons_selected)")
 
+              #try the PFlowCandidates
+              # .Define("pflow_candidates_pT", "FCCAnalyses::ReconstructedParticle::get_pt(ParticleFlowCandidates)")
+
+
 
                )
 
@@ -397,7 +403,7 @@ class RDFanalysis():
                      #Adapted truth matching code to be able to extract the isoVar as computed by Delphes: Truth matching returns indices rather than the particles
                       #electrons
                      .Define("indices_truthmatched_reco_ele_from_higgs_noiso", "AnalysisFCChh::find_truth_to_reco_matches_indices(truth_leps_from_higgs, electrons_noiso, 11)")
-                     .Define("isoVar_truthmatched_ele_from_higgs", "AnalysisFCChh::get(indices_truthmatched_reco_ele_from_higgs_noiso, ElectronNoIso_IsolationVar)")
+                     # .Define("isoVar_truthmatched_ele_from_higgs", "AnalysisFCChh::get(indices_truthmatched_reco_ele_from_higgs_noiso, ElectronNoIso_IsolationVar)")
                      .Define("truthmatched_reco_ele_from_higgs_noiso", "AnalysisFCChh::get(indices_truthmatched_reco_ele_from_higgs_noiso, electrons_noiso)") #getting the actual objects!
                      .Define("n_truthmatched_ele_from_HWW", "ReconstructedParticle::get_n(truthmatched_reco_ele_from_higgs_noiso)") 
                      .Define("pT_truthmatched_ele_from_HWW", "ReconstructedParticle::get_pt(truthmatched_reco_ele_from_higgs_noiso)") 
@@ -408,7 +414,7 @@ class RDFanalysis():
 
                      #same for muons 
                      .Define("indices_truthmatched_reco_mu_from_higgs_noiso", "AnalysisFCChh::find_truth_to_reco_matches_indices(truth_leps_from_higgs, muons_noiso, 13)")
-                     .Define("isoVar_truthmatched_mu_from_higgs", "AnalysisFCChh::get(indices_truthmatched_reco_mu_from_higgs_noiso, MuonNoIso_IsolationVar)")
+                     # .Define("isoVar_truthmatched_mu_from_higgs", "AnalysisFCChh::get(indices_truthmatched_reco_mu_from_higgs_noiso, MuonNoIso_IsolationVar)")
                      .Define("truthmatched_reco_mu_from_higgs_noiso", "AnalysisFCChh::get(indices_truthmatched_reco_mu_from_higgs_noiso, muons_noiso)") #getting the actual objects!
                      .Define("n_truthmatched_mu_from_HWW", "ReconstructedParticle::get_n(truthmatched_reco_mu_from_higgs_noiso)") 
                      .Define("pT_truthmatched_mu_from_HWW", "ReconstructedParticle::get_pt(truthmatched_reco_mu_from_higgs_noiso)") 
@@ -434,16 +440,7 @@ class RDFanalysis():
                      .Define("eta_truthmatched_leps_from_HWW_noiso_dr02",  "FCCAnalyses::ReconstructedParticle::get_eta(truthmatched_reco_leps_from_higgs_noiso_dr02)") 
                      .Define("E_truthmatched_leps_from_HWW_noiso_dr02",  "FCCAnalyses::ReconstructedParticle::get_e(truthmatched_reco_leps_from_higgs_noiso_dr02)") 
                      .Define("phi_truthmatched_leps_from_HWW_noiso_dr02",  "FCCAnalyses::ReconstructedParticle::get_phi(truthmatched_reco_leps_from_higgs_noiso_dr02)") 
-                     .Define("P_truthmatched_leps_from_HWW_noiso_dr02",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_leps_from_higgs_noiso_dr02)") 
-
-                     #Check how many matched leptons in the no OR, but iso applied collections
-                     .Define("truthmatched_reco_leps_from_higgs_noOR", "AnalysisFCChh::find_true_signal_leps_reco_matches(truth_leps_from_higgs, electrons_noOR, muons_noOR)")
-                     .Define("n_truthmatched_leps_from_HWW_noOR", "ReconstructedParticle::get_n(truthmatched_reco_leps_from_higgs_noOR)")
-                     .Define("pT_truthmatched_leps_from_HWW_noOR",  "FCCAnalyses::ReconstructedParticle::get_pt(truthmatched_reco_leps_from_higgs_noOR)")
-                     .Define("eta_truthmatched_leps_from_HWW_noOR",  "FCCAnalyses::ReconstructedParticle::get_eta(truthmatched_reco_leps_from_higgs_noOR)") 
-                     .Define("E_truthmatched_leps_from_HWW_noOR",  "FCCAnalyses::ReconstructedParticle::get_e(truthmatched_reco_leps_from_higgs_noOR)") 
-                     .Define("phi_truthmatched_leps_from_HWW_noOR",  "FCCAnalyses::ReconstructedParticle::get_phi(truthmatched_reco_leps_from_higgs_noOR)") 
-                     .Define("P_truthmatched_leps_from_HWW_noOR",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_leps_from_higgs_noOR)") 
+                     .Define("P_truthmatched_leps_from_HWW_noiso_dr02",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_leps_from_higgs_noiso_dr02)")  
 
                      #Check how many matched leptons in the collections after iso
                      .Define("truthmatched_reco_leps_from_higgs", "AnalysisFCChh::find_true_signal_leps_reco_matches(truth_leps_from_higgs, electrons, muons)")
@@ -454,6 +451,9 @@ class RDFanalysis():
                      .Define("phi_truthmatched_leps_from_HWW",  "FCCAnalyses::ReconstructedParticle::get_phi(truthmatched_reco_leps_from_higgs)") 
                      .Define("P_truthmatched_leps_from_HWW",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_leps_from_higgs)") 
 
+                     #manually recalculated isoVar:
+                     # .Define("recalc_isoVar_truthmatched_ele_from_higgs", "AnalysisFCChh::get_IP_delphes(truthmatched_reco_ele_from_higgs_noiso, ParticleFlowCandidates)")
+                     # .Define("recalc_isoVar_truthmatched_mu_from_higgs", "AnalysisFCChh::get_IP_delphes(truthmatched_reco_mu_from_higgs_noiso, ParticleFlowCandidates)")
                       #old for reference: using MCParticle filter by pdg id functionality
                       # .Define("truth_ele_from_higgs", "FCCAnalyses::MCParticle::filter_pdgID(13, true)(truth_leps_from_higgs)") #this doesnt work
                       # .Define("truth_ele_from_higgs", ROOT.MCParticle.filter_pdgID(13, True),["truth_leps_from_higgs"]) #neither does this
@@ -478,15 +478,6 @@ class RDFanalysis():
                      .Define("E_truthmatched_ys_from_higgs_noiso",  "FCCAnalyses::ReconstructedParticle::get_e(truthmatched_reco_ys_from_higgs_noiso)") 
                      .Define("phi_truthmatched_ys_from_higgs_noiso",  "FCCAnalyses::ReconstructedParticle::get_phi(truthmatched_reco_ys_from_higgs_noiso)") 
                      .Define("P_truthmatched_ys_from_higgs_noiso",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_ys_from_higgs_noiso)") 
-
-                     #Check how many matched leptons in the no OR, but iso applied collections
-                     .Define("truthmatched_reco_ys_from_higgs_noOR", "AnalysisFCChh::find_reco_matches(truth_ys_from_higgs, photons_noOR)")
-                     .Define("n_truthmatched_ys_from_higgs_noOR", "ReconstructedParticle::get_n(truthmatched_reco_ys_from_higgs_noOR)")
-                     .Define("pT_truthmatched_ys_from_higgs_noOR",  "FCCAnalyses::ReconstructedParticle::get_pt(truthmatched_reco_ys_from_higgs_noOR)")
-                     .Define("eta_truthmatched_ys_from_higgs_noOR",  "FCCAnalyses::ReconstructedParticle::get_eta(truthmatched_reco_ys_from_higgs_noOR)") 
-                     .Define("E_truthmatched_ys_from_higgs_noOR",  "FCCAnalyses::ReconstructedParticle::get_e(truthmatched_reco_ys_from_higgs_noOR)") 
-                     .Define("phi_truthmatched_ys_from_higgs_noOR",  "FCCAnalyses::ReconstructedParticle::get_phi(truthmatched_reco_ys_from_higgs_noOR)") 
-                     .Define("P_truthmatched_ys_from_higgs_noOR",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_ys_from_higgs_noOR)") 
 
 
                      #Check how many matched leptons in the collections after iso
@@ -519,16 +510,7 @@ class RDFanalysis():
                      .Define("eta_truthmatched_leps_from_HZZ_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(truthmatched_reco_leps_from_higgs_noiso)") 
                      .Define("E_truthmatched_leps_from_HZZ_noiso",  "FCCAnalyses::ReconstructedParticle::get_e(truthmatched_reco_leps_from_higgs_noiso)") 
                      .Define("phi_truthmatched_leps_from_HZZ_noiso",  "FCCAnalyses::ReconstructedParticle::get_phi(truthmatched_reco_leps_from_higgs_noiso)") 
-                     .Define("P_truthmatched_leps_from_HZZ_noiso",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_leps_from_higgs_noiso)") 
-
-                     #Check how many matched leptons in the no OR, but iso applied collections
-                     .Define("truthmatched_reco_leps_from_higgs_noOR", "AnalysisFCChh::find_true_signal_leps_reco_matches(truth_leps_from_higgs, electrons_noOR, muons_noOR)")
-                     .Define("n_truthmatched_leps_from_HZZ_noOR", "ReconstructedParticle::get_n(truthmatched_reco_leps_from_higgs_noOR)")
-                     .Define("pT_truthmatched_leps_from_HZZ_noOR",  "FCCAnalyses::ReconstructedParticle::get_pt(truthmatched_reco_leps_from_higgs_noOR)")
-                     .Define("eta_truthmatched_leps_from_HZZ_noOR",  "FCCAnalyses::ReconstructedParticle::get_eta(truthmatched_reco_leps_from_higgs_noOR)") 
-                     .Define("E_truthmatched_leps_from_HZZ_noOR",  "FCCAnalyses::ReconstructedParticle::get_e(truthmatched_reco_leps_from_higgs_noOR)") 
-                     .Define("phi_truthmatched_leps_from_HZZ_noOR",  "FCCAnalyses::ReconstructedParticle::get_phi(truthmatched_reco_leps_from_higgs_noOR)") 
-                     .Define("P_truthmatched_leps_from_HZZ_noOR",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_leps_from_higgs_noOR)") 
+                     .Define("P_truthmatched_leps_from_HZZ_noiso",  "FCCAnalyses::ReconstructedParticle::get_p(truthmatched_reco_leps_from_higgs_noiso)")  
 
                      #Check how many matched leptons in the collections after iso
                      .Define("truthmatched_reco_leps_from_higgs", "AnalysisFCChh::find_true_signal_leps_reco_matches(truth_leps_from_higgs, electrons, muons)")
@@ -549,6 +531,9 @@ class RDFanalysis():
 
     def output(out_name):
         branchList = [
+                      # Jets before overlap removal:
+                      # "n_jets_noiso", "px_jets_noiso", "py_jets_noiso", "pz_jets_noiso", "E_jets_noiso", "pT_jets_noiso", "eta_jets_noiso",
+                      # "n_b_jets_loose_noiso", "px_b_jets_loose_noiso", "py_b_jets_loose_noiso", "pz_b_jets_loose_noiso", "E_b_jets_loose_noiso", "pT_b_jets_loose_noiso", "eta_b_jets_loose_noiso",
                       # Jets:
                       "n_jets", "px_jets", "py_jets", "pz_jets", "E_jets", "pT_jets", "eta_jets",
                       "n_jets_sel", "px_jets_sel", "py_jets_sel", "pz_jets_sel", "E_jets_sel", "pT_jets_sel", "eta_jets_sel",
@@ -562,22 +547,22 @@ class RDFanalysis():
                       "n_tau_jets_tight", "px_tau_jets_tight", "py_tau_jets_tight", "pz_tau_jets_tight", "E_tau_jets_tight", "pT_tau_jets_tight", "eta_tau_jets_tight",
                       # Electrons:
                       "n_electrons_noiso", "px_electrons_noiso", "py_electrons_noiso", "pz_electrons_noiso", "E_electrons_noiso", "pT_electrons_noiso", "eta_electrons_noiso",
-                      "n_electrons_noOR", "px_electrons_noOR", "py_electrons_noOR", "pz_electrons_noOR", "E_electrons_noOR", "pT_electrons_noOR", "eta_electrons_noOR",
                       "n_electrons", "px_electrons", "py_electrons", "pz_electrons", "E_electrons", "pT_electrons", "eta_electrons",
                       "n_electrons_iso", "px_electrons_iso", "py_electrons_iso", "pz_electrons_iso", "E_electrons_iso", "pT_electrons_iso", "eta_electrons_iso",
                       "n_electrons_sel", "px_electrons_sel", "py_electrons_sel", "pz_electrons_sel", "E_electrons_sel", "pT_electrons_sel", "eta_electrons_sel",
                       # Muons:
                       "n_muons_noiso", "px_muons_noiso", "py_muons_noiso", "pz_muons_noiso", "E_muons_noiso", "pT_muons_noiso", "eta_muons_noiso",
-                      "n_muons_noOR", "px_muons_noOR", "py_muons_noOR", "pz_muons_noOR", "E_muons_noOR", "pT_muons_noOR", "eta_muons_noOR",
                       "n_muons", "px_muons", "py_muons", "pz_muons", "E_muons", "pT_muons", "eta_muons",
                       "n_muons_iso", "px_muons_iso", "py_muons_iso", "pz_muons_iso", "E_muons_iso", "pT_muons_iso", "eta_muons_iso",
                       "n_muons_sel", "px_muons_sel", "py_muons_sel", "pz_muons_sel", "E_muons_sel", "pT_muons_sel", "eta_muons_sel",
                       # Photons:
                       "n_photons_noiso", "px_photons_noiso", "py_photons_noiso", "pz_photons_noiso", "E_photons_noiso", "pT_photons_noiso", "eta_photons_noiso",
-                      "n_photons_noOR", "px_photons_noOR", "py_photons_noOR", "pz_photons_noOR", "E_photons_noOR", "pT_photons_noOR", "eta_photons_noOR",
                       "n_photons", "px_photons", "py_photons", "pz_photons", "E_photons", "pT_photons", "eta_photons",
                       "n_photons_iso", "px_photons_iso", "py_photons_iso", "pz_photons_iso", "E_photons_iso", "pT_photons_iso", "eta_photons_iso",
                       "n_photons_sel", "px_photons_sel", "py_photons_sel", "pz_photons_sel", "E_photons_sel", "pT_photons_sel", "eta_photons_sel",
+                      #isolation variables:
+                      # "isoVar_electrons_noiso", "isoVar_muons_noiso", "isoVar_photons_noiso",
+                      # "recalc_isoVar_electrons_noiso", "recalc_isoVar_muons_noiso", "recalc_isoVar_photons_noiso", #manually recalculated
                       # ETMiss:
                       "MET","MET_x", "MET_y", "MET_phi",
                       # Hbb decay:
@@ -592,6 +577,8 @@ class RDFanalysis():
                       # MC particles:
                       'n_MC_photons', 'pT_MC_photons', 'eta_MC_photons',
                       'n_MC_photons_sel', 'pT_MC_photons_sel', 'eta_MC_photons_sel',
+                      #test
+                      # 'pflow_candidates_pT',
             
         ]
 
@@ -618,13 +605,6 @@ class RDFanalysis():
               branchList.append("E_truthmatched_leps_from_HWW_noiso_dr02")
               branchList.append("phi_truthmatched_leps_from_HWW_noiso_dr02")
               branchList.append("P_truthmatched_leps_from_HWW_noiso_dr02")
-              #wiuth iso, but no OR
-              branchList.append("n_truthmatched_leps_from_HWW_noOR")
-              branchList.append("pT_truthmatched_leps_from_HWW_noOR")
-              branchList.append("eta_truthmatched_leps_from_HWW_noOR")
-              branchList.append("E_truthmatched_leps_from_HWW_noOR")
-              branchList.append("phi_truthmatched_leps_from_HWW_noOR")
-              branchList.append("P_truthmatched_leps_from_HWW_noOR")
               #reco leptons matched to truth in cone 0.1, after isolation
               branchList.append("n_truthmatched_leps_from_HWW")
               branchList.append("pT_truthmatched_leps_from_HWW")
@@ -635,7 +615,7 @@ class RDFanalysis():
 
               #split truth - reco matching for the isoVar extraction:
               #electrons
-              branchList.append("isoVar_truthmatched_ele_from_higgs")
+              # branchList.append("isoVar_truthmatched_ele_from_higgs")
               branchList.append("n_truthmatched_ele_from_HWW")
               branchList.append("pT_truthmatched_ele_from_HWW")
               branchList.append("eta_truthmatched_ele_from_HWW")
@@ -643,13 +623,17 @@ class RDFanalysis():
               branchList.append("P_truthmatched_ele_from_HWW")
               branchList.append("E_truthmatched_ele_from_HWW")
               #muons
-              branchList.append("isoVar_truthmatched_mu_from_higgs")
+              # branchList.append("isoVar_truthmatched_mu_from_higgs")
               branchList.append("n_truthmatched_mu_from_HWW")
               branchList.append("pT_truthmatched_mu_from_HWW")
               branchList.append("eta_truthmatched_mu_from_HWW")
               branchList.append("phi_truthmatched_mu_from_HWW")
               branchList.append("P_truthmatched_mu_from_HWW")
               branchList.append("E_truthmatched_mu_from_HWW")
+
+              #manually recalculated isoVar
+              # branchList.append("recalc_isoVar_truthmatched_ele_from_higgs")
+              # branchList.append("recalc_isoVar_truthmatched_mu_from_higgs")
 
 
 
@@ -668,13 +652,6 @@ class RDFanalysis():
               branchList.append("E_truthmatched_ys_from_higgs_noiso")
               branchList.append("phi_truthmatched_ys_from_higgs_noiso")
               branchList.append("P_truthmatched_ys_from_higgs_noiso")
-              #with iso but no OR
-              branchList.append("n_truthmatched_ys_from_higgs_noOR")
-              branchList.append("pT_truthmatched_ys_from_higgs_noOR")
-              branchList.append("eta_truthmatched_ys_from_higgs_noOR")
-              branchList.append("E_truthmatched_ys_from_higgs_noOR")
-              branchList.append("phi_truthmatched_ys_from_higgs_noOR")
-              branchList.append("P_truthmatched_ys_from_higgs_noOR")
 
               #reco photons matched to truth in cone 0.1, after isolation
               branchList.append("n_truthmatched_ys_from_higgs")
@@ -700,13 +677,6 @@ class RDFanalysis():
               branchList.append("E_truthmatched_leps_from_HZZ_noiso")
               branchList.append("phi_truthmatched_leps_from_HZZ_noiso")
               branchList.append("P_truthmatched_leps_from_HZZ_noiso")
-              #with iso but no OR
-              branchList.append("n_truthmatched_leps_from_HZZ_noOR")
-              branchList.append("pT_truthmatched_leps_from_HZZ_noOR")
-              branchList.append("eta_truthmatched_leps_from_HZZ_noOR")
-              branchList.append("E_truthmatched_leps_from_HZZ_noOR")
-              branchList.append("phi_truthmatched_leps_from_HZZ_noOR")
-              branchList.append("P_truthmatched_leps_from_HZZ_noOR")
               #reco leptons matched to truth in cone 0.1, after isolation
               branchList.append("n_truthmatched_leps_from_HZZ")
               branchList.append("pT_truthmatched_leps_from_HZZ")
