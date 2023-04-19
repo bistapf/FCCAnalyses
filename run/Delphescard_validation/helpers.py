@@ -5,25 +5,38 @@ import os
 
 def get_rdf(input_filepath):
 
+	print("Getting rdf from:", input_filepath)
+
 	if input_filepath.endswith(".root"):
 		rdf = ROOT.RDataFrame("events", input_filepath)
 	else:
-		rdf = ROOT.RDataFrame("events", input_filepath+"chunk*")
+		print("Adding chunks ..")
+		# rdf = ROOT.RDataFrame("events", input_filepath+"/chunk99.root")
+		rdf = ROOT.RDataFrame("events", input_filepath+"/chunk*")
 
 	if not rdf:
 		print("Empty file for:", input_filepath, " Exiting.")
 		return
 
+	# print(rdf.GetColumnNames())
+
 	return rdf
 
-def plot_single_hist(hist, filename, out_dir_base, xaxis_label, yaxis_label, do_gauss_fit=False, colour_code=38, file_format="png"):
+def plot_single_hist(hist, filename, out_dir_base, xaxis_label, yaxis_label, do_gauss_fit=False, colour_code=38, file_format="png", do_logy=False):
 
 	canvas = ROOT.TCanvas("canvas", "canvas", 800, 800) 
 	canvas.cd()
-	canvas.SetLeftMargin(0.16)
-	histfile_name = "{}.{}".format(filename, file_format)
-	histfile_path = os.path.join(out_dir_base, histfile_name)
 
+	canvas.SetLeftMargin(0.16)
+	histname = filename
+	
+	if do_logy:
+		canvas.SetLogy()
+		histname+="_logY"
+	
+	histfile_name = "{}.{}".format(histname, file_format)
+	histfile_path = os.path.join(out_dir_base, histfile_name)
+		
 	#fit the histogram with a gaus:
 	if do_gauss_fit:
 		gauss = ROOT.TF1("gauss","gaus", -1., 1.)

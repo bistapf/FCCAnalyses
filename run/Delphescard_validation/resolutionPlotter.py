@@ -4,7 +4,6 @@ from array import array
 
 import helpers
 
-
 class ResolutionPlotter:
 	"""Generic class to make plots of various resolutions, in bins of other variables"""
 
@@ -27,6 +26,12 @@ class ResolutionPlotter:
 		self.res_model_nbins = 40
 		self.res_model_xmin = -0.05
 		self.res_model_xmax = 0.05
+
+		#if to use absolute eta or not (needed for eta binning)
+		self.use_abs_eta = False
+
+	def set_use_abs_eta(self, use_abs):
+		self.use_abs_eta = use_abs
 
 	# Open the requested file(s) into the rdf
 	def get_rdf(self, input_path):
@@ -65,7 +70,7 @@ class ResolutionPlotter:
 
 	def build_cutstring_bin(self, var_name, var_edges, object_index):
 
-		if "eta" in var_name:
+		if "eta" in var_name and self.use_abs_eta:
 			cutstring = "abs({}[{}]) > {:.2f} && abs({}[{}]) <= {:.2f}".format(var_name, object_index, var_edges[0], var_name, object_index, var_edges[1])
 		else:
 			cutstring = "{}[{}] > {:.2f} && {}[{}] <= {:.2f}".format(var_name, object_index, var_edges[0], var_name, object_index, var_edges[1])

@@ -434,3 +434,6 @@ if __name__ == "__main__":
 
 #for checking the myy
 # python bbyy_eff_res_check.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbaa/ -o ./bbyy_checks/ -op resolution_dE_vs_E
+# python bbyy_eff_res_check.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbaa/ -o ./bbyy_checks/ -op resolution_dE_vs_eta
+# python bbyy_eff_res_check.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbaa/ -o ./bbyy_checks/ -op resolution_dP_vs_pT
+# python bbyy_eff_res_check.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbaa/ -o ./bbyy_checks/ -op resolution_dP_vs_eta

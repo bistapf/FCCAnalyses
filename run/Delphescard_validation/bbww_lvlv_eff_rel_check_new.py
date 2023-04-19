@@ -541,6 +541,10 @@ if __name__ == "__main__":
 	# tot_events = rdf.Count().GetValue()
 	# evts_with_OR_effect = rdf.Filter("n_truthmatched_leps_from_HWW_noOR != n_truthmatched_leps_from_HWW").Count().GetValue()
 	# print("Fraction of events where n_leps before OR != after OR", evts_with_OR_effect/tot_events)
+	# evts_with_OR_effect_mu = rdf.Filter("n_muons_noOR != n_muons").Count().GetValue()
+	# print("Fraction of events where n_mu before OR != after OR", evts_with_OR_effect_mu/tot_events)
+	# evts_with_OR_effect_el = rdf.Filter("n_electrons_noOR != n_electrons").Count().GetValue()
+	# print("Fraction of events where n_ele before OR != after OR", evts_with_OR_effect_el/tot_events)
 	# exit()
 
 
@@ -574,8 +578,12 @@ if __name__ == "__main__":
 
 	#different parametrizations via the operations options
 	if args.op == "eff_vs_pT_eta_bins":
-		eff_hist_name = "eff_vs_pT_eta_bins_{}".format(basename_suffix)
-		eff_plotter.set_binning("eta_truth_leps_from_HWW", [0., 2.5, 4., 6], "|#eta_{truth}|", "pT_truth_leps_from_HWW", [0., 5., 10., 15., 20., 30., 40., 60., 80., 100., 150., 200., 300.,], "pT_{truth} in GeV")
+		eff_hist_name = "eff_vs_pT_eta_bins_reco_{}".format(basename_suffix)
+		#reco eta and pT bbins
+		eff_plotter.set_binning("eta_truthmatched_leps_from_HWW_noiso", [0., 2.5, 4., 6], "|#eta_{reco}|", "pT_truthmatched_leps_from_HWW_noiso", [0., 5., 10., 15., 20., 30., 40., 60., 80., 100., 150., 200., 300.,], "pT_{truth} in GeV")
+
+		#using truth eta and pT bins
+		# eff_plotter.set_binning("eta_truth_leps_from_HWW", [0., 2.5, 4., 6], "|#eta_{truth}|", "pT_truth_leps_from_HWW", [0., 5., 10., 15., 20., 30., 40., 60., 80., 100., 150., 200., 300.,], "pT_{truth} in GeV")
 		eff_plotter.set_use_abs_eta(True)
 		eff_plotter.plot_efficiencies(eff_hist_name, lep_reco_var, eff_label,  1)
 	exit()

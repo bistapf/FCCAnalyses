@@ -60,6 +60,7 @@ if __name__ == "__main__":
 	parser.add_argument('--input', '-i', metavar="INPUTFILE", dest="inPath", required=True, help="Path to the input directory")
 	parser.add_argument('--outdir', '-o', metavar="OUTPUTDIR", dest="outDir", required=True, help="Output directory.")
 	parser.add_argument('--lep', '-l', metavar="lepton", dest="lep", required=True, help="electron or muon")
+	parser.add_argument('--op', '-op', metavar="task you want to do", dest="op", required=True, help="task you want to do")
 	args = parser.parse_args()
 
 	#test the class method:
@@ -71,18 +72,39 @@ if __name__ == "__main__":
 		flavour_filter = "abs(pdgID_truth_leps_from_HZZ[0]) == 11 && abs(pdgID_truth_leps_from_HZZ[1]) == 11 && abs(pdgID_truth_leps_from_HZZ[2]) == 11 && abs(pdgID_truth_leps_from_HZZ[3]) == 11 "
 	elif args.lep == "muon"  or args.lep == "Muon":
 		flavour_filter = "abs(pdgID_truth_leps_from_HZZ[0]) == 13 && abs(pdgID_truth_leps_from_HZZ[1]) == 13 && abs(pdgID_truth_leps_from_HZZ[2]) == 13 && abs(pdgID_truth_leps_from_HZZ[3]) == 13 "
-
+	else:
+		raiseException("Lepton flavour not recognized. Should be electron or muon, not", args.lep)
+	
 	res_plotter.filter_input_rdf(flavour_filter) #use only a subset of events
 
-	#start with energy resolutions vs E in bins of eta:
-	res_plotter.set_binning("eta_truth_leps_from_HZZ", [0., 2.5, 4., 6], "|#eta_{truth}|", "E_truth_leps_from_HZZ", [0., 50., 100., 200.], "E_{truth} in GeV")
-	res_plotter.plot_resolution_histograms("E_res_eta_bins_vs_E", "E_truthmatched_leps_from_HZZ_noiso", "E_truth_leps_from_HZZ", "#sigmaE/E",  4)
+	#Energy resolutions vs E in bins of eta:
+	if args.op == "resolution_dE_vs_E":
+		print("Plotting relative energy resolution vs E in bins of eta.")
+		res_plotter.set_binning("eta_truth_leps_from_HZZ", [0., 2.5, 4., 6], "|#eta_{truth}|", "E_truth_leps_from_HZZ", [0., 50., 100., 200.], "E_{truth} in GeV")
+		res_plotter.set_use_abs_eta(True)
+		res_plotter.plot_resolution_histograms("E_res_eta_bins_vs_E", "E_truthmatched_leps_from_HZZ_noiso", "E_truth_leps_from_HZZ", "#sigmaE/E",  4)
+	elif args.op == "resolution_dE_vs_eta":
+		print("Plotting relative energy resolution vs eta in bins of E")
+		res_plotter.set_binning("E_truth_leps_from_HZZ", [0., 50., 100., 200.], "E_{truth} in GeV", "eta_truth_leps_from_HZZ", [-6., -4., -2.5, -2.0, -1.5, -1.0, -0.5, 0., 0.5, 1.0, 1.5, 2.0, 2.5, 4., 6], "#eta_{truth}")
+		res_plotter.set_use_abs_eta(False)
+		res_plotter.plot_resolution_histograms("E_res_E_bins_vs_eta", "E_truthmatched_leps_from_HZZ_noiso", "E_truth_leps_from_HZZ", "#sigmaE/E",  4)
+	elif args.op == "resolution_dP_vs_pT":
+		print("Plotting relative momentum resolution vs pT in bins of eta")
+		res_plotter.set_binning("eta_truth_leps_from_HZZ", [0., 2.5, 4., 6], "|#eta_{truth}|", "pT_truth_leps_from_HZZ", [0., 50., 100., 200.], "pT_{truth} in GeV")
+		res_plotter.set_use_abs_eta(True)
+		res_plotter.plot_resolution_histograms("P_res_eta_bins_vs_pT", "P_truthmatched_leps_from_HZZ_noiso", "P_truth_leps_from_HZZ", "#sigmaP/P",  4)
+	elif args.op == "resolution_dP_vs_eta":
+		print("Plotting relative momentum resolution vs eta in bins of pT")
+		res_plotter.set_binning("pT_truth_leps_from_HZZ", [0., 50., 100., 200.], "pT_{truth} in GeV", "eta_truth_leps_from_HZZ", [-6., -4., -2.5, -2.0, -1.5, -1.0, -0.5, 0., 0.5, 1.0, 1.5, 2.0, 2.5, 4., 6], "#eta_{truth}")
+		res_plotter.set_use_abs_eta(False)
+		res_plotter.plot_resolution_histograms("P_res_pT_bins_vs_eta", "P_truthmatched_leps_from_HZZ_noiso", "P_truth_leps_from_HZZ", "#sigmaP/P",  4)
 
-	# res_plotter.build_cutstring_bin(["eta_truth_leps_from_HZZ", "E_truth_leps_from_HZZ"], list_bin_edge_pairs, object_index)
 
 	# validate_file(args.inPath, args.outDir)
 
 # checking tester file:
 # python bbzz_4l_eff_rel_checks.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/FCChh_EvtGen_pwp8_pp_hh_5f_hhbbZZ_4l_e_mu_excl.root -o ./bbzz_4l_checks/
-# python bbzz_4l_eff_rel_checks.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbzz_4l/ -o ./bbzz_4l_checks/ -l muon
-# python bbzz_4l_eff_rel_checks.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbzz_4l/ -o ./bbzz_4l_checks_class/ -l muon
+# bbzz_4l_eff_rel_checks.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbzz_4l/ -o ./bbzz_4l_checks/ -l electron -op resolution_dE_vs_eta
+# python bbzz_4l_eff_rel_checks.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbzz_4l/ -o ./bbzz_4l_checks/ -l electron -op resolution_dP_vs_pT
+# python bbzz_4l_eff_rel_checks.py -i /eos/user/b/bistapf/FCChh_EvtGen/FCCAnalysis_ntuples_noIso/pwp8_pp_hh_lambda100_5f_hhbbzz_4l/ -o ./bbzz_4l_checks/ -l electron -op resolution_dP_vs_eta
+
