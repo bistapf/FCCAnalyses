@@ -858,6 +858,7 @@ def runFinal(rdfModule):
         # Define all histos, snapshots, etc...
         print ('----> Defining snapshots and histograms')
         for cut in cutList:
+            print("Processing cut:", cut)
             fout = outputDir+pr+'_'+cut+'.root' #output file for tree
             fout_list.append(fout)
 
@@ -897,6 +898,8 @@ def runFinal(rdfModule):
                 snapshot_tdf = df_cut.Snapshot("events", fout, "", opts)
                 # Needed to avoid python garbage collector messing around with the snapshot
                 tdf_list.append(snapshot_tdf)
+
+                
 
         # Now perform the loop and evaluate everything at once.
         print ('----> Evaluating...')
@@ -962,6 +965,14 @@ def runFinal(rdfModule):
                 # test that the snapshot worked well
                 validfile = testfile(fout_list[i])
                 if not validfile: continue
+                #add the processed events to the output tree
+                print("Updating file", fout_list[i])
+                outfile = ROOT.TFile(fout_list[i], 'update')
+                param = ROOT.TParameter(int)('eventsProcessed', processEvents[pr])
+                print("Number of events processed:", processEvents[pr])
+                param.Write()
+                outfile.Write()
+                outfile.Close()
 
         if saveTabular and cut != 'selNone':
             saveTab.append(cuts_list)
