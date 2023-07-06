@@ -7,9 +7,10 @@ inputDir  = "/eos/user/b/bistapf/FCChh_EvtGen/bb2lMET_ntuples/SFOS/"
 outputDir  = "/eos/user/b/bistapf/FCChh_EvtGen/bb2lMET_ntuples/SFOS/noZ/"
 
 processList = {
-    'pwp8_pp_hh_lambda100_5f_hhbbww':{},#Run over the full statistics from stage2 input file <inputDir>/p8_ee_ZZ_ecm240.root. Keep the same output name as input
+    # 'pwp8_pp_hh_lambda100_5f_hhbbww':{}, 
     # 'pwp8_pp_hh_lambda100_5f_hhbbtata':{}, #Run over the statistics from stage2 input files <inputDir>/p8_ee_WW_ecm240_out/*.root. Keep the same output name as input
     # 'pwp8_pp_hh_lambda100_5f_hhbbzz_zleptonic':{} #Run over the full statistics from stage2 input file <inputDir>/p8_ee_ZH_ecm240_out.root. Change the output name to MySample_p8_ee_ZH_ecm240
+    'mgp8_pp_tt012j_5f':{},
 }
 
 #Link to the dictonary that contains all the cross section informations etc...

@@ -8,15 +8,17 @@ processList = {
     "pwp8_pp_hh_lambda100_5f_hhbbww":{'chunks':200, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbww"}, #put the name of your input file here (without .root), the output file will have the same name
     "pwp8_pp_hh_lambda100_5f_hhbbtata":{'chunks':200, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbtata"}, #put the name of your input file here (without .root), the output file will have the same name
     "pwp8_pp_hh_lambda100_5f_hhbbzz_zleptonic":{'chunks':200, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbww"}, #put the name of your input file here (without .root), the output file will have the same name
+    # "mgp8_pp_tt012j_5f":{'chunks':2000, 'output':"FCChh_EvtGen_mgp8_pp_tt012j_5f"}, #put the name of your input file here (without .root), the output file will have the same name
     
 }
 
 #for local testing:
 # processList= {
-#     # "pwp8_pp_hh_lambda100_5f_hhbbtata":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbtata"}, #put the name of your input file here (without .root), the output file will have the same name
-#     "pwp8_pp_hh_lambda100_5f_hhbbww":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbww"}, #put the name of your input file here (without .root), the output file will have the same name
-#     # "pwp8_pp_hh_lambda100_5f_hhbbaa":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa"}, #put the name of your input file here (without .root), the output file will have the same name
-#     # "pwp8_pp_hh_lambda100_5f_hhbbzz_4l":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbzz_4l"}, #put the name of your input file here (without .root), the output file will have the same name
+#     # "pwp8_pp_hh_lambda100_5f_hhbbtata":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbtata"}, 
+#     # "pwp8_pp_hh_lambda100_5f_hhbbww":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbww"}, 
+#     # "pwp8_pp_hh_lambda100_5f_hhbbaa":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa"}, 
+#     # "pwp8_pp_hh_lambda100_5f_hhbbzz_4l":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbzz_4l"}, 
+#     "mgp8_pp_tt012j_5f":{'output':"FCChh_EvtGen_mgp8_pp_tt012j_5f"}, 
 # }
 
 
@@ -33,7 +35,7 @@ nCPUS       = 8
 # runBatch    = False
 runBatch    = True
 
-saveTabular = True
+
 
 
 
@@ -46,6 +48,11 @@ class RDFanalysis():
         import ROOT
 
         df2 = (df
+
+              ########################################### EVENT HEADER ########################################### 
+              .Define("weight",  "EventHeader.weight")
+              
+
               ########################################### JETS ########################################### 
               # all jets - before any object overlap removal
               .Define("n_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_n(JetNoIso)")
@@ -578,7 +585,8 @@ class RDFanalysis():
     #REMEMBER TO ADD ALL THE OUTPUT BRANCHES TO THIS LIST 
 
     def output(out_name):
-        branchList = [
+        branchList = [ 
+                      'weight',
                       # Jets before overlap removal:
                       "n_jets_noiso", "px_jets_noiso", "py_jets_noiso", "pz_jets_noiso", "E_jets_noiso", "pT_jets_noiso", "eta_jets_noiso",
                       "n_b_jets_loose_noiso", "px_b_jets_loose_noiso", "py_b_jets_loose_noiso", "pz_b_jets_loose_noiso", "E_b_jets_loose_noiso", "pT_b_jets_loose_noiso", "eta_b_jets_loose_noiso",
