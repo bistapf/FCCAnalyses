@@ -497,6 +497,7 @@ def addeosType(fileName):
 
 #__________________________________________________________
 def runLocal(rdfModule, fileList, args):
+
     #Create list of files to be Processed
     print ("----> Create dataframe object from files: ", )
     fileListRoot = ROOT.vector('string')()
@@ -533,6 +534,28 @@ def runLocal(rdfModule, fileList, args):
     #run RDF
     runRDF(rdfModule, fileListRoot, outFile, nevents_local, args)
 
+    #HACK
+    #try to get the sum of weights from the yaml
+    process_name = fileList[0].split("events")[0].split("/")[-2]
+    # prodTag = fileList[0].split("events")[0].split("/")[-3] #doesnt work because of double /
+    # print(prodTag)
+    # if getElement(rdfModule,"prodTag"):
+    #     prodTag = getElement(rdfModule,"prodTag")
+    #HARDCODED FOR TEMP TEST!!
+    yamlfile=os.path.join("/afs/cern.ch/work/f/fccsw/public/FCCDicts/yaml/FCChh/fcc_v05_scenarioI", process_name+'/merge.yaml')
+    with open(yamlfile) as ftmp:
+        try:
+            doc = yaml.load(ftmp, Loader=yaml.FullLoader)
+        except yaml.YAMLError as exc:
+            print(exc)
+        except IOError as exc:
+            print ("I/O error({0}): {1}".format(exc.errno, exc.strerror))
+            print ("outfile ",outfile)
+        finally:
+            print ('----> yaml file {} succesfully opened'.format(yamlfile))
+
+    sow = doc["merge"]["sumofweights"]
+
     outf = ROOT.TFile( outFile, "update" )
     outt = outf.Get("events")
     outn = outt.GetEntries()
@@ -541,6 +564,11 @@ def runLocal(rdfModule, fileList, args):
     if nevents_meta>nevents_local:n[0]=nevents_meta
     p = ROOT.TParameter(int)( "eventsProcessed", n[0])
     p.Write()
+    p2 = ROOT.TParameter(float)( "SumOfWeights", sow)
+    p2.Write()
+
+    # yamlfile=os.path.join(os.getenv('FCCDICTSDIR', deffccdicts), '')+"yaml/"+prodTag+process+'/merge.yaml'
+    # getProcessInfo(process, getElement(rdfModule,"prodTag"), getElement(rdfModule, "inputDir"))
 
 #    if args.test:
 #        outf2 = ROOT.TFile(fileListRoot[0])
