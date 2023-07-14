@@ -1,5 +1,5 @@
-#Instructions to produce parquet
-##Run analysis module in FCC FW
+# Instructions to produce parquet
+## Run analysis module in FCC FW
 First source the FW setup:
 ```
 source setup.sh
@@ -16,7 +16,7 @@ fccanalysis run analysis_bbyy_selections_v2.py
 ```
 This step will produce root files needed for the following.
 
-##Process root files
+## Process root files
 Process root files submittting jobs on condor with:
 ```
 condor_submit Submit.cmd
@@ -24,7 +24,7 @@ condor_submit Submit.cmd
 Remember to change the `LAUNCH_FOLDER` in `run_the_skim.sh`
 This step will produced root files called `processed_$chunckNumber$` in the same folder were the chuncks are. These root files contain the complex variables needed in the parquet with the right name convention.
 
-##Merge and convert to parquet
+## Merge and convert to parquet
 Merge the processed trees divided in chunks in one single file changing the path in `mergeTree.py` and running it simply with:
  ```
 python mergeTree.py
