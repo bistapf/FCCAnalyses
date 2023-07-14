@@ -2,15 +2,15 @@
 
 #for batch submission
 processList = {
-#     "pwp8_pp_hh_lambda100_5f_hhbbaa":{'chunks':500, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa"}, #put the name of your input file here (without .root), the output file will have the same name
-#     "pwp8_pp_hh_lambda240_5f_hhbbaa":{'chunks':500, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda240_5f_hhbbaa"},
-#     "pwp8_pp_hh_lambda300_5f_hhbbaa":{'chunks':500, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda300_5f_hhbbaa"},
-#     "pwp8_pp_hh_lambda000_5f_hhbbaa":{'chunks':500, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda000_5f_hhbbaa"},
-#     "mgp8_pp_h012j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_h012j_5f"},
-#     "mgp8_pp_vbf_h01j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_vbf_h01j_5f"},
-#     "mgp8_pp_tth01j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_tth01j_5f"},
-#     "mgp8_pp_vh012j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_vh012j_5f"},
-#     "mgp8_pp_jjaa_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_jjaa_5f"},
+     "pwp8_pp_hh_lambda100_5f_hhbbaa":{'chunks':500, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa"}, #put the name of your input file here (without .root), the output file will have the same name
+     "pwp8_pp_hh_lambda240_5f_hhbbaa":{'chunks':500, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda240_5f_hhbbaa"},
+     "pwp8_pp_hh_lambda300_5f_hhbbaa":{'chunks':500, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda300_5f_hhbbaa"},
+     "pwp8_pp_hh_lambda000_5f_hhbbaa":{'chunks':500, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda000_5f_hhbbaa"},
+     "mgp8_pp_h012j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_h012j_5f"},
+     "mgp8_pp_vbf_h01j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_vbf_h01j_5f"},
+     "mgp8_pp_tth01j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_tth01j_5f"},
+     "mgp8_pp_vh012j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_vh012j_5f"},
+     "mgp8_pp_jjaa_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_jjaa_5f"},
      "mgp8_pp_tt012j_5f": {'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_tt012j_5f"}
 
 }
@@ -201,5 +201,5 @@ class RDFanalysis():
         return branchList
 
 
-# local test: fccanalysis run analysis_noiso.py --nevents 100 - also switch runBatch to False
+# local test: fccanalysis run analysis_bbyy_selections_v2.py --nevents 100 - also switch runBatch to False
 
