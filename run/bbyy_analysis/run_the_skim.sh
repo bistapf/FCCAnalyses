@@ -1,0 +1,22 @@
+#! /bin/sh
+
+chunkID=$1
+echo ${chunkID}
+
+LAUNCH_FOLDER="/eos/user/p/pmastrap/FCCFW/Analysis/FCCAnalyses/run/Delphescard_validation"
+
+cd ${LAUNCH_FOLDER}
+source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
+python processTrees.py --ID ${chunkID}
+
+
+file_name=( pwp8_pp_hh_lambda000_5f_hhbbaa pwp8_pp_hh_lambda020_5f_hhbbaa pwp8_pp_hh_lambda040_5f_hhbbaa pwp8_pp_hh_lambda060_5f_hhbbaa pwp8_pp_hh_lambda080_5f_hhbbaa pwp8_pp_hh_lambda090_5f_hhbbaa pwp8_pp_hh_lambda094_5f_hhbbaa pwp8_pp_hh_lambda096_5f_hhbbaa pwp8_pp_hh_lambda097_5f_hhbbaa pwp8_pp_hh_lambda098_5f_hhbbaa pwp8_pp_hh_lambda099_5f_hhbba pwp8_pp_hh_lambda101_5f_hhbbaa pwp8_pp_hh_lambda102_5f_hhbbaa pwp8_pp_hh_lambda103_5f_hhbbaa pwp8_pp_hh_lambda104_5f_hhbbaa pwp8_pp_hh_lambda106_5f_hhbbaa pwp8_pp_hh_lambda108_5f_hhbbaa pwp8_pp_hh_lambda110_5f_hhbbaa pwp8_pp_hh_lambda120_5f_hhbbaa pwp8_pp_hh_lambda130_5f_hhbbaa pwp8_pp_hh_lambda140_5f_hhbbaa pwp8_pp_hh_lambda150_5f_hhbbaa pwp8_pp_hh_lambda155_5f_hhbbaa pwp8_pp_hh_lambda170_5f_hhbbaa pwp8_pp_hh_lambda190_5f_hhbbaa pwp8_pp_hh_lambda200_5f_hhbbaa pwp8_pp_hh_lambda220_5f_hhbbaa pwp8_pp_hh_lambda240_5f_hhbbaa pwp8_pp_hh_lambda260_5f_hhbbaa pwp8_pp_hh_lambda280_5f_hhbbaa pwp8_pp_hh_lambda300_5f_hhbbaa pwp8_pp_hh_lambda100_5f_hhbbaa mgp8_pp_tth01j_5f_haa mgp8_pp_h012j_5f_haa mgp8_pp_jjja_5f mgp8_pp_jjaa_5f mgp8_pp_vh012j_5f_haa mgp8_pp_vbf_h01j_5f_haa )
+
+STORAGE_FOLDER="/eos/user/p/pmastrap/HHSnowExt/CondorSubmit/SkimmedSplitted"
+
+for i in "${file_name[@]}"
+do
+	cp -r $i_skim_Sel_$ProcId.root ${STORAGE_FOLDER}
+        rm -r $i_skim_sel_$ProcId.root
+done
+
