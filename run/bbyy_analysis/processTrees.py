@@ -20,8 +20,7 @@ ID = args.ID
 print("Process ID: ",ID)
 #print("Number of submitted jobs: ", JN)
 
-#file_name = ['pwp8_pp_hh_lambda000_5f_hhbbaa', 'pwp8_pp_hh_lambda100_5f_hhbbaa', 'pwp8_pp_hh_lambda240_5f_hhbbaa','pwp8_pp_hh_lambda300_5f_hhbbaa', 'mgp8_pp_tth01j_5f','mgp8_pp_h012j_5f','mgp8_pp_jjaa_5f', 'mgp8_pp_vh012j_5f','mgp8_pp_vbf_h01j_5f']
-file_name = ['mgp8_pp_tt012j_5f']
+file_name = ['pwp8_pp_hh_lambda000_5f_hhbbaa', 'pwp8_pp_hh_lambda100_5f_hhbbaa', 'pwp8_pp_hh_lambda240_5f_hhbbaa','pwp8_pp_hh_lambda300_5f_hhbbaa', 'mgp8_pp_tth01j_5f','mgp8_pp_h012j_5f','mgp8_pp_jjaa_5f', 'mgp8_pp_vh012j_5f','mgp8_pp_vbf_h01j_5f']#,'mgp8_pp_tt012j_5f']
 
 
 for name in file_name:

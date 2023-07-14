@@ -11,7 +11,7 @@ processList = {
      "mgp8_pp_tth01j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_tth01j_5f"},
      "mgp8_pp_vh012j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_vh012j_5f"},
      "mgp8_pp_jjaa_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_jjaa_5f"},
-     "mgp8_pp_tt012j_5f": {'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_tt012j_5f"}
+#     "mgp8_pp_tt012j_5f": {'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_tt012j_5f"}
 
 }
 
