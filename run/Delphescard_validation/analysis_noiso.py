@@ -9,20 +9,21 @@ processList = {
 
 #for local testing:
 processList= {
-    "pwp8_pp_hh_lambda100_5f_hhbbww":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbww"}, #put the name of your input file here (without .root), the output file will have the same name
+    "pwp8_pp_hh_lambda100_5f_hhbbww":{}, #put the name of your input file here (without .root), the output file will have the same name
+    # "pwp8_pp_hh_lambda100_5f_hhbbww":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbww"}, #put the name of your input file here (without .root), the output file will have the same name
     # "pwp8_pp_hh_lambda100_5f_hhbbaa":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa"}, #put the name of your input file here (without .root), the output file will have the same name
     # "pwp8_pp_hh_lambda100_5f_hhbbzz_4l":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbzz_4l"}, #put the name of your input file here (without .root), the output file will have the same name
 }
 
 #for testing the isoVar/isoInputcollections:
 # processList = { 
-    # # "testing_isoInput_bbww":{'output':"FCChh_testingIsoInput_hhbbww"},
-    # "testing_isoVar_Zmumu":{'output':"FCChh_testing_isoVar_Zmumu"},
-    # } 
+#     # "testing_isoInput_bbww":{'output':"FCChh_testingIsoInput_hhbbww"},
+#     # "testing_isoVar_Zmumu":{'output':"FCChh_testing_isoVar_Zmumu"},
+#     "testing_isoJets_bbww":{'output':"FCChh_testing_isoJets_bbww"},
+#     } 
 
 #Mandatory: input directory when not running over centrally produced edm4hep events. 
 inputDir    = "/eos/experiment/fcc/hh/generation/DelphesEvents/fcc_v05_scenarioI/" #your directory with the input file
-# inputDir    = "/eos/user/b/bistapf/FCChh_EvtGen/" #your directory with the input file
 # inputDir    = "/afs/cern.ch/user/b/bistapf/Dev_k4SimDelphes/k4SimDelphes/" #TESTING READING THE ISOVAR
 
 #Optional: output directory, default is local dir
@@ -44,29 +45,86 @@ class RDFanalysis():
         import ROOT
 
         df2 = (df
+              ########################################### EVENT HEADER ########################################### 
+              .Define("event_weight",  "EventHeader.weight")
+
               ########################################### JETS ########################################### 
               # all jets - before any object overlap removal
-              # .Define("n_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_n(ParticleFlowJet04)")
-              # .Define("px_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_px(ParticleFlowJet04)")
-              # .Define("py_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_py(ParticleFlowJet04)")
-              # .Define("pz_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_pz(ParticleFlowJet04)")
-              # .Define("E_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_e(ParticleFlowJet04)")
-              # .Define("pT_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(ParticleFlowJet04)")
-              # .Define("eta_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(ParticleFlowJet04)")
+              .Define("n_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_n(JetNoIso)")
+              .Define("px_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_px(JetNoIso)")
+              .Define("py_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_py(JetNoIso)")
+              .Define("pz_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_pz(JetNoIso)")
+              .Define("E_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_e(JetNoIso)")
+              .Define("pT_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(JetNoIso)")
+              .Define("eta_jets_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(JetNoIso)")
 
-              # # get the flavour tags for those jets:
-              # .Alias("ParticleFlowJet04_pids","ParticleFlowJet04#3.index") 
+              # get the flavour tags for those jets:
+              .Alias("JetNoIso_pids","JetNoIso#3.index") 
 
-              # #LOOSE WP
-              # .Define("b_tagged_jets_loose_noiso", "AnalysisFCChh::get_tagged_jets(ParticleFlowJet04, ParticleFlowJet04_pids, ParticleIDs, ParticleIDs_0, 0)") #bit 0 = loose WP, see: https://github.com/delphes/delphes/blob/master/cards/FCC/scenarios/FCChh_I.tcl
-              # .Define("n_b_jets_loose_noiso", "FCCAnalyses::ReconstructedParticle::get_n(b_tagged_jets_loose_noiso)")
-              # .Define("px_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_px(b_tagged_jets_loose_noiso)")
-              # .Define("py_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_py(b_tagged_jets_loose_noiso)")
-              # .Define("pz_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_pz(b_tagged_jets_loose_noiso)")
-              # .Define("E_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_e(b_tagged_jets_loose_noiso)")
-              # .Define("pT_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(b_tagged_jets_loose_noiso)")
-              # .Define("eta_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(b_tagged_jets_loose_noiso)")
+              #LOOSE WP
+              .Define("b_tagged_jets_loose_noiso", "AnalysisFCChh::get_tagged_jets(JetNoIso, JetNoIso_pids, ParticleIDs, ParticleIDs_0, 0)") #bit 0 = loose WP, see: https://github.com/delphes/delphes/blob/master/cards/FCC/scenarios/FCChh_I.tcl
+              .Define("n_b_jets_loose_noiso", "FCCAnalyses::ReconstructedParticle::get_n(b_tagged_jets_loose_noiso)")
+              .Define("px_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_px(b_tagged_jets_loose_noiso)")
+              .Define("py_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_py(b_tagged_jets_loose_noiso)")
+              .Define("pz_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_pz(b_tagged_jets_loose_noiso)")
+              .Define("E_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_e(b_tagged_jets_loose_noiso)")
+              .Define("pT_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(b_tagged_jets_loose_noiso)")
+              .Define("eta_b_jets_loose_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(b_tagged_jets_loose_noiso)")
 
+              #MEDIUM WP
+              .Define("b_tagged_jets_medium_noiso", "AnalysisFCChh::get_tagged_jets(JetNoIso, JetNoIso_pids, ParticleIDs, ParticleIDs_0, 1)") #bit 1 = medium WP, see: https://github.com/delphes/delphes/blob/master/cards/FCC/scenarios/FCChh_I.tcl
+              .Define("n_b_jets_medium_noiso", "FCCAnalyses::ReconstructedParticle::get_n(b_tagged_jets_medium_noiso)")
+              .Define("px_b_jets_medium_noiso",  "FCCAnalyses::ReconstructedParticle::get_px(b_tagged_jets_medium_noiso)")
+              .Define("py_b_jets_medium_noiso",  "FCCAnalyses::ReconstructedParticle::get_py(b_tagged_jets_medium_noiso)")
+              .Define("pz_b_jets_medium_noiso",  "FCCAnalyses::ReconstructedParticle::get_pz(b_tagged_jets_medium_noiso)")
+              .Define("E_b_jets_medium_noiso",  "FCCAnalyses::ReconstructedParticle::get_e(b_tagged_jets_medium_noiso)")
+              .Define("pT_b_jets_medium_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(b_tagged_jets_medium_noiso)")
+              .Define("eta_b_jets_medium_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(b_tagged_jets_medium_noiso)")
+
+              #TIGHT WP
+              .Define("b_tagged_jets_tight_noiso", "AnalysisFCChh::get_tagged_jets(JetNoIso, JetNoIso_pids, ParticleIDs, ParticleIDs_0, 2)") #bit 2 = tight WP, see: https://github.com/delphes/delphes/blob/master/cards/FCC/scenarios/FCChh_I.tcl
+              .Define("n_b_jets_tight_noiso", "FCCAnalyses::ReconstructedParticle::get_n(b_tagged_jets_tight_noiso)")
+              .Define("px_b_jets_tight_noiso",  "FCCAnalyses::ReconstructedParticle::get_px(b_tagged_jets_tight_noiso)")
+              .Define("py_b_jets_tight_noiso",  "FCCAnalyses::ReconstructedParticle::get_py(b_tagged_jets_tight_noiso)")
+              .Define("pz_b_jets_tight_noiso",  "FCCAnalyses::ReconstructedParticle::get_pz(b_tagged_jets_tight_noiso)")
+              .Define("E_b_jets_tight_noiso",  "FCCAnalyses::ReconstructedParticle::get_e(b_tagged_jets_tight_noiso)")
+              .Define("pT_b_jets_tight_noiso",  "FCCAnalyses::ReconstructedParticle::get_pt(b_tagged_jets_tight_noiso)")
+              .Define("eta_b_jets_tight_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(b_tagged_jets_tight_noiso)")
+
+              #Tau-jets, here also 3 WP
+
+              #LOOSE WP
+              .Define("tau_tagged_jets_loose_noiso", "AnalysisFCChh::get_tau_jets(JetNoIso, JetNoIso_pids, ParticleIDs, ParticleIDs_0, 0)") #bit 0 = loose WP, see: https://github.com/delphes/delphes/blob/master/cards/FCC/scenarios/FCChh_I.tcl
+              .Define("n_tau_jets_loose_noiso", "FCCAnalyses::ReconstructedParticle::get_n(tau_tagged_jets_loose_noiso)")
+              .Define("px_tau_jets_loose_noiso", "FCCAnalyses::ReconstructedParticle::get_px(tau_tagged_jets_loose_noiso)")
+              .Define("py_tau_jets_loose_noiso", "FCCAnalyses::ReconstructedParticle::get_py(tau_tagged_jets_loose_noiso)")
+              .Define("pz_tau_jets_loose_noiso", "FCCAnalyses::ReconstructedParticle::get_pz(tau_tagged_jets_loose_noiso)")
+              .Define("E_tau_jets_loose_noiso", "FCCAnalyses::ReconstructedParticle::get_e(tau_tagged_jets_loose_noiso)")
+              .Define("pT_tau_jets_loose_noiso", "FCCAnalyses::ReconstructedParticle::get_pt(tau_tagged_jets_loose_noiso)")
+              .Define("eta_tau_jets_loose_noiso", "FCCAnalyses::ReconstructedParticle::get_eta(tau_tagged_jets_loose_noiso)")
+
+              #MEDIUM WP
+              .Define("tau_tagged_jets_medium_noiso", "AnalysisFCChh::get_tau_jets(JetNoIso, JetNoIso_pids, ParticleIDs, ParticleIDs_0, 1)") #bit 1 = medium WP, see: https://github.com/delphes/delphes/blob/master/cards/FCC/scenarios/FCChh_I.tcl
+              .Define("n_tau_jets_medium_noiso", "FCCAnalyses::ReconstructedParticle::get_n(tau_tagged_jets_medium_noiso)")
+              .Define("px_tau_jets_medium_noiso", "FCCAnalyses::ReconstructedParticle::get_px(tau_tagged_jets_medium_noiso)")
+              .Define("py_tau_jets_medium_noiso", "FCCAnalyses::ReconstructedParticle::get_py(tau_tagged_jets_medium_noiso)")
+              .Define("pz_tau_jets_medium_noiso", "FCCAnalyses::ReconstructedParticle::get_pz(tau_tagged_jets_medium_noiso)")
+              .Define("E_tau_jets_medium_noiso", "FCCAnalyses::ReconstructedParticle::get_e(tau_tagged_jets_medium_noiso)")
+              .Define("pT_tau_jets_medium_noiso", "FCCAnalyses::ReconstructedParticle::get_pt(tau_tagged_jets_medium_noiso)")
+              .Define("eta_tau_jets_medium_noiso", "FCCAnalyses::ReconstructedParticle::get_eta(tau_tagged_jets_medium_noiso)")
+
+
+              #TIGHT WP
+              .Define("tau_tagged_jets_tight_noiso", "AnalysisFCChh::get_tau_jets(JetNoIso, JetNoIso_pids, ParticleIDs, ParticleIDs_0, 2)") #bit 2 = tight WP, see: https://github.com/delphes/delphes/blob/master/cards/FCC/scenarios/FCChh_I.tcl
+              .Define("n_tau_jets_tight_noiso", "FCCAnalyses::ReconstructedParticle::get_n(tau_tagged_jets_tight_noiso)")
+              .Define("px_tau_jets_tight_noiso", "FCCAnalyses::ReconstructedParticle::get_px(tau_tagged_jets_tight_noiso)")
+              .Define("py_tau_jets_tight_noiso", "FCCAnalyses::ReconstructedParticle::get_py(tau_tagged_jets_tight_noiso)")
+              .Define("pz_tau_jets_tight_noiso", "FCCAnalyses::ReconstructedParticle::get_pz(tau_tagged_jets_tight_noiso)")
+              .Define("E_tau_jets_tight_noiso", "FCCAnalyses::ReconstructedParticle::get_e(tau_tagged_jets_tight_noiso)")
+              .Define("pT_tau_jets_tight_noiso", "FCCAnalyses::ReconstructedParticle::get_pt(tau_tagged_jets_tight_noiso)")
+              .Define("eta_tau_jets_tight_noiso", "FCCAnalyses::ReconstructedParticle::get_eta(tau_tagged_jets_tight_noiso)")
+
+              #####  Jets after overlap removal 
 
               # jets after overlap removal is performed between jets and isolated electrons, muons and photons
               .Define("n_jets",  "FCCAnalyses::ReconstructedParticle::get_n(Jet)")
@@ -169,7 +227,7 @@ class RDFanalysis():
               .Define("eta_electrons_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(electrons_noiso)")
 
               #isolation variable
-              # .Define("isoVar_electrons_noiso", "ElectronNoIso_IsolationVar")
+              .Define("isoVar_electrons_noiso", "ElectronNoIso_IsolationVar")
               # .Define("recalc_isoVar_electrons_noiso", "AnalysisFCChh::get_IP_delphes(electrons_noiso, ParticleFlowCandidates)")
 
               #all isolated 
@@ -216,7 +274,7 @@ class RDFanalysis():
               .Define("eta_muons_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(muons_noiso)")
 
               #isolation variable
-              # .Define("isoVar_muons_noiso", "MuonNoIso_IsolationVar")
+              .Define("isoVar_muons_noiso", "MuonNoIso_IsolationVar")
               # .Define("recalc_isoVar_muons_noiso", "AnalysisFCChh::get_IP_delphes(muons_noiso, ParticleFlowCandidates)")
 
               # all isolated
@@ -264,7 +322,7 @@ class RDFanalysis():
               .Define("eta_photons_noiso",  "FCCAnalyses::ReconstructedParticle::get_eta(photons_noiso)")
 
               #isolation variable
-              # .Define("isoVar_photons_noiso", "PhotonNoIso_IsolationVar")
+              .Define("isoVar_photons_noiso", "PhotonNoIso_IsolationVar")
               # .Define("recalc_isoVar_photons_noiso", "AnalysisFCChh::get_IP_delphes(photons_noiso, ParticleFlowCandidates)")
 
               #all, after isolation
@@ -403,7 +461,7 @@ class RDFanalysis():
                      #Adapted truth matching code to be able to extract the isoVar as computed by Delphes: Truth matching returns indices rather than the particles
                       #electrons
                      .Define("indices_truthmatched_reco_ele_from_higgs_noiso", "AnalysisFCChh::find_truth_to_reco_matches_indices(truth_leps_from_higgs, electrons_noiso, 11)")
-                     # .Define("isoVar_truthmatched_ele_from_higgs", "AnalysisFCChh::get(indices_truthmatched_reco_ele_from_higgs_noiso, ElectronNoIso_IsolationVar)")
+                     .Define("isoVar_truthmatched_ele_from_higgs", "AnalysisFCChh::get(indices_truthmatched_reco_ele_from_higgs_noiso, ElectronNoIso_IsolationVar)")
                      .Define("truthmatched_reco_ele_from_higgs_noiso", "AnalysisFCChh::get(indices_truthmatched_reco_ele_from_higgs_noiso, electrons_noiso)") #getting the actual objects!
                      .Define("n_truthmatched_ele_from_HWW", "ReconstructedParticle::get_n(truthmatched_reco_ele_from_higgs_noiso)") 
                      .Define("pT_truthmatched_ele_from_HWW", "ReconstructedParticle::get_pt(truthmatched_reco_ele_from_higgs_noiso)") 
@@ -414,7 +472,7 @@ class RDFanalysis():
 
                      #same for muons 
                      .Define("indices_truthmatched_reco_mu_from_higgs_noiso", "AnalysisFCChh::find_truth_to_reco_matches_indices(truth_leps_from_higgs, muons_noiso, 13)")
-                     # .Define("isoVar_truthmatched_mu_from_higgs", "AnalysisFCChh::get(indices_truthmatched_reco_mu_from_higgs_noiso, MuonNoIso_IsolationVar)")
+                     .Define("isoVar_truthmatched_mu_from_higgs", "AnalysisFCChh::get(indices_truthmatched_reco_mu_from_higgs_noiso, MuonNoIso_IsolationVar)")
                      .Define("truthmatched_reco_mu_from_higgs_noiso", "AnalysisFCChh::get(indices_truthmatched_reco_mu_from_higgs_noiso, muons_noiso)") #getting the actual objects!
                      .Define("n_truthmatched_mu_from_HWW", "ReconstructedParticle::get_n(truthmatched_reco_mu_from_higgs_noiso)") 
                      .Define("pT_truthmatched_mu_from_HWW", "ReconstructedParticle::get_pt(truthmatched_reco_mu_from_higgs_noiso)") 
@@ -531,9 +589,16 @@ class RDFanalysis():
 
     def output(out_name):
         branchList = [
+                      #Event header 
+                      "event_weight",
                       # Jets before overlap removal:
-                      # "n_jets_noiso", "px_jets_noiso", "py_jets_noiso", "pz_jets_noiso", "E_jets_noiso", "pT_jets_noiso", "eta_jets_noiso",
-                      # "n_b_jets_loose_noiso", "px_b_jets_loose_noiso", "py_b_jets_loose_noiso", "pz_b_jets_loose_noiso", "E_b_jets_loose_noiso", "pT_b_jets_loose_noiso", "eta_b_jets_loose_noiso",
+                      "n_jets_noiso", "px_jets_noiso", "py_jets_noiso", "pz_jets_noiso", "E_jets_noiso", "pT_jets_noiso", "eta_jets_noiso",
+                      "n_b_jets_loose_noiso", "px_b_jets_loose_noiso", "py_b_jets_loose_noiso", "pz_b_jets_loose_noiso", "E_b_jets_loose_noiso", "pT_b_jets_loose_noiso", "eta_b_jets_loose_noiso",
+                      "n_b_jets_medium_noiso", "px_b_jets_medium_noiso", "py_b_jets_medium_noiso", "pz_b_jets_medium_noiso", "E_b_jets_medium_noiso", "pT_b_jets_medium_noiso", "eta_b_jets_medium_noiso",
+                      "n_b_jets_tight_noiso", "px_b_jets_tight_noiso", "py_b_jets_tight_noiso", "pz_b_jets_tight_noiso", "E_b_jets_tight_noiso", "pT_b_jets_tight_noiso", "eta_b_jets_tight_noiso",
+                      "n_tau_jets_loose_noiso", "px_tau_jets_loose_noiso", "py_tau_jets_loose_noiso", "pz_tau_jets_loose_noiso", "E_tau_jets_loose_noiso", "pT_tau_jets_loose_noiso", "eta_tau_jets_loose_noiso",
+                      "n_tau_jets_medium_noiso", "px_tau_jets_medium_noiso", "py_tau_jets_medium_noiso", "pz_tau_jets_medium_noiso", "E_tau_jets_medium_noiso", "pT_tau_jets_medium_noiso", "eta_tau_jets_medium_noiso",
+                      "n_tau_jets_tight_noiso", "px_tau_jets_tight_noiso", "py_tau_jets_tight_noiso", "pz_tau_jets_tight_noiso", "E_tau_jets_tight_noiso", "pT_tau_jets_tight_noiso", "eta_tau_jets_tight_noiso",
                       # Jets:
                       "n_jets", "px_jets", "py_jets", "pz_jets", "E_jets", "pT_jets", "eta_jets",
                       "n_jets_sel", "px_jets_sel", "py_jets_sel", "pz_jets_sel", "E_jets_sel", "pT_jets_sel", "eta_jets_sel",
@@ -561,7 +626,7 @@ class RDFanalysis():
                       "n_photons_iso", "px_photons_iso", "py_photons_iso", "pz_photons_iso", "E_photons_iso", "pT_photons_iso", "eta_photons_iso",
                       "n_photons_sel", "px_photons_sel", "py_photons_sel", "pz_photons_sel", "E_photons_sel", "pT_photons_sel", "eta_photons_sel",
                       #isolation variables:
-                      # "isoVar_electrons_noiso", "isoVar_muons_noiso", "isoVar_photons_noiso",
+                      "isoVar_electrons_noiso", "isoVar_muons_noiso", "isoVar_photons_noiso",
                       # "recalc_isoVar_electrons_noiso", "recalc_isoVar_muons_noiso", "recalc_isoVar_photons_noiso", #manually recalculated
                       # ETMiss:
                       "MET","MET_x", "MET_y", "MET_phi",
@@ -615,7 +680,7 @@ class RDFanalysis():
 
               #split truth - reco matching for the isoVar extraction:
               #electrons
-              # branchList.append("isoVar_truthmatched_ele_from_higgs")
+              branchList.append("isoVar_truthmatched_ele_from_higgs")
               branchList.append("n_truthmatched_ele_from_HWW")
               branchList.append("pT_truthmatched_ele_from_HWW")
               branchList.append("eta_truthmatched_ele_from_HWW")
@@ -623,7 +688,7 @@ class RDFanalysis():
               branchList.append("P_truthmatched_ele_from_HWW")
               branchList.append("E_truthmatched_ele_from_HWW")
               #muons
-              # branchList.append("isoVar_truthmatched_mu_from_higgs")
+              branchList.append("isoVar_truthmatched_mu_from_higgs")
               branchList.append("n_truthmatched_mu_from_HWW")
               branchList.append("pT_truthmatched_mu_from_HWW")
               branchList.append("eta_truthmatched_mu_from_HWW")
