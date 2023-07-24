@@ -774,6 +774,7 @@ def runFinal(rdfModule):
     start_time = time.time()
 
     processEvents={}
+    SumOfWeights={}
     eventsTTree={}
     processList={}
     saveTab=[]
@@ -810,6 +811,7 @@ def runFinal(rdfModule):
     for pr in getElement(rdfModule,"processList", True):
         processEvents[pr]=0
         eventsTTree[pr]=0
+        SumOfWeights[pr]=0
 
         fileListRoot = ROOT.vector('string')()
         fin  = inputDir+pr+'.root' #input file
@@ -824,9 +826,12 @@ def runFinal(rdfModule):
                 if 'eventsProcessed' == key.GetName():
                     events = tfin.eventsProcessed.GetVal()
                     processEvents[pr]=events
+                    sow = tfin.SumOfWeights.GetVal()
+                    SumOfWeights[pr] = sow
                     found=True
             if not found:
                 processEvents[pr]=1
+                SumOfWeights[pr]=1
             tt=tfin.Get("events")
             eventsTTree[pr]+=tt.GetEntries()
 
@@ -845,17 +850,26 @@ def runFinal(rdfModule):
                     if 'eventsProcessed' == key.GetName():
                         events = tfin.eventsProcessed.GetVal()
                         processEvents[pr]+=events
+                        sow = tfin.SumOfWeights.GetVal()
+                        SumOfWeights[pr] = sow
                         found=True
                 if not found:
                     processEvents[pr]=1
+                    SumOfWeights[pr]=1
 
                 tt=tfin.Get("events")
+
+                if not tt:
+                    print("Tree not found in file", tfin, " possibly empty chunk - continuing with next one.")
+                    continue 
+
                 eventsTTree[pr]+=tt.GetEntries()
                 tfin.Close()
                 fileListRoot.push_back(f)
         processList[pr]=fileListRoot
 
     print('processed events ',processEvents)
+    print('sumOfWeight ', SumOfWeights)
     print('events in ttree  ',eventsTTree)
 
     histoList = getElement(rdfModule,"histoList", True)
@@ -999,6 +1013,9 @@ def runFinal(rdfModule):
                 param = ROOT.TParameter(int)('eventsProcessed', processEvents[pr])
                 print("Number of events processed:", processEvents[pr])
                 param.Write()
+                param2 = ROOT.TParameter(float)('SumOfWeights', SumOfWeights[pr])
+                print("Sum of weights:", SumOfWeights[pr])
+                param2.Write()
                 outfile.Write()
                 outfile.Close()
 
