@@ -10,19 +10,31 @@ processList = {
     # 'pwp8_pp_hh_lambda100_5f_hhbbww':{}, 
     # 'pwp8_pp_hh_lambda100_5f_hhbbtata':{}, #Run over the statistics from stage2 input files <inputDir>/p8_ee_WW_ecm240_out/*.root. Keep the same output name as input
     # 'pwp8_pp_hh_lambda100_5f_hhbbzz_zleptonic':{} #Run over the full statistics from stage2 input file <inputDir>/p8_ee_ZH_ecm240_out.root. Change the output name to MySample_p8_ee_ZH_ecm240
-    'mgp8_pp_tt012j_5f':{},
+    # 'mgp8_pp_tt012j_5f':{},
+    #single Higgs bkg
+    # 'mgp8_pp_h012j_5f':{},
+    # 'mgp8_pp_vbf_h01j_5f':{},
+    # 'mgp8_pp_vh012j_5f':{},
+    # 'mgp8_pp_tth01j_5f':{},
+    #V+jets bkg
+    "mgp8_pp_vj_5f_HT_500_1000":{},
+    "mgp8_pp_vj_5f_HT_1000_2000":{},
+    "mgp8_pp_vj_5f_HT_5000_10000":{},
+    "mgp8_pp_vj_5f_HT_10000_27000":{},
+    "mgp8_pp_vj_5f_HT_27000_100000":{},
 }
 
 #Link to the dictonary that contains all the cross section informations etc...
-procDict = "FCCee_procDict_spring2021_IDEA.json"
+procDict = "FCChh_procDict_v05_scenarioI.json"
 
 #Add MySample_p8_ee_ZH_ecm240 as it is not an offical process
-procDictAdd={"pwp8_pp_hh_lambda100_5f_hhbbzz_zleptonic": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.0032097804, "kfactor": 1.08, "matchingEfficiency": 1.0}}
-procDictAdd={"pwp8_pp_hh_lambda100_5f_hhbbww": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.28332, "kfactor": 1.08, "matchingEfficiency": 1.0}}
-procDictAdd={"pwp8_pp_hh_lambda100_5f_hhbbtata": {"numberOfEvents": 4997958, "sumOfWeights": 4997958.0, "crossSection": 0.08214306096, "kfactor": 1.08, "matchingEfficiency": 1.0}}
+# procDictAdd={"pwp8_pp_hh_lambda100_5f_hhbbzz_zleptonic": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.0032097804, "kfactor": 1.08, "matchingEfficiency": 1.0}}
+# procDictAdd={"pwp8_pp_hh_lambda100_5f_hhbbww": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.28332, "kfactor": 1.08, "matchingEfficiency": 1.0}}
+# procDictAdd={"pwp8_pp_hh_lambda100_5f_hhbbtata": {"numberOfEvents": 4997958, "sumOfWeights": 4997958.0, "crossSection": 0.08214306096, "kfactor": 1.08, "matchingEfficiency": 1.0}}
+# procDictAdd={"mgp8_pp_tt012j_5f": {"numberOfEvents": 79190000, "sumOfWeights": 79190000.0, "crossSection": 43110.0, "kfactor": 1.74, "matchingEfficiency": 1.0},}
 
 #Number of CPUs to use
-nCPUS = 2
+nCPUS = 4
 
 #produces ROOT TTrees, default is False
 doTree = True

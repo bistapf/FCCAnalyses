@@ -2,25 +2,43 @@
 #flavour option - HOW DO I GET THIS TO BE COMMAND LINE?
 flavour = "SFOS"
 
-
-#for batch submission
+#running in screen on lxplus782 subjobs
+#for batch submission 
 processList = {
-    "pwp8_pp_hh_lambda100_5f_hhbbww":{'chunks':200, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbww"}, #put the name of your input file here (without .root), the output file will have the same name
-    "pwp8_pp_hh_lambda100_5f_hhbbtata":{'chunks':200, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbtata"}, #put the name of your input file here (without .root), the output file will have the same name
-    "pwp8_pp_hh_lambda100_5f_hhbbzz_zleptonic":{'chunks':200, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbww"}, #put the name of your input file here (without .root), the output file will have the same name
-    # "mgp8_pp_tt012j_5f":{'chunks':2000, 'output':"FCChh_EvtGen_mgp8_pp_tt012j_5f"}, #put the name of your input file here (without .root), the output file will have the same name
-    
+    # "pwp8_pp_hh_lambda100_5f_hhbbww":{'chunks':200, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbww"}, #put the name of your input file here (without .root), the output file will have the same name
+    # "pwp8_pp_hh_lambda100_5f_hhbbtata":{'chunks':200, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbtata"}, #put the name of your input file here (without .root), the output file will have the same name
+    # "pwp8_pp_hh_lambda100_5f_hhbbzz_zleptonic":{'chunks':200, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbww"}, #put the name of your input file here (without .root), the output file will have the same name
+    # "mgp8_pp_tt012j_5f":{'chunks':2499, 'output':"FCChh_EvtGen_mgp8_pp_tt012j_5f"}, #put the name of your input file here (without .root), the output file will have the same name 
+    # "mgp8_pp_h012j_5f":{'chunks':200}, #put the name of your input file here (without .root), the output file will have the same name
+    # "mgp8_pp_vbf_h01j_5f":{'chunks':200}, #put the name of your input file here (without .root), the output file will have the same name
+    # "mgp8_pp_vh012j_5f":{'chunks':200}, #put the name of your input file here (without .root), the output file will have the same name
+    # "mgp8_pp_tth01j_5f":{'chunks':200},
+    # "mgp8_pp_ttw_5f":{'chunks':200},
+    # "mgp8_pp_ttz_5f":{'chunks':200},
+    # "mgp8_pp_ttzz_5f":{'chunks':200},
+    # "mgp8_pp_ttwz_5f":{'chunks':200},
+    # "mgp8_pp_ttww_4f":{'chunks':200},
+    # "mgp8_pp_vj_5f_HT_500_1000":{'chunks':200},
+    # "mgp8_pp_vj_5f_HT_1000_2000":{'chunks':200},
+    "mgp8_pp_vj_5f_HT_2000_5000":{'chunks':200},
+    # "mgp8_pp_vj_5f_HT_5000_10000":{'chunks':200},
+    # "mgp8_pp_vj_5f_HT_10000_27000":{'chunks':200},
+    # "mgp8_pp_vj_5f_HT_27000_100000":{'chunks':200},
 }
+
 
 #for local testing:
 # processList= {
-#     # "pwp8_pp_hh_lambda100_5f_hhbbtata":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbtata"}, 
-#     # "pwp8_pp_hh_lambda100_5f_hhbbww":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbww"}, 
-#     # "pwp8_pp_hh_lambda100_5f_hhbbaa":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa"}, 
-#     # "pwp8_pp_hh_lambda100_5f_hhbbzz_4l":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbzz_4l"}, 
-#     "mgp8_pp_tt012j_5f":{'output':"FCChh_EvtGen_mgp8_pp_tt012j_5f"}, 
+# #     # "pwp8_pp_hh_lambda100_5f_hhbbtata":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbtata"}, 
+#     "pwp8_pp_hh_lambda100_5f_hhbbww":{}, 
+# #     # "pwp8_pp_hh_lambda100_5f_hhbbaa":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa"}, 
+# #     # "pwp8_pp_hh_lambda100_5f_hhbbzz_4l":{'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbzz_4l"}, 
+# #     "pwp8_pp_hh_lambda100_5f_hhbbww/events_000013364":{'output':"pwp8_pp_hh_lambda100_5f_hhbbww_events_000013364_tester"}, 
+# #     # "mgp8_pp_tt012j_5f":{'output':"FCChh_EvtGen_mgp8_pp_tt012j_5f"}, 
+#     # "mgp8_pp_vj_5f_HT_500_1000":{'output':"FCChh_EvtGen_mgp8_pp_vj_5f_HT_500_1000"}, 
 # }
 
+# /eos/user/b/bistapf/FCChh_EvtGen/bb2lMET_ntuples/SFOS/
 
 #Mandatory: input directory when not running over centrally produced edm4hep events. 
 inputDir    = "/eos/experiment/fcc/hh/generation/DelphesEvents/fcc_v05_scenarioI/" #your directory with the input file
@@ -419,12 +437,12 @@ class RDFanalysis():
 
             )
 
-          # filter - REMOVED FOR NOW TEMP
-          # df_filter_2l = df_DFOS_leps.Filter("n_OS_ll_pairs > 0")
+          # filter - pre-selection
+          df_filter_2l = df_DFOS_leps.Filter("n_OS_ll_pairs > 0")
 
-          # df_filter_2b = df_filter_2l.Filter("n_b_jets > 1")
+          df_filter_2b = df_filter_2l.Filter("n_b_jets_medium > 1")
 
-          df_leps = df_DFOS_leps
+          # df_leps = df_DFOS_leps
 
         elif flavour == "SFOS":
 
@@ -440,19 +458,19 @@ class RDFanalysis():
 
             )
 
-          df_leps = df_SFOS_leps
+          # df_leps = df_SFOS_leps
 
-          #filter - REMOVED FOR NOW TEMP
-          # df_filter_2l = df_SFOS_leps.Filter("n_OS_ll_pairs > 0")
+          #filter - pre-selection
+          df_filter_2l = df_SFOS_leps.Filter("n_OS_ll_pairs > 0")
 
-          # df_filter_2b = df_filter_2l.Filter("n_b_jets > 1")
+          df_filter_2b = df_filter_2l.Filter("n_b_jets_medium > 1")
 
 
 
           ########################################### FILL EVENT WIDE VARIABLES ########################################### 
 
-        # df_out = (df_filter_2b
-        df_out = (df_leps
+        df_out = (df_filter_2b
+        # df_out = (df_leps
 
           #H(bb) system
           .Define("bb_pairs_unmerged", "AnalysisFCChh::getPairs(b_tagged_jets_medium)") #currently gets only leading pT pair, as a RecoParticlePair
@@ -586,7 +604,7 @@ class RDFanalysis():
 
     def output(out_name):
         branchList = [ 
-                      'weight',
+                      "weight",
                       # Jets before overlap removal:
                       "n_jets_noiso", "px_jets_noiso", "py_jets_noiso", "pz_jets_noiso", "E_jets_noiso", "pT_jets_noiso", "eta_jets_noiso",
                       "n_b_jets_loose_noiso", "px_b_jets_loose_noiso", "py_b_jets_loose_noiso", "pz_b_jets_loose_noiso", "E_b_jets_loose_noiso", "pT_b_jets_loose_noiso", "eta_b_jets_loose_noiso",
@@ -660,7 +678,7 @@ class RDFanalysis():
                       "pzeta_vis", "pzeta_miss", "dzeta_85",
 
                       #angle between higgs candidates
-                      "dPhi_HH", "dEta_HH", "dR_HH",
+                      "dPhi_HH", "dEta_HH", "dR_HH"
             
         ]
 
