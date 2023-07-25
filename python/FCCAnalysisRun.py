@@ -16,6 +16,49 @@ from process import getProcessInfo, get_process_dict
 DATE = datetime.datetime.fromtimestamp(datetime.datetime.now().timestamp()).strftime('%Y-%m-%d_%H-%M-%S')
 
 #__________________________________________________________
+def get_entries_sow(infilepath):
+    '''
+    Get number of original entries and number of actual entries in the file, as well as the sum of weights
+    '''
+    infile = ROOT.TFile.Open(infilepath)
+    infile.cd()
+
+    processEvents = 0
+    processSumOfWeights = 0.
+    try:
+        processEvents = infile.Get('eventsProcessed').GetVal()
+    except AttributeError:
+        print('----> Warning: Input file is missing information about '
+              'original number of events!')
+    try:
+        processSumOfWeights = infile.Get('SumOfWeights').GetVal()
+    except AttributeError:
+        print('----> Warning: Input file is missing information about '
+              'original sum of weights!')
+
+    eventsTTree = 0
+    sumOfWeightsTTree = 0.
+    try:
+        eventsTTree = infile.Get("events").GetEntries()
+    except AttributeError:
+        print('----> Error: Input file is missing events TTree! Aborting...')
+        infile.Close()
+        sys.exit(3)
+
+    try:
+        infile.Get("events").Draw('EventHeader.weight[0]>>histo')
+		histo=r.gDirectory.Get('histo')
+		sumOfWeightsTTree=float(nentries)*histo.GetMean()
+    except AttributeError:
+        print('----> Error: Input file is missing event weights. ')
+        infile.Close()
+        sys.exit(3)
+
+    infile.Close()
+
+    return processEvents, eventsTTree, processSumOfWeights, sumOfWeightsTTree
+
+#__________________________________________________________
 def get_entries(infilepath):
     '''
     Get number of original entries and number of actual entries in the file
@@ -191,10 +234,10 @@ def runRDF(rdfModule, inputlist, outFile, nevt, args):
         df = df.Range(0, args.nevents)
 
     try:
-        df2 = getElement(rdfModule.RDFanalysis, "analysers")(df)
+        df2 = getElement(rdfModule.RDFanalysis, "analysers")(df, outFile)
 
         branch_list = ROOT.vector('string')()
-        blist = getElement(rdfModule.RDFanalysis, "output")()
+        blist = getElement(rdfModule.RDFanalysis, "output")(outFile)
         for bname in blist:
             branch_list.push_back(bname)
 
@@ -432,8 +475,8 @@ def runLocal(rdfModule, infile_list, args):
 #        outt2_3.Write()
 #        outt2_4.Write()
 
-    outf.Write()
-    outf.Close()
+    outfile.Write()
+    outfile.Close()
 
     elapsed_time = time.time() - start_time
     print('============================= SUMMARY =============================')
@@ -669,7 +712,8 @@ def runFinal(rdfModule):
     for process_id in getElement(rdfModule, "processList", True):
         processEvents[process_id] = 0
         eventsTTree[process_id] = 0
-        SumOfWeights[process_id]=0
+        processSumOfWeights[process_id]=0.
+        sumOfWeightsTTree[process_id]=0.
 
         fileListRoot = ROOT.vector('string')()
         infilepath = inputDir + process_id + '.root' #input file
@@ -677,7 +721,7 @@ def runFinal(rdfModule):
             print('----> File ', infilepath, '  does not exist. Try if it is a directory as it was processed with batch')
         else:
             print('----> Open file ', infilepath)
-            processEvents[process_id], eventsTTree[process_id] = get_entries(infilepath)
+            processEvents[process_id], eventsTTree[process_id], processSumOfWeights[process_id], sumOfWeightsTTree[process_id] = get_entries_sow(infilepath)
             fileListRoot.push_back(infilepath)
 
         indirpath = inputDir + process_id
@@ -713,7 +757,6 @@ def runFinal(rdfModule):
     doTree = getElement(rdfModule, "doTree", True)
     for pr in getElement(rdfModule, "processList", True):
         print ('\n----> Running over process: ', pr)
->>>>>>> master:python/FCCAnalysisRun.py
 
         if processEvents[pr] == 0:
             print('----> Error: Can\'t scale histograms, the number of '
