@@ -1,6 +1,7 @@
 if [ "${0}" != "${BASH_SOURCE}" ]; then
   # Determinig the location of this setup script
   export LOCAL_DIR=$(cd $(dirname "${BASH_SOURCE}") && pwd)
+  echo ${LOCAL_DIR}
 
   echo "----> Info: Setting up Key4hep stack..."
   # Sourcing of the stack
@@ -16,8 +17,8 @@ if [ "${0}" != "${BASH_SOURCE}" ]; then
   fi
 
   echo "----> Info: Setting up environment variables..."
-  export PYTHONPATH=${LOCAL_DIR}/python:${PYTHONPATH}
   export PYTHONPATH=${LOCAL_DIR}/install/python:${PYTHONPATH}
+  export PYTHONPATH=${LOCAL_DIR}/python:${PYTHONPATH}
   export PATH=${LOCAL_DIR}/bin:${PATH}
   export PATH=${LOCAL_DIR}/install/bin:${PATH}
   export LD_LIBRARY_PATH=${LOCAL_DIR}/install/lib:${LD_LIBRARY_PATH}
