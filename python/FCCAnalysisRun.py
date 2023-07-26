@@ -16,10 +16,11 @@ from process import getProcessInfo, get_process_dict
 DATE = datetime.datetime.fromtimestamp(datetime.datetime.now().timestamp()).strftime('%Y-%m-%d_%H-%M-%S')
 
 #__________________________________________________________
-def get_entries_sow(infilepath):
+def get_entries_sow(infilepath, nevents_max=None):
     '''
     Get number of original entries and number of actual entries in the file, as well as the sum of weights
     '''
+
     infile = ROOT.TFile.Open(infilepath)
     infile.cd()
 
@@ -39,20 +40,28 @@ def get_entries_sow(infilepath):
     eventsTTree = 0
     sumOfWeightsTTree = 0.
     try:
-        eventsTTree = infile.Get("events").GetEntries()
+         #use a RDF here too so the nevents restriction option can be imposed easily for the local events
+        rdf_tmp = ROOT.ROOT.RDataFrame("events", infilepath)
+
+        if nevents_max:
+            rdf_tmp = rdf_tmp.Range(0, nevents_max)
+
+        eventsTTree = rdf_tmp.Count().GetValue()
+
+        # eventsTTree = infile.Get("events").GetEntries()
+        ROOT.gROOT.SetBatch(True)
+        try:
+            # infile.Get("events").Draw('EventHeader.weight[0]>>histo')
+            # histo=ROOT.gDirectory.Get('histo')
+            histo = rdf_tmp.Histo1D("EventHeader.weight")
+            sumOfWeightsTTree=float(eventsTTree)*histo.GetMean()
+        except AttributeError:
+            print('----> Warning: Input file has no event weights.')
     except AttributeError:
         print('----> Error: Input file is missing events TTree! Aborting...')
         infile.Close()
         sys.exit(3)
 
-    try:
-        infile.Get("events").Draw('EventHeader.weight[0]>>histo')
-		histo=r.gDirectory.Get('histo')
-		sumOfWeightsTTree=float(nentries)*histo.GetMean()
-    except AttributeError:
-        print('----> Error: Input file is missing event weights. ')
-        infile.Close()
-        sys.exit(3)
 
     infile.Close()
 
@@ -226,7 +235,7 @@ def initialize(args, rdfModule, analysisFile):
             _ana.append(getattr(ROOT, analysis).dictionary)
 
 #__________________________________________________________
-def runRDF(rdfModule, inputlist, outFile, nevt, args):
+def runRDF(rdfModule, inputlist, outFile, nevt, args): #why does this need nevt as an argument?
     df = ROOT.RDataFrame("events", inputlist)
 
     # limit number of events processed
@@ -379,34 +388,34 @@ def apply_filepath_rewrites(filepath):
 #__________________________________________________________
 def runLocal(rdfModule, infile_list, args):
     # Create list of files to be processed
+    print ('----> Info: TEST TEST ', )
     print ('----> Info: Creating dataframe object from files: ', )
     file_list = ROOT.vector('string')()
     nevents_orig = 0   # Amount of events processed in previous stage (= 0 if it is the first stage)
     nevents_local = 0  # The amount of events in the input file(s)
+    sow_orig = 0.
+    sow_local = 0.
     for filepath in infile_list:
 
         filepath = apply_filepath_rewrites(filepath)
 
         file_list.push_back(filepath)
         print(f'             - {filepath}')
-        infile = ROOT.TFile.Open(filepath, 'READ')
-        try:
-            nevents_orig += infile.Get('eventsProcessed').GetVal()
-        except AttributeError:
-            pass
 
-        try:
-            nevents_local += infile.Get("events").GetEntries()
-        except AttributeError:
-            print('----> Error: Input file:')
-            print('             ' + filepath)
-            print('             is missing events TTree! Aborting...')
-            infile.Close()
-            sys.exit(3)
+        if args.nevents > 0:
+            nevts_param, nevts_tree, sow_param, sow_tree = get_entries_sow(filepath, args.nevents)
+        else:
+            nevts_param, nevts_tree, sow_param, sow_tree = get_entries_sow(filepath)
 
-    # Adjust number of events in case --nevents was specified
-    if args.nevents > 0 and args.nevents < nevents_local:
-        nevents_local = args.nevents
+        nevents_orig += nevts_param
+        nevents_local += nevts_tree
+        sow_orig += sow_param
+        sow_local += sow_tree
+
+    # Adjust number of events in case --nevents was specified -> replaced with adding the max nevts to the get_entries function
+    #NOTE: this wont work if you give it more than one file and nevents < total events in the files - TO BE FIXED!?
+    # if args.nevents > 0 and args.nevents < nevents_local:
+    #     nevents_local = args.nevents
 
     if nevents_orig > 0:
         print('----> Info: Number of events:')
@@ -414,6 +423,11 @@ def runLocal(rdfModule, infile_list, args):
         print(f'             - local:    {nevents_local}')
     else:
         print(f'----> Info: Number of local events: {nevents_local}')
+
+    #testing:
+    print('----> Info: Sum of weights:')
+    print(f'             - original: {sow_orig}')
+    print(f'             - local: {sow_local}')
 
     output_dir = getElement(rdfModule, "outputDir")
     if not args.batch:
@@ -431,34 +445,35 @@ def runLocal(rdfModule, infile_list, args):
     outn = runRDF(rdfModule, file_list, outfile_path, nevents_local, args)
     outn = outn.GetValue()
 
-    #HACK
+    #HACK - OLD IMPROVED WITH READING SOW FROM INPUT FILES
     #try to get the sum of weights from the yaml
-    process_name = infile_list[0].split("events")[0].split("/")[-2]
+    # process_name = infile_list[0].split("events")[0].split("/")[-2]
     # prodTag = fileList[0].split("events")[0].split("/")[-3] #doesnt work because of double /
     # print(prodTag)
     # if getElement(rdfModule,"prodTag"):
     #     prodTag = getElement(rdfModule,"prodTag")
     #HARDCODED FOR TEMP TEST!!
-    yamlfile=os.path.join("/afs/cern.ch/work/f/fccsw/public/FCCDicts/yaml/FCChh/fcc_v05_scenarioI", process_name+'/merge.yaml')
-    with open(yamlfile) as ftmp:
-        try:
-            doc = yaml.load(ftmp, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-        except IOError as exc:
-            print ("I/O error({0}): {1}".format(exc.errno, exc.strerror))
-            print ("outfile ",outfile)
-        finally:
-            print ('----> yaml file {} succesfully opened'.format(yamlfile))
+    # yamlfile=os.path.join("/afs/cern.ch/work/f/fccsw/public/FCCDicts/yaml/FCChh/fcc_v05_scenarioI", process_name+'/merge.yaml')
+    # with open(yamlfile) as ftmp:
+    #     try:
+    #         doc = yaml.load(ftmp, Loader=yaml.FullLoader)
+    #     except yaml.YAMLError as exc:
+    #         print(exc)
+    #     except IOError as exc:
+    #         print ("I/O error({0}): {1}".format(exc.errno, exc.strerror))
+    #         print ("outfile ",outfile)
+        # finally:
+        #     print ('----> yaml file {} succesfully opened'.format(yamlfile))
 
-    sow = doc["merge"]["sumofweights"]
+    # sow = doc["merge"]["sumofweights"]
 
     outfile = ROOT.TFile(outfile_path, 'update')
     param = ROOT.TParameter(int)('eventsProcessed',
                                  nevents_orig if nevents_orig != 0 else nevents_local)
     param.Write()
-    p2 = ROOT.TParameter(float)( "SumOfWeights", sow)
-    p2.Write()
+    param_sow = ROOT.TParameter(float)( "SumOfWeights", 
+                                        sow_orig if sow_orig != 0 else sow_local )
+    param_sow.Write()
 
     # yamlfile=os.path.join(os.getenv('FCCDICTSDIR', deffccdicts), '')+"yaml/"+prodTag+process+'/merge.yaml'
     # getProcessInfo(process, getElement(rdfModule,"prodTag"), getElement(rdfModule, "inputDir"))
