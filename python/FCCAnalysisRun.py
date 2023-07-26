@@ -16,7 +16,7 @@ from process import getProcessInfo, get_process_dict
 DATE = datetime.datetime.fromtimestamp(datetime.datetime.now().timestamp()).strftime('%Y-%m-%d_%H-%M-%S')
 
 #__________________________________________________________
-def get_entries_sow(infilepath, nevents_max=None):
+def get_entries_sow(infilepath, nevents_max=None, get_local = True, weight_name="EventHeader.weight"):
     '''
     Get number of original entries and number of actual entries in the file, as well as the sum of weights
     '''
@@ -37,6 +37,9 @@ def get_entries_sow(infilepath, nevents_max=None):
         print('----> Warning: Input file is missing information about '
               'original sum of weights!')
 
+    if not get_local:
+        return processEvents, None, processSumOfWeights, None
+
     eventsTTree = 0
     sumOfWeightsTTree = 0.
     try:
@@ -53,7 +56,7 @@ def get_entries_sow(infilepath, nevents_max=None):
         try:
             # infile.Get("events").Draw('EventHeader.weight[0]>>histo')
             # histo=ROOT.gDirectory.Get('histo')
-            histo = rdf_tmp.Histo1D("EventHeader.weight")
+            histo = rdf_tmp.Histo1D(weight_name)
             sumOfWeightsTTree=float(eventsTTree)*histo.GetMean()
         except AttributeError:
             print('----> Warning: Input file has no event weights.')
@@ -661,8 +664,9 @@ def runFinal(rdfModule):
     start_time = time.time()
 
     processEvents={}
-    SumOfWeights={}
+    processSumOfWeights={}
     eventsTTree={}
+    sumOfWeightsTTree={}
     processList={}
     saveTab=[]
     efficiencyList=[]
@@ -713,33 +717,46 @@ def runFinal(rdfModule):
             print('----> File ', infilepath, '  does not exist. Try if it is a directory as it was processed with batch')
         else:
             print('----> Open file ', infilepath)
-            processEvents[process_id], eventsTTree[process_id], processSumOfWeights[process_id], sumOfWeightsTTree[process_id] = get_entries_sow(infilepath)
+            processEvents[process_id], eventsTTree[process_id], processSumOfWeights[process_id], sumOfWeightsTTree[process_id] = get_entries_sow(infilepath, weight_name="weight")
             fileListRoot.push_back(infilepath)
+
+
 
         indirpath = inputDir + process_id
         if os.path.isdir(indirpath):
+            #reset the nevts/sow counters to avoid wrong counting in case a single file (e.g. local test output) also exist in the same directory
+            processEvents[process_id] = 0
+            eventsTTree[process_id] = 0
+            processSumOfWeights[process_id]=0.
+            sumOfWeightsTTree[process_id]=0.
+
             print('----> Open directory ' + indirpath)
             flist = glob.glob(indirpath + '/chunk*.root')
             for filepath in flist:
                 print('        ' + filepath)
 
                 #check for empty chunk (TEMP to be improved = move to getentries fct)
-                tfin = ROOT.TFile.Open(f)
+                tfin = ROOT.TFile.Open(filepath)
                 tt=tfin.Get("events")
 
                 if not tt:
                     print("Tree not found in file", tfin, " possibly empty chunk - continuing with next one.")
                     continue 
 
-                chunkProcessEvents, chunkEventsTTree = get_entries(filepath)
+                # chunkProcessEvents, chunkEventsTTree = get_entries(filepath)
+                chunkProcessEvents, chunkEventsTTree, chunkProcessSumOfWeights, chunkTreeSumOfWeights = get_entries_sow(filepath, weight_name="weight")
                 processEvents[process_id] += chunkProcessEvents                                     
+                processSumOfWeights[process_id] += chunkProcessSumOfWeights                                     
                 eventsTTree[process_id] += chunkEventsTTree
+                sumOfWeightsTTree[process_id] += chunkTreeSumOfWeights
                 fileListRoot.push_back(filepath)
 
         processList[process_id] = fileListRoot
 
     print('----> Processed events: {}'.format(processEvents))
     print('----> Events in ttree:  {}'.format(eventsTTree))
+    print('----> Processed sum of weights:  {}'.format(processSumOfWeights))
+    print('----> Sum of weights in tree:  {}'.format(sumOfWeightsTTree))
     # print('----> Events in ttree:  {}'.format(eventsTTree))
 
     histoList = getElement(rdfModule, "histoList", True)
@@ -893,8 +910,8 @@ def runFinal(rdfModule):
                 param = ROOT.TParameter(int)('eventsProcessed', processEvents[pr])
                 print("Number of events processed:", processEvents[pr])
                 param.Write()
-                param2 = ROOT.TParameter(float)('SumOfWeights', SumOfWeights[pr])
-                print("Sum of weights:", SumOfWeights[pr])
+                param2 = ROOT.TParameter(float)('SumOfWeights', processSumOfWeights[pr])
+                print("Sum of weights:", processSumOfWeights[pr])
                 param2.Write()
                 outfile.Write()
                 outfile.Close()
