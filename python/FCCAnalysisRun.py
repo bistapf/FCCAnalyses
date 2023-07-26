@@ -388,7 +388,6 @@ def apply_filepath_rewrites(filepath):
 #__________________________________________________________
 def runLocal(rdfModule, infile_list, args):
     # Create list of files to be processed
-    print ('----> Info: TEST TEST ', )
     print ('----> Info: Creating dataframe object from files: ', )
     file_list = ROOT.vector('string')()
     nevents_orig = 0   # Amount of events processed in previous stage (= 0 if it is the first stage)
@@ -444,28 +443,6 @@ def runLocal(rdfModule, infile_list, args):
     start_time = time.time()
     outn = runRDF(rdfModule, file_list, outfile_path, nevents_local, args)
     outn = outn.GetValue()
-
-    #HACK - OLD IMPROVED WITH READING SOW FROM INPUT FILES
-    #try to get the sum of weights from the yaml
-    # process_name = infile_list[0].split("events")[0].split("/")[-2]
-    # prodTag = fileList[0].split("events")[0].split("/")[-3] #doesnt work because of double /
-    # print(prodTag)
-    # if getElement(rdfModule,"prodTag"):
-    #     prodTag = getElement(rdfModule,"prodTag")
-    #HARDCODED FOR TEMP TEST!!
-    # yamlfile=os.path.join("/afs/cern.ch/work/f/fccsw/public/FCCDicts/yaml/FCChh/fcc_v05_scenarioI", process_name+'/merge.yaml')
-    # with open(yamlfile) as ftmp:
-    #     try:
-    #         doc = yaml.load(ftmp, Loader=yaml.FullLoader)
-    #     except yaml.YAMLError as exc:
-    #         print(exc)
-    #     except IOError as exc:
-    #         print ("I/O error({0}): {1}".format(exc.errno, exc.strerror))
-    #         print ("outfile ",outfile)
-        # finally:
-        #     print ('----> yaml file {} succesfully opened'.format(yamlfile))
-
-    # sow = doc["merge"]["sumofweights"]
 
     outfile = ROOT.TFile(outfile_path, 'update')
     param = ROOT.TParameter(int)('eventsProcessed',
