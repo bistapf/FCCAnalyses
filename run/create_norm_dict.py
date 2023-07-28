@@ -80,7 +80,7 @@ if __name__ == "__main__":
 		fcchh_hh_dict_out[process_name]["numberOfEvents"] = nevts
 		fcchh_hh_dict_out[process_name]["sumOfWeights"] = sow
 
-	outfile = os.path.join(args.indir, args.outname)
+	outfile = os.path.join(args.indir, args.outname+".json")
 	print("Creating json at:", outfile)
 	with open(outfile, 'w') as convert_file:
 		convert_file.write(json.dumps(fcchh_hh_dict_out, indent=0))
