@@ -42,7 +42,16 @@ def get_entries_sow(infilepath, nevents_max=None, get_local = True, weight_name=
 
     eventsTTree = 0
     sumOfWeightsTTree = 0.
+
+     # check for empty chunk (can this be improved? exception from RDF cannot be caught it seems?)
+    tree =infile.Get("events")
+    if not tree:
+        print("Tree not found in file", infilepath, " possibly empty chunk - continuing with next one.")
+        infile.Close()
+        return processEvents, eventsTTree, processSumOfWeights, sumOfWeightsTTree
+
     try:
+
          #use a RDF here too so the nevents restriction option can be imposed easily for the local events
         rdf_tmp = ROOT.ROOT.RDataFrame("events", infilepath)
 
@@ -61,9 +70,17 @@ def get_entries_sow(infilepath, nevents_max=None, get_local = True, weight_name=
         except AttributeError:
             print('----> Warning: Input file has no event weights.')
     except AttributeError:
-        print('----> Error: Input file is missing events TTree! Aborting...')
+        print('----> Error: Input file is missing events TTree! Probably empty chunk.')
         infile.Close()
-        sys.exit(3)
+        # sys.exit(3)
+
+                #         #check for empty chunk (TEMP to be improved = move to getentries fct)
+                # tfin = ROOT.TFile.Open(filepath)
+                # tt=tfin.Get("events")
+
+                # if not tt:
+                #     print("Tree not found in file", tfin, " possibly empty chunk - continuing with next one.")
+                #     continue 
 
 
     infile.Close()
@@ -735,21 +752,15 @@ def runFinal(rdfModule):
             for filepath in flist:
                 print('        ' + filepath)
 
-                #check for empty chunk (TEMP to be improved = move to getentries fct)
-                tfin = ROOT.TFile.Open(filepath)
-                tt=tfin.Get("events")
-
-                if not tt:
-                    print("Tree not found in file", tfin, " possibly empty chunk - continuing with next one.")
-                    continue 
-
                 # chunkProcessEvents, chunkEventsTTree = get_entries(filepath)
                 chunkProcessEvents, chunkEventsTTree, chunkProcessSumOfWeights, chunkTreeSumOfWeights = get_entries_sow(filepath, weight_name="weight")
                 processEvents[process_id] += chunkProcessEvents                                     
                 processSumOfWeights[process_id] += chunkProcessSumOfWeights                                     
                 eventsTTree[process_id] += chunkEventsTTree
                 sumOfWeightsTTree[process_id] += chunkTreeSumOfWeights
-                fileListRoot.push_back(filepath)
+                #if local events were 0 there is not tree in the file because chunk is empty, so dont use for output rdf, still want to count original nevts though
+                if chunkEventsTTree:
+                    fileListRoot.push_back(filepath)
 
         processList[process_id] = fileListRoot
 
