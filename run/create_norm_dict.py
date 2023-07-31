@@ -32,6 +32,8 @@ fcchh_hh_dict = {
 	"mgp8_pp_vj_5f_HT_27000_100000": {"numberOfEvents": 1970000, "sumOfWeights": 1970000.0, "crossSection": 7.24e-06, "kfactor": 2.0, "matchingEfficiency": 1.0},
 	"mgp8_pp_vj_5f_HT_5000_10000": {"numberOfEvents": 2000000, "sumOfWeights": 2000000.0, "crossSection": 0.2814, "kfactor": 2.0, "matchingEfficiency": 1.0},
 	"mgp8_pp_vj_5f_HT_500_1000": {"numberOfEvents": 2000000, "sumOfWeights": 2000000.0, "crossSection": 2034.0, "kfactor": 2.0, "matchingEfficiency": 1.0},
+	#jjaa background
+	"mgp8_pp_jjaa01j_5f": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 55.72, "kfactor": 1.0, "matchingEfficiency": 0.236},
 	#to be added!
 	# "mgp8_pp_bbtata_QED": {"numberOfEvents": 4910000, "sumOfWeights": 4910000.0, "crossSection": 0.5519, "kfactor": 1.0, "matchingEfficiency": 1.0},
 	# "mgp8_pp_bbtata_QCDQED": {"numberOfEvents": 4950000, "sumOfWeights": 4950000.0, "crossSection": 75.61, "kfactor": 1.0, "matchingEfficiency": 1.0},
