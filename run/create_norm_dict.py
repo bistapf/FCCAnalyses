@@ -46,7 +46,7 @@ fcchh_hh_dict = {
 	"pwp8_pp_hh_lambda040_5f_hhbbww": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.44625, "kfactor": 1.08, "matchingEfficiency": 1.0},
 	"pwp8_pp_hh_lambda240_5f_hhbbww": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.12217, "kfactor": 1.08, "matchingEfficiency": 1.0},
 	"pwp8_pp_hh_lambda000_5f_hhbbww": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.58621, "kfactor": 1.08, "matchingEfficiency": 1.0},
-	"pwp8_pp_hh_lambda300_5f_hhbbww": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.14686, "kfactor": 1.08, "matchingEfficiency": 1.0}
+	"pwp8_pp_hh_lambda300_5f_hhbbww": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.14686, "kfactor": 1.08, "matchingEfficiency": 1.0},
 	"pwp8_pp_hh_lambda000_5f_hhbbaa": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.00617488866, "kfactor": 1.075363, "matchingEfficiency": 1.0},
 	"pwp8_pp_hh_lambda040_5f_hhbbaa": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.0047005905, "kfactor": 1.075363, "matchingEfficiency": 1.0},
 	"pwp8_pp_hh_lambda240_5f_hhbbaa": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.001286922174, "kfactor": 1.075363, "matchingEfficiency": 1.0},
