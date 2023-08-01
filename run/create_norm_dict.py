@@ -34,6 +34,7 @@ fcchh_hh_dict = {
 	"mgp8_pp_vj_5f_HT_500_1000": {"numberOfEvents": 2000000, "sumOfWeights": 2000000.0, "crossSection": 2034.0, "kfactor": 2.0, "matchingEfficiency": 1.0},
 	#jjaa background
 	"mgp8_pp_jjaa01j_5f": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 55.72, "kfactor": 1.0, "matchingEfficiency": 0.236},
+	"mgp8_pp_jjaa_5f": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 17.97, "kfactor": 1.2, "matchingEfficiency": 1.},
 	#signals with kappa lambda != 1
 	"pwp8_pp_hh_lambda000_5f_hhbbzz_zleptonic": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.0066411846, "kfactor": 1.08, "matchingEfficiency": 1.0}, 
 	"pwp8_pp_hh_lambda040_5f_hhbbzz_zleptonic": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.005055555, "kfactor": 1.08, "matchingEfficiency": 1.0}, 
