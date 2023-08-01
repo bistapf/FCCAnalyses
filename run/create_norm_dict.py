@@ -34,6 +34,28 @@ fcchh_hh_dict = {
 	"mgp8_pp_vj_5f_HT_500_1000": {"numberOfEvents": 2000000, "sumOfWeights": 2000000.0, "crossSection": 2034.0, "kfactor": 2.0, "matchingEfficiency": 1.0},
 	#jjaa background
 	"mgp8_pp_jjaa01j_5f": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 55.72, "kfactor": 1.0, "matchingEfficiency": 0.236},
+	#signals with kappa lambda != 1
+	"pwp8_pp_hh_lambda000_5f_hhbbzz_zleptonic": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.0066411846, "kfactor": 1.08, "matchingEfficiency": 1.0}, 
+	"pwp8_pp_hh_lambda040_5f_hhbbzz_zleptonic": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.005055555, "kfactor": 1.08, "matchingEfficiency": 1.0}, 
+	"pwp8_pp_hh_lambda240_5f_hhbbzz_zleptonic": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.00138410394, "kfactor": 1.08, "matchingEfficiency": 1.0}, 
+	"pwp8_pp_hh_lambda300_5f_hhbbzz_zleptonic": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.00166372668, "kfactor": 1.08, "matchingEfficiency": 1.0},
+	"pwp8_pp_hh_lambda000_5f_hhbbtata": {"numberOfEvents": 4997958, "sumOfWeights": 4997958.0, "crossSection": 0.169957805, "kfactor": 1.08, "matchingEfficiency": 1.0},
+	"pwp8_pp_hh_lambda040_5f_hhbbtata": {"numberOfEvents": 4997958, "sumOfWeights": 4997958.0, "crossSection": 0.129379182, "kfactor": 1.08, "matchingEfficiency": 1.0},
+	"pwp8_pp_hh_lambda240_5f_hhbbtata": {"numberOfEvents": 4997958, "sumOfWeights": 4997958.0, "crossSection": 0.03542128126, "kfactor": 1.08, "matchingEfficiency": 1.0},
+	"pwp8_pp_hh_lambda300_5f_hhbbtata": {"numberOfEvents": 4997958, "sumOfWeights": 4997958.0, "crossSection": 0.04257724363, "kfactor": 1.08, "matchingEfficiency": 1.0},
+	"pwp8_pp_hh_lambda040_5f_hhbbww": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.44625, "kfactor": 1.08, "matchingEfficiency": 1.0},
+	"pwp8_pp_hh_lambda240_5f_hhbbww": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.12217, "kfactor": 1.08, "matchingEfficiency": 1.0},
+	"pwp8_pp_hh_lambda000_5f_hhbbww": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.58621, "kfactor": 1.08, "matchingEfficiency": 1.0},
+	"pwp8_pp_hh_lambda300_5f_hhbbww": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.14686, "kfactor": 1.08, "matchingEfficiency": 1.0}
+	"pwp8_pp_hh_lambda000_5f_hhbbaa": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.00617488866, "kfactor": 1.075363, "matchingEfficiency": 1.0},
+	"pwp8_pp_hh_lambda040_5f_hhbbaa": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.0047005905, "kfactor": 1.075363, "matchingEfficiency": 1.0},
+	"pwp8_pp_hh_lambda240_5f_hhbbaa": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.001286922174, "kfactor": 1.075363, "matchingEfficiency": 1.0},
+	"pwp8_pp_hh_lambda300_5f_hhbbaa": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.001546911828, "kfactor": 1.075363, "matchingEfficiency": 1.0},
+	"pwp8_pp_hh_lambda000_5f_hhbbbb": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.7786317937499999, "kfactor": 1.075363, "matchingEfficiency": 1.0},
+	"pwp8_pp_hh_lambda040_5f_hhbbbb": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.5927279687499999, "kfactor": 1.075363, "matchingEfficiency": 1.0},
+	"pwp8_pp_hh_lambda240_5f_hhbbbb": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.16227637062499997, "kfactor": 1.075363, "matchingEfficiency": 1.0},
+	"pwp8_pp_hh_lambda300_5f_hhbbbb": {"numberOfEvents": 50000, "sumOfWeights": 50000.0, "crossSection": 0.19506015374999996, "kfactor": 1.075363, "matchingEfficiency": 1.0},
+
 	#to be added!
 	# "mgp8_pp_bbtata_QED": {"numberOfEvents": 4910000, "sumOfWeights": 4910000.0, "crossSection": 0.5519, "kfactor": 1.0, "matchingEfficiency": 1.0},
 	# "mgp8_pp_bbtata_QCDQED": {"numberOfEvents": 4950000, "sumOfWeights": 4950000.0, "crossSection": 75.61, "kfactor": 1.0, "matchingEfficiency": 1.0},
