@@ -1,20 +1,36 @@
 #NOTE: isovar branches temporarily commented out!!
 
-#for batch submission
+
 processList = {
+     #"pwp8_pp_hh_lambda100_5f_hhbbaa":{'chunks':200, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa"}, #put the name of your input file here (witho\ut .root), the output file will have the same name
+     #"pwp8_pp_hh_lambda240_5f_hhbbaa":{'chunks':200, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda240_5f_hhbbaa"},
+     #"pwp8_pp_hh_lambda300_5f_hhbbaa":{'chunks':200, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda300_5f_hhbbaa"},
+     #"pwp8_pp_hh_lambda000_5f_hhbbaa":{'chunks':200, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda000_5f_hhbbaa"},
+     "mgp8_pp_h012j_5f_haa":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_h012j_5f_haa"},
+     "mgp8_pp_vbf_h01j_5f_haa":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_vbf_h01j_5f_haa"},
+     "mgp8_pp_tth01j_5f_haa":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_tth01j_5f_haa"},
+     "mgp8_pp_vh012j_5f_haa":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_vh012j_5f_haa"},
+     #"mgp8_pp_jjaa_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_jjaa_5f"},
+     #"mgp8_pp_tt012j_5f": {'chunks':200, 'output':"FCChh_EvtGen_mgp8_pp_tt012j_5f"}
+
+}
+
+
+#for batch submission
+#processList = {
 #     "pwp8_pp_hh_lambda100_5f_hhbbaa":{'chunks':500, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda100_5f_hhbbaa"}, #put the name of your input file here (without .root), the output file will have the same name
 #     "pwp8_pp_hh_lambda240_5f_hhbbaa":{'chunks':500, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda240_5f_hhbbaa"},
 #     "pwp8_pp_hh_lambda300_5f_hhbbaa":{'chunks':500, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda300_5f_hhbbaa"},
 #     "pwp8_pp_hh_lambda000_5f_hhbbaa":{'chunks':500, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda000_5f_hhbbaa"},
      #"mgp8_pp_h012j_5f_haa":{#'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_h012j_5f_haa"},
 #     "mgp8_pp_vbf_h01j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_vbf_h01j_5f"},
-     "mgp8_pp_tth01j_5f_haa/events_000000143":{#'chunks':500, 
-'output':"FCChh_EvtGen_mgp8_pp_tth01j_5f_haa"},
+#     "mgp8_pp_tth01j_5f_haa/events_000000143":{#'chunks':500, 
+#'output':"FCChh_EvtGen_mgp8_pp_tth01j_5f_haa"},
 #     "mgp8_pp_vh012j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_vh012j_5f"},
 #     "mgp8_pp_jjaa_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_jjaa_5f"},
 #     "mgp8_pp_tt012j_5f": {'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_tt012j_5f"}
 
-}
+    #}
 
 #for local testing:
 #processList= {
@@ -35,13 +51,13 @@ processList = {
 inputDir    = "/eos/experiment/fcc/hh/generation/DelphesEvents/fcc_v05_scenarioI/" #your directory with the input file
 
 #Optional: output directory, default is local dir
-outputDir   =  "/eos/user/p/pmastrap/FCCFW/Analysis/FCCAnalyses/run/Delphescard_validation/FCCAnalysis_ntuples_forAnalysis/" 
+outputDir   =  "/eos/user/p/pmastrap/FCCFW/Analysis/FCCAnalyses/run/Delphescard_validation/FCCAnalysis_ntuples_forAnalysis_Mbtag/"
 
 #Optional: ncpus, default is 4
 nCPUS       = 8
 
 #Optional running on HTCondor, default is False
-runBatch    = False
+runBatch    = True
 #runBatch    = True
 #Mandatory: RDFanalysis class where the use defines the operations on the TTree
 class RDFanalysis():
@@ -77,9 +93,8 @@ class RDFanalysis():
               .Alias("Jet3","_Jet_particleIDs.index")
               #LOOSE WP : bit 1 = medium WP, bit 2 = tight WP
               #b tagged jets
-              .Define("bjets", "AnalysisFCChh::get_tagged_jets(Jet, Jet3, ParticleIDs, _ParticleIDs_parameters, 0)")
+              .Define("bjets", "AnalysisFCChh::get_tagged_jets(Jet, Jet3, ParticleIDs, _ParticleIDs_parameters, 1)")
               #.Define("bjets", "AnalysisFCChh::get_tagged_jets(Jet, Jet3, ParticleIDs, ParticleIDs_0, 0)") #bit 0 = loose WP, see: https://github.com/delphes/delphes/blob/master/cards/FCC/scenarios/FCChh_I.tcl
-              .Define("jet_type", "Jet.type")
               .Define("selpt_bjets", "FCCAnalyses::ReconstructedParticle::sel_pt(30.)(bjets)")
               .Define("sel_bjets_unsort", "FCCAnalyses::ReconstructedParticle::sel_eta(4)(selpt_bjets)")
               .Define("sel_bjets", "AnalysisFCChh::SortParticleCollection(sel_bjets_unsort)")
@@ -167,12 +182,12 @@ class RDFanalysis():
               .Define("m_yy", "FCCAnalyses::ReconstructedParticle::get_mass(yy_pairs)")
 
               # Filter at least one candidate
-              #.Filter("sel_bjets.size()>1")
-              #.Filter("sel_gamma.size()>1") 
-              #.Filter("m_bb[0] < 200.") 
-              #.Filter("m_bb[0] > 80.") 
-              #.Filter("m_yy[0] < 180.") 
-              #.Filter("m_yy[0] > 100.")            
+              .Filter("sel_bjets.size()>1")
+              .Filter("sel_gamma.size()>1") 
+              .Filter("m_bb[0] < 200.") 
+              .Filter("m_bb[0] > 80.") 
+              .Filter("m_yy[0] < 180.") 
+              .Filter("m_yy[0] > 100.")            
         ) 
         return df2
 
@@ -183,8 +198,8 @@ class RDFanalysis():
 
     def output(out_name):
         branchList = [
+                      "weight",
                       # Jets:
-                      "jet_type",
                       "njets", "j1_e", "j1_pt", "j1_eta", "j1_phi",
                       "j2_e", "j2_pt", "j2_eta", "j2_phi",
                       # B-jets:

@@ -6,10 +6,11 @@ processList = {
      "pwp8_pp_hh_lambda240_5f_hhbbaa":{'chunks':500, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda240_5f_hhbbaa"},
      "pwp8_pp_hh_lambda300_5f_hhbbaa":{'chunks':500, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda300_5f_hhbbaa"},
      "pwp8_pp_hh_lambda000_5f_hhbbaa":{'chunks':500, 'output':"FCChh_EvtGen_pwp8_pp_hh_lambda000_5f_hhbbaa"},
-     "mgp8_pp_h012j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_h012j_5f"},
-     "mgp8_pp_vbf_h01j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_vbf_h01j_5f"},
-     "mgp8_pp_tth01j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_tth01j_5f"},
-     "mgp8_pp_vh012j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_vh012j_5f"},
+     #"mgp8_pp_h012j_5f_haa":{#'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_h012j_5f_haa"},
+#     "mgp8_pp_vbf_h01j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_vbf_h01j_5f"},
+#     "mgp8_pp_tth01j_5f_haa/events_000000143":{#'chunks':500, 
+#'output':"FCChh_EvtGen_mgp8_pp_tth01j_5f_haa"},
+#     "mgp8_pp_vh012j_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_vh012j_5f"},
      "mgp8_pp_jjaa_5f":{'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_jjaa_5f"},
 #     "mgp8_pp_tt012j_5f": {'chunks':500, 'output':"FCChh_EvtGen_mgp8_pp_tt012j_5f"}
 
@@ -34,7 +35,7 @@ processList = {
 inputDir    = "/eos/experiment/fcc/hh/generation/DelphesEvents/fcc_v05_scenarioI/" #your directory with the input file
 
 #Optional: output directory, default is local dir
-outputDir   =  "/eos/user/p/pmastrap/FCCFW/Analysis/FCCAnalyses/run/Delphescard_validation/FCCAnalysis_ntuples_forAnalysis/" 
+outputDir   =  "/eos/user/p/pmastrap/FCCFW/Analysis/FCCAnalyses/run/Delphescard_validation/FCCAnalysis_ntuples_forAnalysis_Mbtag/" 
 
 #Optional: ncpus, default is 4
 nCPUS       = 8
@@ -73,10 +74,11 @@ class RDFanalysis():
 
               #b-tagged jets:
               .Alias("Jet3","Jet#3.index") 
-
+              #.Alias("Jet3","_Jet_particleIDs.index")
               #LOOSE WP : bit 1 = medium WP, bit 2 = tight WP
               #b tagged jets
-              .Define("bjets", "AnalysisFCChh::get_tagged_jets(Jet, Jet3, ParticleIDs, ParticleIDs_0, 0)") #bit 0 = loose WP, see: https://github.com/delphes/delphes/blob/master/cards/FCC/scenarios/FCChh_I.tcl
+              #.Define("bjets", "AnalysisFCChh::get_tagged_jets(Jet, Jet3, ParticleIDs, _ParticleIDs_parameters, 0)")
+              .Define("bjets", "AnalysisFCChh::get_tagged_jets(Jet, Jet3, ParticleIDs, ParticleIDs_0, 1)") #bit 0 = loose WP, see: https://github.com/delphes/delphes/blob/master/cards/FCC/scenarios/FCChh_I.tcl
               .Define("selpt_bjets", "FCCAnalyses::ReconstructedParticle::sel_pt(30.)(bjets)")
               .Define("sel_bjets_unsort", "FCCAnalyses::ReconstructedParticle::sel_eta(4)(selpt_bjets)")
               .Define("sel_bjets", "AnalysisFCChh::SortParticleCollection(sel_bjets_unsort)")
@@ -94,6 +96,7 @@ class RDFanalysis():
 
               #all isolated 
               .Alias("Electron0", "Electron#0.index")
+              #.Alias("Electron0", "Electron_objIdx.index")
               .Define("ele",  "FCCAnalyses::ReconstructedParticle::get(Electron0, ReconstructedParticles)")
               .Define("selpt_ele", "FCCAnalyses::ReconstructedParticle::sel_pt(10.)(ele)")
               .Define("sel_ele_unsort", "FCCAnalyses::ReconstructedParticle::sel_eta(4)(selpt_ele)")
@@ -112,6 +115,7 @@ class RDFanalysis():
           
               # all isolated
               .Alias("Muon0", "Muon#0.index")
+              #.Alias("Muon0", "Muon_objIdx.index")
               .Define("mu",  "FCCAnalyses::ReconstructedParticle::get(Muon0, ReconstructedParticles)")
               .Define("selpt_mu", "FCCAnalyses::ReconstructedParticle::sel_pt(10.)(mu)")
               .Define("sel_mu_unsort", "FCCAnalyses::ReconstructedParticle::sel_eta(4)(selpt_mu)")
@@ -131,6 +135,7 @@ class RDFanalysis():
               #all, after isolation
 
               .Alias("Photon0", "Photon#0.index") 
+              #.Alias("Photon0", "Photon_objIdx.index")
               .Define("gamma",  "FCCAnalyses::ReconstructedParticle::get(Photon0, ReconstructedParticles)")
               .Define("selpt_gamma", "FCCAnalyses::ReconstructedParticle::sel_pt(30.)(gamma)")
               .Define("sel_gamma_unsort", "FCCAnalyses::ReconstructedParticle::sel_eta(4)(selpt_gamma)")
@@ -177,7 +182,8 @@ class RDFanalysis():
 
     def output(out_name):
         branchList = [
-                      # Jets:
+                      "weight",
+                      # Jets:             
                       "njets", "j1_e", "j1_pt", "j1_eta", "j1_phi",
                       "j2_e", "j2_pt", "j2_eta", "j2_phi",
                       # B-jets:
@@ -201,5 +207,5 @@ class RDFanalysis():
         return branchList
 
 
-# local test: fccanalysis run analysis_bbyy_selections_v2.py --nevents 100 - also switch runBatch to False
+# local test: fccanalysis run analysis_noiso.py --nevents 100 - also switch runBatch to False
 

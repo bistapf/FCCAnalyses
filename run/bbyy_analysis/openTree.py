@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pyarrow
 
-file_name = ['pwp8_pp_hh_lambda000_5f_hhbbaa', 'pwp8_pp_hh_lambda100_5f_hhbbaa', 'pwp8_pp_hh_lambda240_5f_hhbbaa','pwp8_pp_hh_lambda300_5f_hhbbaa', 'mgp8_pp_tth01j_5f','mgp8_pp_h012j_5f','mgp8_pp_jjaa_5f', 'mgp8_pp_vh012j_5f','mgp8_pp_vbf_h01j_5f']#, 'mgp8_pp_tt012j_5f']
+file_name = ['pwp8_pp_hh_lambda000_5f_hhbbaa', 'pwp8_pp_hh_lambda100_5f_hhbbaa', 'pwp8_pp_hh_lambda240_5f_hhbbaa','pwp8_pp_hh_lambda300_5f_hhbbaa', 'mgp8_pp_tth01j_5f_haa','mgp8_pp_h012j_5f_haa','mgp8_pp_jjaa_5f', 'mgp8_pp_vh012j_5f_haa','mgp8_pp_vbf_h01j_5f_haa']#, 'mgp8_pp_tt012j_5f']
 
 file_ = uproot.open("./"+file_name[0]+".root")
 tree = file_["events"]
@@ -34,5 +34,5 @@ for name in file_name:
 print(df.shape)
 print(df.columns)
 
-df.to_parquet('df_Sel_All.parquet')
+df.to_parquet('df_Sel_All_haa_Mbtag.parquet')
 
