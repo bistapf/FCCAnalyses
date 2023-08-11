@@ -4,6 +4,7 @@ import math
 import sys
 import uproot
 import os
+import json
 
 # Import the library
 import argparse
@@ -19,14 +20,15 @@ ID = args.ID
 
 print("Process ID: ",ID)
 #print("Number of submitted jobs: ", JN)
+ 
+file_name = ['mgp8_pp_h012j_5f_haa', 'mgp8_pp_vh012j_5f_haa', 'mgp8_pp_vbf_h01j_5f_haa', 'mgp8_pp_tth01j_5f_haa','pwp8_pp_hh_lambda000_5f_hhbbaa', 'pwp8_pp_hh_lambda100_5f_hhbbaa', 'pwp8_pp_hh_lambda240_5f_hhbbaa','pwp8_pp_hh_lambda300_5f_hhbbaa', 'mgp8_pp_jjaa_5f']#,'mgp8_pp_tt012j_5f']
 
-file_name = ['pwp8_pp_hh_lambda000_5f_hhbbaa', 'pwp8_pp_hh_lambda100_5f_hhbbaa', 'pwp8_pp_hh_lambda240_5f_hhbbaa','pwp8_pp_hh_lambda300_5f_hhbbaa', 'mgp8_pp_tth01j_5f','mgp8_pp_h012j_5f','mgp8_pp_jjaa_5f', 'mgp8_pp_vh012j_5f','mgp8_pp_vbf_h01j_5f']#,'mgp8_pp_tt012j_5f']
-
+lumi = 30e+06
 
 for name in file_name:
 
-        nameINPUT = "./FCCAnalysis_ntuples_forAnalysis/"+name+"/chunk"+str(ID)+".root"
-        nameOUTPUT = "./FCCAnalysis_ntuples_forAnalysis/"+name+"/processed"+str(ID)+".root"
+        nameINPUT = "./FCCAnalysis_ntuples_forAnalysis_Mbtag/"+name+"/chunk"+str(ID)+".root"
+        nameOUTPUT = "./FCCAnalysis_ntuples_forAnalysis_Mbtag/"+name+"/processed"+str(ID)+".root"
         #input file
         if not os.path.isfile(nameINPUT):
            print("File do not exist")
@@ -35,7 +37,7 @@ for name in file_name:
         fin = ROOT.TFile.Open(nameINPUT)          
         fout = ROOT.TFile.Open(nameOUTPUT, "RECREATE")
 
-        #weight = array('f', [0])
+        weight = array('f', [0])
         njets = array('i', [0])
         pTb1_o_m_bb = array('f', [0])
         pTb2_o_m_bb = array('f', [0])
@@ -80,7 +82,18 @@ for name in file_name:
 
         #def of skimmed tree with needed branches
         tree = ROOT.TTree( "events", "events" )
-        #tree.Branch( "weight",weight, "weight/F" )
+        ##open json file for the weights
+
+        json_file = open('FCC_bbyy_Ntuples_for_analysis/FCChh_procDict_v05_scenarioI.json', 'r')
+        all_weights = json.loads(json_file.read())
+        xsec_weight = all_weights[name]['crossSection']
+        k_factor_weight = all_weights[name]['kfactor']
+        sumofweights = all_weights[name]['sumOfWeights']
+        matching_eff = all_weights[name]['matchingEfficiency']
+
+        weight_xs = xsec_weight*lumi*k_factor_weight*matching_eff/sumofweights
+
+        tree.Branch( "weight",weight, "weight/F" )
                
         tree.Branch( "a1_pt",a1_pt, "a1_pt/F" )
         tree.Branch( "a1_eta",a1_eta, "a1_eta/F" )
@@ -144,13 +157,18 @@ for name in file_name:
            #if "events" not in fup.keys()[0]:
               print("No tree in file")
               continue
+        #elif "events" not in fup.keys()[0]:
+        #      print("No events in file")
+        #      continue
         fup.close()
-        print("Number of events : ",(fin.events).GetEntries())
-
+        try:
+                print("Number of events : ",(fin.events).GetEntries())
+        except:
+                continue
         iter=0
                    
         for event in fin.events:
-
+                #print(event)
                 #iter_ +=1
                 #if iter_ % 1000 == 0 :
                 #   print("Iteration number ",iter_)
@@ -161,8 +179,10 @@ for name in file_name:
                 ################
 
                 #print(event.njets)
-
-                #weight[0] = event.weight
+                #print('event.weight ', event.weight[0])
+                #print('event.weight ', float(event.weight[0]))
+                #print('weight_xs ', weight_xs)
+                weight[0] = event.weight[0]*weight_xs
                 
                 a1_pt[0] = event.g1_pt 
                 a1_e[0]  = event.g1_e
