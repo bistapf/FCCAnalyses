@@ -95,6 +95,9 @@ namespace AnalysisFCChh{
 	ROOT::VecOps::RVec<RecoParticlePair> getPairs(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> particles_in);
 	ROOT::VecOps::RVec<RecoParticlePair> getPair_sublead(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> particles_in);
 
+	//SORT OBJ COLLECTION
+    ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> SortParticleCollection(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> particles_in);
+
 	//btags
 	ROOT::VecOps::RVec<bool> getJet_tag(ROOT::VecOps::RVec<int> index, ROOT::VecOps::RVec<edm4hep::ParticleIDData> pid, ROOT::VecOps::RVec<float> values, int algoIndex);
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> get_tagged_jets(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> jets, ROOT::VecOps::RVec<int> index, ROOT::VecOps::RVec<edm4hep::ParticleIDData> pid, ROOT::VecOps::RVec<float> values, int algoIndex);

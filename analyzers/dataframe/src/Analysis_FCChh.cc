@@ -866,6 +866,18 @@ ROOT::VecOps::RVec<RecoParticlePair> AnalysisFCChh::getDFOSPairs(ROOT::VecOps::R
 
 }
 
+//SortParticleCollection
+//
+ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::SortParticleCollection(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> particles_in){
+        if (particles_in.size() < 2){ return particles_in; }
+        else{       
+              auto sort_by_pT = [&] (edm4hep::ReconstructedParticleData part_i ,edm4hep::ReconstructedParticleData part_j) { return ( getTLV_reco(part_i).Pt() > getTLV_reco(part_j).Pt() ); };
+              std::sort(particles_in.begin(), particles_in.end(), sort_by_pT);
+              return particles_in;
+              }
+
+}
+
 //build all pairs from the input particles -> this returns the pair made of pT leading particles!!!
 ROOT::VecOps::RVec<RecoParticlePair> AnalysisFCChh::getPairs(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> particles_in){
 

@@ -25,6 +25,11 @@ fcchh_hh_dict = {
 	"mgp8_pp_vh012j_5f": {"numberOfEvents": 1600000, "sumOfWeights": 1600000.0, "crossSection": 37.43, "kfactor": 1.32, "matchingEfficiency": 1.0},
 	"mgp8_pp_vbf_h01j_5f": {"numberOfEvents": 6600000, "sumOfWeights": 6600000.0, "crossSection": 84.17, "kfactor": 4.3, "matchingEfficiency": 1.0},
 	"mgp8_pp_tth01j_5f": {"numberOfEvents": 970000, "sumOfWeights": 970000.0, "crossSection": 44.84, "kfactor": 1.22, "matchingEfficiency": 1.0},
+	"mgp8_pp_h012j_5f_haa": {"numberOfEvents": 6600000, "sumOfWeights": 6600000.0, "crossSection": 587.5*2.270e-03, "kfactor": 3.76, "matchingEfficiency": 1.0},
+	"mgp8_pp_vh012j_5f_haa": {"numberOfEvents": 1600000, "sumOfWeights": 1600000.0, "crossSection": 37.43*2.270e-03, "kfactor": 1.32, "matchingEfficiency": 1.0},
+	"mgp8_pp_vbf_h01j_5f_haa": {"numberOfEvents": 6600000, "sumOfWeights": 6600000.0, "crossSection": 84.17*2.270e-03, "kfactor": 4.3, "matchingEfficiency": 1.0},
+	"mgp8_pp_tth01j_5f_haa": {"numberOfEvents": 970000, "sumOfWeights": 970000.0, "crossSection": 44.84*2.270e-03, "kfactor": 1.22, "matchingEfficiency": 1.0},
+
 	#V+jets bkgs
 	"mgp8_pp_vj_5f_HT_10000_27000": {"numberOfEvents": 1980000, "sumOfWeights": 1980000.0, "crossSection": 0.008647, "kfactor": 2.0, "matchingEfficiency": 1.0},
 	"mgp8_pp_vj_5f_HT_1000_2000": {"numberOfEvents": 1980000, "sumOfWeights": 1980000.0, "crossSection": 191.6, "kfactor": 2.0, "matchingEfficiency": 1.0},
