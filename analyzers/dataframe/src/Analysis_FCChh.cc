@@ -610,6 +610,9 @@ ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getBhadron(ROOT::VecO
 	return b_had_list;
 }
 
+
+
+
 //return the full jets rather than the list of tags
 ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::get_tagged_jets(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> jets, ROOT::VecOps::RVec<int> index, ROOT::VecOps::RVec<edm4hep::ParticleIDData> pid, ROOT::VecOps::RVec<float> tag_values, int algoIndex){
 	
@@ -922,7 +925,6 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::SortPartic
               }
 
 }
-
 //build all pairs from the input particles -> this returns the pair made of pT leading particles!!!
 ROOT::VecOps::RVec<RecoParticlePair> AnalysisFCChh::getPairs(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> particles_in){
 
@@ -2002,7 +2004,6 @@ ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getTruthTauHads(ROOT:
 	return tau_list;
 }
 
-
 //find leptons (including taus?) that came from a H->WW decay
 ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getLepsFromW(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids){
 	//test by simply counting first:
@@ -2346,6 +2347,51 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::getTruthME
 
 // additonal code for validation of new delphes card: 
 
+//helper function to find dR matched mc particle for a single reco particle - returns vector of size 1 always, only the one that is closest in dR! (technically doesnt need to be vector at this stage ..)
+ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::find_mc_matched_particle(edm4hep::ReconstructedParticleData reco_part_to_match, ROOT::VecOps::RVec<edm4hep::MCParticleData> check_mc_parts, float dR_thres){
+	
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> out_vector;
+
+	TLorentzVector reco_part_tlv = getTLV_reco(reco_part_to_match);
+
+	for (auto & check_mc_part: check_mc_parts){
+		TLorentzVector check_mc_part_tlv = getTLV_MC(check_mc_part);
+
+		float dR_val = reco_part_tlv.DeltaR(check_mc_part_tlv);
+
+		if (dR_val <= dR_thres){
+
+			//check if already sth in the vector - always want only exactly one match! 
+
+			if (out_vector.size() > 0 ){
+				// check which one is closer
+				float dR_val_old = reco_part_tlv.DeltaR(getTLV_MC(out_vector.at(0)));
+
+				float pT_diff_old = abs(reco_part_tlv.Pt() - getTLV_MC(out_vector.at(0)).Pt());
+
+
+				if (dR_val < dR_val_old){
+					out_vector.at(0) = check_mc_part;
+
+					if (pT_diff_old < abs(reco_part_tlv.Pt() - check_mc_part_tlv.Pt() )){
+						std::cout << "Found case where closest in pT is not closest in dR" << std::endl;
+					}
+				}
+			}
+
+			else {
+				out_vector.push_back(check_mc_part);
+			}
+			
+		}
+
+		check_mc_part_tlv.Clear();
+	}
+
+	return out_vector;
+}
+
+
 //helper function to find dR matched reco particle for a single truth particle - returns vector of size 1 always, only the one that is closest in dR! (technically doesnt need to be vector at this stage ..)
 ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_reco_matched_particle(edm4hep::MCParticleData truth_part_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> check_reco_parts, float dR_thres){
 	
@@ -2457,7 +2503,18 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_reco_
 			std::cout << "Warning in AnalysisFCChh::find_reco_matches() - Truth particle matched to more than one reco particle." << std::endl;
 		}
 
-		out_vector.append(reco_match_vector.begin(), reco_match_vector.end());
+		//check that the reco particle is not already in the out_vector
+		bool isAlready=false;
+		for (auto & out_i: out_vector){
+			if ((getTLV_reco(reco_match_vector[0]).Pt() == getTLV_reco(out_i).Pt()) && 
+                            (getTLV_reco(reco_match_vector[0]).Eta() == getTLV_reco(out_i).Eta())){
+				isAlready=true;
+				std::cout<<"Already in the array"<<std::endl;
+			}
+		}
+		if (!isAlready){
+			out_vector.append(reco_match_vector.begin(), reco_match_vector.end());
+		}
 	}
 
 	return out_vector;
@@ -2506,6 +2563,7 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_reco_
 
 }
 
+
 ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::find_truth_matches(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_particles, float dR_thres){
 	
 	ROOT::VecOps::RVec<edm4hep::MCParticleData> out_vector;
@@ -2532,6 +2590,7 @@ ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::find_truth_matches(RO
 	return out_vector;
 
 }
+
 
 //same as above just with indices
 ROOT::VecOps::RVec<int> AnalysisFCChh::find_reco_match_indices(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_particles, float dR_thres){
