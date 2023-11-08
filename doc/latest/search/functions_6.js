@@ -8,7 +8,9 @@ var searchData=
   ['find_5freco_5fmatched_5findex_5',['find_reco_matched_index',['../namespace_analysis_f_c_chh.html#a95265a47855c7d75f42ce6a60dc18819',1,'AnalysisFCChh']]],
   ['find_5freco_5fmatched_5fparticle_6',['find_reco_matched_particle',['../namespace_analysis_f_c_chh.html#a1a8055f3db7562f464a2d522dadb9f6f',1,'AnalysisFCChh']]],
   ['find_5freco_5fmatches_7',['find_reco_matches',['../namespace_analysis_f_c_chh.html#a41a02d1d68749e51057fedc6af671e19',1,'AnalysisFCChh']]],
-  ['find_5ftrue_5fsignal_5fleps_5freco_5fmatches_8',['find_true_signal_leps_reco_matches',['../namespace_analysis_f_c_chh.html#a984959f34f5b72927f9b8553c88dd5c5',1,'AnalysisFCChh']]],
-  ['find_5ftruth_5fto_5freco_5fmatches_5findices_9',['find_truth_to_reco_matches_indices',['../namespace_analysis_f_c_chh.html#a1fe198b37b4983449c81d575ee32a4d1',1,'AnalysisFCChh']]],
-  ['findsvfromtracks_10',['findSVfromTracks',['../namespace_f_c_c_analyses_1_1_vertex_finder_l_c_f_i_plus.html#a7e2c566652e55b151a6a7304d1af3bba',1,'FCCAnalyses::VertexFinderLCFIPlus']]]
+  ['find_5freco_5fmatches_5fexclusive_8',['find_reco_matches_exclusive',['../namespace_analysis_f_c_chh.html#a15f78aa4a7b8bf0f006ee77b011f47a9',1,'AnalysisFCChh']]],
+  ['find_5ftrue_5fsignal_5fleps_5freco_5fmatches_9',['find_true_signal_leps_reco_matches',['../namespace_analysis_f_c_chh.html#a984959f34f5b72927f9b8553c88dd5c5',1,'AnalysisFCChh']]],
+  ['find_5ftruth_5fmatches_10',['find_truth_matches',['../namespace_analysis_f_c_chh.html#aa0d5ec6a58def566faa0ba58c553b4c5',1,'AnalysisFCChh']]],
+  ['find_5ftruth_5fto_5freco_5fmatches_5findices_11',['find_truth_to_reco_matches_indices',['../namespace_analysis_f_c_chh.html#a1fe198b37b4983449c81d575ee32a4d1',1,'AnalysisFCChh']]],
+  ['findsvfromtracks_12',['findSVfromTracks',['../namespace_f_c_c_analyses_1_1_vertex_finder_l_c_f_i_plus.html#a7e2c566652e55b151a6a7304d1af3bba',1,'FCCAnalyses::VertexFinderLCFIPlus']]]
 ];
