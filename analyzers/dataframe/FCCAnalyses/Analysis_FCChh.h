@@ -100,13 +100,17 @@ namespace AnalysisFCChh{
 
 	//btags
 	ROOT::VecOps::RVec<bool> getJet_tag(ROOT::VecOps::RVec<int> index, ROOT::VecOps::RVec<edm4hep::ParticleIDData> pid, ROOT::VecOps::RVec<float> values, int algoIndex);
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> getBhadron(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids);
+        ROOT::VecOps::RVec<edm4hep::MCParticleData> getChadron(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids);
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> get_tagged_jets(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> jets, ROOT::VecOps::RVec<int> index, ROOT::VecOps::RVec<edm4hep::ParticleIDData> pid, ROOT::VecOps::RVec<float> values, int algoIndex);
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> get_untagged_jets(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> jets, ROOT::VecOps::RVec<int> index, ROOT::VecOps::RVec<edm4hep::ParticleIDData> pid, ROOT::VecOps::RVec<float> values, int algoIndex);
 
 	//tau jets
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> find_truth_matches(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_particles, float dR_thres);
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> get_tau_jets(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> jets, ROOT::VecOps::RVec<int> index, ROOT::VecOps::RVec<edm4hep::ParticleIDData> pid, ROOT::VecOps::RVec<float> tag_values, int algoIndex);
 	ROOT::VecOps::RVec<edm4hep::MCParticleData> getTruthTauHads(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> daughter_ids, ROOT::VecOps::RVec<podio::ObjectID> parent_ids, TString type);
-
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> getTruthTau(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> daughter_ids, ROOT::VecOps::RVec<podio::ObjectID> parent_ids, TString type);
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> getTruthTauLeps(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> daughter_ids, ROOT::VecOps::RVec<podio::ObjectID> parent_ids, TString type);
 	//isolation: select only those particles of sel_parts that are isolated by the given dR from the check_parts
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> sel_isolated(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> sel_parts, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> check_parts, float dR_thres = 0.4);
 
@@ -193,6 +197,7 @@ namespace AnalysisFCChh{
 
 	//for checking signal efficiencies in delphes card validation
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> find_reco_matches(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_particles, float dR_thres=0.1);
+	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> find_reco_matches_exclusive(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts, ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts_exc, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_particles, float dR_thres=0.1);
 	ROOT::VecOps::RVec<int> find_reco_match_indices(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_particles, float dR_thres=0.1);
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> find_reco_matched_particle(edm4hep::MCParticleData truth_part_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> check_reco_parts, float dR_thres=0.1);
 	ROOT::VecOps::RVec<int> find_reco_matched_index(edm4hep::MCParticleData truth_part_to_match, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> check_reco_parts, float dR_thres=0.1);
