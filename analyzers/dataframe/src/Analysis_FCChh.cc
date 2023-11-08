@@ -565,6 +565,51 @@ ROOT::VecOps::RVec<bool> AnalysisFCChh::getJet_tag(ROOT::VecOps::RVec<int> index
   return result;
 }
 
+//return the list of c hadrons
+ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getChadron(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids){
+
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> c_had_list;
+	for (auto & truth_part: truth_particles) {
+		int num = int(abs(truth_part.PDG));
+                if ((num>400&&num<500)||(num>4000&&num<5000)){
+                   c_had_list.push_back(truth_part); 
+                   }  
+                }
+        return c_had_list;
+        }
+
+//return the list of b hadrons
+ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getBhadron(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids){
+
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> b_had_list;
+	for (auto & truth_part: truth_particles) {
+		int num = int(abs(truth_part.PDG));
+                if ((num>500&&num<600)||(num>5000&&num<6000)){
+ 	//	int npos3, npos4;
+	//	for(int i=0; i<3; i++){
+	//		npos3 = num%10;
+	//		num = num/10;
+	//	}
+        //        num = int(abs(truth_part.PDG));
+        //        for(int i=0; i<4; i++){
+        //                npos4 = num%10;
+        //                num = num/10;
+	//	}
+	//	if (npos3==5 || npos4==5){
+
+			//check also if from Higgs to count only from Higgs ones
+			//if ( !isFromHiggsDirect(truth_part, parent_ids, truth_particles) ){
+			//	continue;
+			//}
+
+			b_had_list.push_back(truth_part);
+		}
+
+		}
+
+	return b_had_list;
+}
+
 //return the full jets rather than the list of tags
 ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::get_tagged_jets(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> jets, ROOT::VecOps::RVec<int> index, ROOT::VecOps::RVec<edm4hep::ParticleIDData> pid, ROOT::VecOps::RVec<float> tag_values, int algoIndex){
 	
@@ -1781,41 +1826,182 @@ ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getLepsFromTau(ROOT::
 	return leps_list;
 }
 
-//find truth (hadronic) taus, to check the tau veto
-ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getTruthTauHads(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> daughter_ids, ROOT::VecOps::RVec<podio::ObjectID> parent_ids, TString type){
+ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getTruthTau(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> daughter_ids, ROOT::VecOps::RVec<podio::ObjectID> parent_ids, TString type){
 
 	ROOT::VecOps::RVec<edm4hep::MCParticleData> tau_list;
 	for (auto & truth_part: truth_particles) {
+                bool flagchildren = false;
 		if (isTau(truth_part)){
 
 			//check also if from Higgs to count only from Higgs ones
-			if ( type.Contains("from_higgs") && hasHiggsParent(truth_part, parent_ids, truth_particles) && !isFromHadron(truth_part, parent_ids, truth_particles) ) {
+			if ( type.Contains("from_higgs") && !isFromHiggsDirect(truth_part, parent_ids, truth_particles) ){//&& isFromHadron(truth_part, parent_ids, truth_particles) ) {
 				continue;
 			}
+                        //select both from higgs or from hadrons
+			if ( type.Contains("higgshad") && !isFromHiggsDirect(truth_part, parent_ids, truth_particles) && !isFromHadron(truth_part, parent_ids, truth_particles) ) {
+                                //continue;
+                                std::cout << " found tau neither from Higgs or from Had" << std::endl;
+                                auto first_parent_index = truth_part.parents_begin;
+                                auto last_parent_index = truth_part.parents_end;
+                                for(int parent_i = first_parent_index; parent_i < last_parent_index; parent_i++){
+                                    auto parent_MC_index = parent_ids.at(parent_i).index;
+                                    auto parent = truth_particles.at(parent_MC_index);
+                                    std::cout << "Parent PDG:"<< std::endl;
+                                    std::cout << parent.PDG << std::endl;
+                                    }
+                                continue;
+                                                
+                        }
 
-			auto first_child_index = truth_part.daughters_begin;
-			auto last_child_index = truth_part.daughters_end;
+			tau_list.push_back(truth_part);
+				}
 
-			auto child_1_MC_index = daughter_ids.at(first_child_index).index;
-			auto child_2_MC_index = daughter_ids.at(last_child_index-1).index;
+		}
+	//}
 
+	return tau_list;
+}
+
+
+ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getTruthTauLeps(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> daughter_ids, ROOT::VecOps::RVec<podio::ObjectID> parent_ids, TString type){
+
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> tau_list;
+        bool flagchildren = false;
+	for (auto & truth_part: truth_particles) {
+                flagchildren = false;
+		if (isTau(truth_part)){
+
+			//check also if from Higgs to count only from Higgs ones
+			if ( type.Contains("from_higgs") && !isFromHiggsDirect(truth_part, parent_ids, truth_particles) ){//&& isFromHadron(truth_part, parent_ids, truth_particles) ) {
+				continue;
+			}
+                        //select both from higgs or from hadrons
+			if ( type.Contains("higgshad") && !isFromHiggsDirect(truth_part, parent_ids, truth_particles) && !isFromHadron(truth_part, parent_ids, truth_particles) ) {
+                                //continue;
+                                std::cout << " found tau neither from Higgs or from Had" << std::endl;
+                                auto first_parent_index = truth_part.parents_begin;
+                                auto last_parent_index = truth_part.parents_end;
+                                for(int parent_i = first_parent_index; parent_i < last_parent_index; parent_i++){
+                                    auto parent_MC_index = parent_ids.at(parent_i).index;
+                                    auto parent = truth_particles.at(parent_MC_index);
+                                    std::cout << "Parent PDG:"<< std::endl;
+                                    std::cout << parent.PDG << std::endl;
+                                    }
+                                continue;
+                                                
+                        }
+			bool isItself = true;
+			while(isItself){
+				auto first_child_index = truth_part.daughters_begin;
+				auto last_child_index = truth_part.daughters_end;
+				//auto child_1_MC_index = daughter_ids.at(first_child_index).index;
+				//auto hild_2_MC_index = daughter_ids.at(last_child_index-1).index;
+				for(int child_i = first_child_index; child_i < last_child_index; child_i++){
+					auto child = truth_particles.at(daughter_ids.at(child_i).index);
+					if (abs(child.PDG) == 15){
+						isItself = true;
+						truth_part = child;
+						break;
+					}
+					else{
+						isItself = false;
+					}
+				}		
+			}		
+		
 			// std::cout << " found tau with children" << std::endl;
-
-			for(int child_i = first_child_index; child_i < last_child_index; child_i++){
-				auto child = truth_particles.at(daughter_ids.at(child_i).index);
-				// std::cout << "Child ID: " << child.PDG << std::endl;
-				if (isHadron(child)){
-					// std::cout <<" Is hadronic" << std::endl;
-					tau_list.push_back(truth_part);
+			auto first_child_index = truth_part.daughters_begin;
+                        auto last_child_index = truth_part.daughters_end;
+			for(int ch_i = first_child_index; ch_i < last_child_index; ch_i++){
+				auto ch = truth_particles.at(daughter_ids.at(ch_i).index);
+				std::cout << "Child ID: " << ch.PDG << std::endl;
+				if (isLep(ch)){
+					std::cout <<" Is leptonic" << std::endl;
+					flagchildren = true;
+					break; 
 				}
 
 			}
+			if (flagchildren){
+				tau_list.push_back(truth_part);
+				}
 
 		}
 	}
 
 	return tau_list;
 }
+
+//find truth (hadronic) taus, to check the tau veto
+ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getTruthTauHads(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> daughter_ids, ROOT::VecOps::RVec<podio::ObjectID> parent_ids, TString type){
+
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> tau_list;
+        bool flagchildren = false;
+	for (auto & truth_part: truth_particles) {
+                flagchildren = false;
+		if (isTau(truth_part)){
+
+			//check also if from Higgs to count only from Higgs ones
+			if ( type.Contains("from_higgs") && !isFromHiggsDirect(truth_part, parent_ids, truth_particles) ){//&& isFromHadron(truth_part, parent_ids, truth_particles) ) {
+				continue;
+			}
+                        //select both from higgs or from hadrons
+			if ( type.Contains("higgshad") && !isFromHiggsDirect(truth_part, parent_ids, truth_particles) && !isFromHadron(truth_part, parent_ids, truth_particles) ) {
+                                //continue;
+                                std::cout << " found tau neither from Higgs or from Had" << std::endl;
+                                auto first_parent_index = truth_part.parents_begin;
+                                auto last_parent_index = truth_part.parents_end;
+                                for(int parent_i = first_parent_index; parent_i < last_parent_index; parent_i++){
+                                    auto parent_MC_index = parent_ids.at(parent_i).index;
+                                    auto parent = truth_particles.at(parent_MC_index);
+                                    std::cout << "Parent PDG:"<< std::endl;
+                                    std::cout << parent.PDG << std::endl;
+                                    }
+                                continue;
+                                                
+                        }
+			bool isItself = true;
+			while(isItself){
+				auto first_child_index = truth_part.daughters_begin;
+				auto last_child_index = truth_part.daughters_end;
+				//auto child_1_MC_index = daughter_ids.at(first_child_index).index;
+				//auto hild_2_MC_index = daughter_ids.at(last_child_index-1).index;
+				for(int child_i = first_child_index; child_i < last_child_index; child_i++){
+					auto child = truth_particles.at(daughter_ids.at(child_i).index);
+					if (abs(child.PDG) == 15){
+						isItself = true;
+						truth_part = child;
+						break;
+					}
+					else{
+						isItself = false;
+					}
+				}		
+			}		
+		
+			// std::cout << " found tau with children" << std::endl;
+			auto first_child_index = truth_part.daughters_begin;
+                        auto last_child_index = truth_part.daughters_end;
+			for(int ch_i = first_child_index; ch_i < last_child_index; ch_i++){
+				auto ch = truth_particles.at(daughter_ids.at(ch_i).index);
+				std::cout << "Child ID: " << ch.PDG << std::endl;
+				if (isHadron(ch)){
+					std::cout <<" Is hadronic" << std::endl;
+					flagchildren = true;
+					break; 
+				}
+
+			}
+			if (flagchildren){
+				tau_list.push_back(truth_part);
+				}
+
+		}
+	}
+
+	return tau_list;
+}
+
 
 //find leptons (including taus?) that came from a H->WW decay
 ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getLepsFromW(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> parent_ids){
@@ -2272,6 +2458,75 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_reco_
 		}
 
 		out_vector.append(reco_match_vector.begin(), reco_match_vector.end());
+	}
+
+	return out_vector;
+
+}
+
+//variation of the previous function, with the addition of a set of MC particles that must not match with the reco ones!
+ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_reco_matches_exclusive(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts, ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts_exc, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_particles, float dR_thres){
+	
+	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> out_vector;
+
+	//if no input part, return nothing
+	if (truth_parts.size() < 1){
+		return out_vector;
+	}
+
+	if (truth_parts_exc.size() < 1){
+		//std::cout<<"Use find_reco_matches!"<<std::endl;
+		return out_vector;
+	}
+
+	for (auto & truth_part : truth_parts){
+		bool excludedMatch = false;
+		ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_match_vector = find_reco_matched_particle(truth_part, reco_particles, dR_thres);
+		ROOT::VecOps::RVec<edm4hep::MCParticleData> mc_excluded_vector = find_mc_matched_particle(reco_match_vector[0], truth_parts_exc, 1.0);	
+		if (mc_excluded_vector.size() > 0){ std::cout<<"Excluded MC particle found matching with reco obj!"<<std::endl; continue;}
+		//if (reco_match_vector.size() > 1){
+		//	std::cout << "Warning in AnalysisFCChh::find_reco_matches() - Truth particle matched to more than one reco particle." << std::endl;
+		//}
+
+		//check that the reco particle is not already in the out_vector
+		bool isAlready=false;
+		for (auto & out_i: out_vector){
+			if ((getTLV_reco(reco_match_vector[0]).Pt() == getTLV_reco(out_i).Pt()) && 
+                            (getTLV_reco(reco_match_vector[0]).Eta() == getTLV_reco(out_i).Eta())){
+				isAlready=true;
+				//std::cout<<"Already in the array"<<std::endl;
+			}
+		}
+		if (!isAlready){
+			out_vector.append(reco_match_vector.begin(), reco_match_vector.end());
+		}
+	}
+
+	return out_vector;
+
+}
+
+ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::find_truth_matches(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_particles, float dR_thres){
+	
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> out_vector;
+
+	//if no input part, return nothing
+	if (truth_parts.size() < 1){
+		return out_vector;
+	}
+
+	for (auto & truth_part : truth_parts){
+
+		ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco_match_vector = find_reco_matched_particle(truth_part, reco_particles, dR_thres);
+
+		if (reco_match_vector.size() > 1){
+			std::cout << "Warning in AnalysisFCChh::find_reco_matches() - Truth particle matched to more than one reco particle." << std::endl;
+		}
+
+		if (reco_match_vector.size() == 1){
+		out_vector.push_back(truth_part);
+		}
+		//out_vector.append(reco_match_vector.begin(), reco_match_vector.end());
 	}
 
 	return out_vector;
