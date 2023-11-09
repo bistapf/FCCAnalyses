@@ -1704,6 +1704,9 @@ ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::get_truth_Higgs(ROOT:
 			auto first_child_index = truth_part.daughters_begin;
 			auto last_child_index = truth_part.daughters_end;
 
+			std::cout << "Found higgs with children with indices " << first_child_index << " , " << last_child_index << std::endl;
+			std::cout << "number of higgs daughters:" << last_child_index - first_child_index << std::endl; 
+
 			if(last_child_index - first_child_index != 2){
 				std::cout << "Error in get_truth_Higgs! Found more or fewer than exactly 2 daughters of a higgs boson - this is not expected by code. Need to implement a solution still!"<< std::endl;
 				return higgs_list;
