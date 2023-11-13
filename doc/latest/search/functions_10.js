@@ -29,7 +29,7 @@ var searchData=
   ['smearedtracks_26',['SmearedTracks',['../struct_f_c_c_analyses_1_1_smear_objects_1_1_smeared_tracks.html#a6f39d65679617192acc145fab83b1c8c',1,'FCCAnalyses::SmearObjects::SmearedTracks']]],
   ['smearedtracksdndx_27',['SmearedTracksdNdx',['../struct_f_c_c_analyses_1_1_smear_objects_1_1_smeared_tracksd_ndx.html#a54ac2ddfd71ca8ff6d3c73da3335abaa',1,'FCCAnalyses::SmearObjects::SmearedTracksdNdx']]],
   ['smearedtrackstof_28',['SmearedTracksTOF',['../struct_f_c_c_analyses_1_1_smear_objects_1_1_smeared_tracks_t_o_f.html#a4e0edbd5ed7de42e7daf1af1c76b8fc8',1,'FCCAnalyses::SmearObjects::SmearedTracksTOF']]],
-  ['sort_5fby_5fpt_29',['sort_by_pT',['../struct_analysis_f_c_chh_1_1_reco_particle_pair.html#a2ea4fc4d6b3182d6e4e0cda8066f291f',1,'AnalysisFCChh::RecoParticlePair']]],
+  ['sort_5fby_5fpt_29',['sort_by_pT',['../struct_analysis_f_c_chh_1_1_m_c_particle_pair.html#a5af2d3291d94d08111f39d4735f0bd42',1,'AnalysisFCChh::MCParticlePair::sort_by_pT()'],['../struct_analysis_f_c_chh_1_1_reco_particle_pair.html#a2ea4fc4d6b3182d6e4e0cda8066f291f',1,'AnalysisFCChh::RecoParticlePair::sort_by_pT()']]],
   ['sortparticlecollection_30',['SortParticleCollection',['../namespace_analysis_f_c_chh.html#a96e28a952fcec426616ebdb188027dcc',1,'AnalysisFCChh']]],
   ['sphericityfit_31',['sphericityFit',['../struct_f_c_c_analyses_1_1_algorithms_1_1sphericity_fit.html#a024b324a41bea3f3c760fceb01f6f419',1,'FCCAnalyses::Algorithms::sphericityFit']]],
   ['sum_5ftlv_5fconstituents_32',['sum_tlv_constituents',['../namespace_f_c_c_analyses_1_1_jet_constituents_utils.html#a27bc13971584b1eacbd2c416ee88c617',1,'FCCAnalyses::JetConstituentsUtils']]]
