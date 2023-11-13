@@ -52,6 +52,32 @@ namespace AnalysisFCChh{
 		}
 	} ;
 
+	//same for MC particle
+	struct MCParticlePair {
+		edm4hep::MCParticleData particle_1;
+		edm4hep::MCParticleData particle_2;
+		TLorentzVector merged_TLV(){
+			TLorentzVector tlv_1 = getTLV_MC(particle_1);
+			TLorentzVector tlv_2 = getTLV_MC(particle_2);
+			return tlv_1+tlv_2;
+		}
+		void sort_by_pT(){
+			double pT_1 = sqrt(particle_1.momentum.x * particle_1.momentum.x + particle_1.momentum.y * particle_1.momentum.y);
+			double pT_2 = sqrt(particle_2.momentum.x * particle_2.momentum.x + particle_2.momentum.y * particle_2.momentum.y);
+			
+			if (pT_1 >= pT_2){ return;} //nothing to do if already sorted corrected
+			else {
+				edm4hep::MCParticleData sublead = particle_1;
+
+				particle_1 = particle_2;
+				particle_2 = sublead;
+				return;
+
+			}
+
+		}
+	} ;
+
 	//merge the particles in such a pair into one edm4hep:RecoParticle to use with other functions (in a vector)
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> merge_pairs(ROOT::VecOps::RVec<RecoParticlePair> pairs);
 	int get_n_pairs(ROOT::VecOps::RVec<RecoParticlePair> pairs);
@@ -68,6 +94,7 @@ namespace AnalysisFCChh{
 
 	//helper functions for the ZZllv truth filter:
 	bool isStablePhoton(edm4hep::MCParticleData truth_part);
+	bool isPhoton(edm4hep::MCParticleData truth_part);
 	bool isLep(edm4hep::MCParticleData truth_part);
 	bool isLightLep(edm4hep::MCParticleData truth_part);
 	bool isNeutrino(edm4hep::MCParticleData truth_part);
@@ -94,6 +121,7 @@ namespace AnalysisFCChh{
 	//make a general pair, not caring about charges, e.g. the two b-jets
 	ROOT::VecOps::RVec<RecoParticlePair> getPairs(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> particles_in);
 	ROOT::VecOps::RVec<RecoParticlePair> getPair_sublead(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> particles_in);
+	ROOT::VecOps::RVec<MCParticlePair>   getPairs(ROOT::VecOps::RVec<edm4hep::MCParticleData> particles_in);
 
 	//SORT OBJ COLLECTION
     ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> SortParticleCollection(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> particles_in);
@@ -135,6 +163,7 @@ namespace AnalysisFCChh{
 	ROOT::VecOps::RVec<float> get_angularDist_MET(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> particle_1, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> MET_obj, TString type="dR");
 
 	ROOT::VecOps::RVec<float> get_angularDist_pair(ROOT::VecOps::RVec<RecoParticlePair> pairs, TString type="dR");
+	ROOT::VecOps::RVec<float> get_angularDist_pair(ROOT::VecOps::RVec<MCParticlePair> pairs, TString type="dR");
 
 	//HT variables
 	ROOT::VecOps::RVec<float> get_HT2(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> particle_1, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> particle_2);
@@ -156,7 +185,9 @@ namespace AnalysisFCChh{
 	//combine particles:
 	ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> build_HZZ(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> Z_ll_pair, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> MET_obj);
 
-	
+	//retrieve children from a given truth particle
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> get_immediate_children(edm4hep::MCParticleData truth_part, ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> daughter_ids);
+
 	//select the truth Higgs, depending on which particles it decays to:
 	ROOT::VecOps::RVec<edm4hep::MCParticleData> get_truth_Higgs(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> daughter_ids, TString decay="ZZ" );
 

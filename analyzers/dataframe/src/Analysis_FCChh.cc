@@ -19,6 +19,18 @@ bool AnalysisFCChh::isStablePhoton(edm4hep::MCParticleData truth_part)
 	}
 }
 
+bool AnalysisFCChh::isPhoton(edm4hep::MCParticleData truth_part)
+{
+	auto pdg_id = truth_part.PDG;
+	//std::cout << "pdg id of truth part is" << pdg_id << std::endl;
+	if (abs(pdg_id) == 22){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
 bool AnalysisFCChh::isLep(edm4hep::MCParticleData truth_part)
 {
 	auto pdg_id = truth_part.PDG;
@@ -963,6 +975,32 @@ ROOT::VecOps::RVec<RecoParticlePair> AnalysisFCChh::getPairs(ROOT::VecOps::RVec<
 
 }
 
+//same for MC particle
+ROOT::VecOps::RVec<MCParticlePair> AnalysisFCChh::getPairs(ROOT::VecOps::RVec<edm4hep::MCParticleData> particles_in){
+
+	ROOT::VecOps::RVec<MCParticlePair> pairs;
+
+	//need at least 2 particles in the input
+	if (particles_in.size() < 2){ return pairs; }
+
+	//else sort them by pT, and take the only the leading pair
+	else {
+		auto sort_by_pT = [&] (edm4hep::MCParticleData part_i ,edm4hep::MCParticleData part_j) { return ( getTLV_MC(part_i).Pt() > getTLV_MC(part_j).Pt() ); };
+    	std::sort(particles_in.begin(), particles_in.end(), sort_by_pT);
+
+		//new method, dont merge the pair
+		MCParticlePair pair;
+		pair.particle_1 = particles_in.at(0);
+		pair.particle_2 = particles_in.at(1);
+
+		pairs.push_back(pair);
+
+	}
+
+	return pairs;
+
+}
+
 
 //make the subleading pair, ie. from particles 3 and 4 in pT order
 ROOT::VecOps::RVec<RecoParticlePair> AnalysisFCChh::getPair_sublead(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> particles_in){
@@ -1693,6 +1731,63 @@ ROOT::VecOps::RVec<float> AnalysisFCChh::get_angularDist_pair(ROOT::VecOps::RVec
 
 }
 
+//get angular distances between the two particles in a pair: MC particles
+ROOT::VecOps::RVec<float> AnalysisFCChh::get_angularDist_pair(ROOT::VecOps::RVec<MCParticlePair> pairs, TString type){
+
+	ROOT::VecOps::RVec<float> out_vector; 
+
+	//if input pairs is empty, fill default value
+	if (pairs.size() < 1 ){
+		out_vector.push_back(-999.);
+		return out_vector;
+	}
+
+	//else, for now, just take the first of each, should be the "best" one (by user input) - flexibility to use all combinations is there, to be implemented if needed
+	TLorentzVector tlv_1 = getTLV_MC(pairs.at(0).particle_1);
+	TLorentzVector tlv_2 = getTLV_MC(pairs.at(0).particle_2);
+
+	if (type.Contains("dR")){
+		out_vector.push_back(tlv_1.DeltaR(tlv_2));
+	}
+
+	else if (type.Contains("dEta")){
+		out_vector.push_back(abs(tlv_1.Eta() -  tlv_2.Eta() ));
+	}
+
+	else if (type.Contains("dPhi")){
+		out_vector.push_back(tlv_1.DeltaPhi(tlv_2));
+	}
+
+	else{
+		std::cout << " Error in AnalysisFCChh::get_angularDist - requested unknown type " << type << "Returning default of -999." << std::endl;
+		out_vector.push_back(-999.);
+	}
+
+	return out_vector;
+
+}
+
+//function which returns the immediate children of a truth particle
+ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::get_immediate_children(edm4hep::MCParticleData truth_part, ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> daughter_ids){
+
+	ROOT::VecOps::RVec<edm4hep::MCParticleData> child_list;
+	auto first_child_index = truth_part.daughters_begin;
+	auto last_child_index = truth_part.daughters_end;
+	auto children_size = last_child_index - first_child_index;
+
+	// std::cout << "children size: " << children_size << std::endl; 
+
+	for (int child_i = 0; child_i < children_size; child_i++ ){
+		auto child_i_index = daughter_ids.at(first_child_index+child_i).index;
+		auto child = truth_particles.at(child_i_index);
+		// std::cout << "PDG ID of child number " << child_i << " : " << child.PDG <<  std::endl;
+		child_list.push_back(child);
+	}
+
+	return child_list;
+
+}
+
 //function which finds truth higgs in the MC particles and selects the one that decays according to requested type (to ZZ or bb here)
 ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::get_truth_Higgs(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles, ROOT::VecOps::RVec<podio::ObjectID> daughter_ids, TString decay){
 	ROOT::VecOps::RVec<edm4hep::MCParticleData>  higgs_list;
@@ -1706,12 +1801,17 @@ ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::get_truth_Higgs(ROOT:
 			auto first_child_index = truth_part.daughters_begin;
 			auto last_child_index = truth_part.daughters_end;
 
-			std::cout << "Found higgs with children with indices " << first_child_index << " , " << last_child_index << std::endl;
-			std::cout << "number of higgs daughters:" << last_child_index - first_child_index << std::endl; 
+			// std::cout << "Found higgs with children with indices " << first_child_index << " , " << last_child_index << std::endl;
+			// std::cout << "number of higgs daughters:" << last_child_index - first_child_index << std::endl; 
 
+			// std::cout << "number of higgs daughters:" << last_child_index - first_child_index << std::endl; 
+
+
+			//skip the intermediate higgs that only lead to one other particle
 			if(last_child_index - first_child_index != 2){
-				std::cout << "Error in get_truth_Higgs! Found more or fewer than exactly 2 daughters of a higgs boson - this is not expected by code. Need to implement a solution still!"<< std::endl;
-				return higgs_list;
+				// std::cout << "Error in get_truth_Higgs! Found more or fewer than exactly 2 daughters of a higgs boson - this is not expected by code. Need to implement a solution still!"<< std::endl;
+				// return higgs_list;
+				continue;
 			}
 
 			//now get the indices in the daughters vector
@@ -1722,6 +1822,9 @@ ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::get_truth_Higgs(ROOT:
 			auto child_1 = truth_particles.at(child_1_MC_index);
 			auto child_2 = truth_particles.at(child_2_MC_index);
 
+			// std::cout << "PDG ID of first child: " << child_1.PDG <<  std::endl;
+			// std::cout << "PDG ID of second child: " << child_2.PDG <<  std::endl;
+
 
 			// std::cout << "Found higgs with status = " << h_status << " and children with indices " << child_1.PDG << " , " << child_2.PDG << std::endl;
 			if (decay.Contains("ZZ") && isZ(child_1) && isZ(child_2) ){
@@ -1729,6 +1832,10 @@ ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::get_truth_Higgs(ROOT:
 			}
 
 			else if (decay.Contains("bb") && isb(child_1) && isb(child_2)){
+				higgs_list.push_back(truth_part);
+			}
+
+			else if ( (decay.Contains("yy") || decay.Contains("aa")) && isPhoton(child_1) && isPhoton(child_2)){
 				higgs_list.push_back(truth_part);
 			}
 		}
@@ -2512,7 +2619,7 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> AnalysisFCChh::find_reco_
 			if ((getTLV_reco(reco_match_vector[0]).Pt() == getTLV_reco(out_i).Pt()) && 
                             (getTLV_reco(reco_match_vector[0]).Eta() == getTLV_reco(out_i).Eta())){
 				isAlready=true;
-				std::cout<<"Already in the array"<<std::endl;
+				// std::cout<<"Already in the array"<<std::endl;
 			}
 		}
 		if (!isAlready){
