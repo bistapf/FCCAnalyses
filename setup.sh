@@ -13,7 +13,9 @@ if [ "${0}" != "${BASH_SOURCE}" ]; then
     echo "      ${STACK_PATH}"
     source ${STACK_PATH}
   else
-    source /cvmfs/sw.hsf.org/key4hep/setup.sh
+    # source /cvmfs/sw.hsf.org/key4hep/setup.sh
+    #use stable rl for FCC-hh: TODO IMPROVE
+    source /cvmfs/sw.hsf.org/key4hep/releases/2023-06-05-fcchh/x86_64-centos7-gcc12.2.0-opt/key4hep-stack/2023-08-28-hsn6vj/setup.sh
   fi
 
   echo "----> Info: Setting up environment variables..."
