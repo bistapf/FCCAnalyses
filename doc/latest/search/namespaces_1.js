@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['contrib_0',['contrib',['../namespacecontrib.html',1,'']]],
-  ['cstemplate_1',['CSTemplate',['../namespace_c_s_template.html',1,'']]]
+  ['edm4hep_0',['edm4hep',['../namespaceedm4hep.html',1,'']]]
 ];
