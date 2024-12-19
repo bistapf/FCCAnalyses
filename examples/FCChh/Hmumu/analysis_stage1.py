@@ -29,16 +29,16 @@ class Analysis():
             # # If you want to process only part of the events, split the output into chunks or give a different name to the output use the optional arguments
             # # or leave blank to use defaults = run the full statistics in one output file named the same as the process:
             # #TESTING
-            # 'mgp8_pp_h012j_5f_hmumu/events_000000599': {'chunks':1}, #signal
+            'mgp8_pp_h012j_5f_hmumu/events_000000599': {'chunks':1}, #signal
             #FULL
-            'mgp8_pp_h012j_5f_hmumu': {'chunks':200}, #signal
-            'mgp8_pp_mumu012j_mhcut_5f_HT_0_100': {'chunks':50}, #mumu cont. bkg
-            'mgp8_pp_mumu012j_mhcut_5f_HT_100_300': {'chunks':50}, #mumu cont. bkg
-            'mgp8_pp_mumu012j_mhcut_5f_HT_300_500': {'chunks':50}, #mumu cont. bkg
-            'mgp8_pp_mumu012j_mhcut_5f_HT_500_700': {'chunks':50}, #mumu cont. bkg
-            'mgp8_pp_mumu012j_mhcut_5f_HT_700_900': {'chunks':50}, #mumu cont. bkg
-            'mgp8_pp_mumu012j_mhcut_5f_HT_900_1100': {'chunks':50}, #mumu cont. bkg
-            'mgp8_pp_mumu012j_mhcut_5f_HT_1100_100000': {'chunks':50}, #mumu cont. bkg
+            # 'mgp8_pp_h012j_5f_hmumu': {'chunks':200}, #signal
+            # 'mgp8_pp_mumu012j_mhcut_5f_HT_0_100': {'chunks':50}, #mumu cont. bkg
+            # 'mgp8_pp_mumu012j_mhcut_5f_HT_100_300': {'chunks':50}, #mumu cont. bkg
+            # 'mgp8_pp_mumu012j_mhcut_5f_HT_300_500': {'chunks':50}, #mumu cont. bkg
+            # 'mgp8_pp_mumu012j_mhcut_5f_HT_500_700': {'chunks':50}, #mumu cont. bkg
+            # 'mgp8_pp_mumu012j_mhcut_5f_HT_700_900': {'chunks':50}, #mumu cont. bkg
+            # 'mgp8_pp_mumu012j_mhcut_5f_HT_900_1100': {'chunks':50}, #mumu cont. bkg
+            # 'mgp8_pp_mumu012j_mhcut_5f_HT_1100_100000': {'chunks':50}, #mumu cont. bkg
         }
 
         # Mandatory: Input directory where to find the samples, or a production tag when running over the centrally produced
@@ -46,7 +46,7 @@ class Analysis():
         self.input_dir = '/eos/experiment/fcc/hh/generation/DelphesEvents/fcc_v06/II/'
 
         # Optional: output directory, default is local running directory
-        self.output_dir = '/eos/experiment/fcc/hh/analysis_ntuples/fcc_v06/II/'
+        self.output_dir = '/eos/experiment/fcc/hh/analysis_ntuples/fcc_v06/II/Hmumu_analysis/'
 
         # Optional: analysisName, default is ''
         self.analysis_name = 'FCC-hh Hmumu analysis'
@@ -55,7 +55,8 @@ class Analysis():
         self.n_threads = 4
 
         # Optional: running on HTCondor, default is False
-        self.run_batch = True
+        self.run_batch = False
+        # self.run_batch = True
 
         # Optional: Use weighted events
         self.do_weighted = True 
@@ -102,6 +103,7 @@ class Analysis():
 
                 #select the pair
                 .Define("OS_mumu_pairs", "AnalysisFCChh::getOSPairs(sel_muons)") 
+                .Define("n_os_muon_pairs",  "OS_mumu_pairs.size()") 
                 .Define("best_OS_mumu_pair", "AnalysisFCChh::get_first_pair(OS_mumu_pairs)") 
                 .Define("mu_plus", "AnalysisFCChh::get_first_from_pair(best_OS_mumu_pair)") 
                 .Define("mu_minus", "AnalysisFCChh::get_second_from_pair(best_OS_mumu_pair)") 
@@ -135,6 +137,16 @@ class Analysis():
                 .Define("MET_phi", "FCCAnalyses::ReconstructedParticle::get_phi(MissingET)")
                 # .Define("HT", "FCCAnalyses::ReconstructedParticle::get_pt(ScalarHT)") #not yet in k4SimDelphes due to bug
 
+                ########################################### MC PARTICLES ########################################### 
+
+                #all MC particles
+                .Define("mc_particles", "Particle")
+                # .Alias("mc_parents", "_Particle_parents.index")
+                # .Alias("mc_daughters", "_Particle_daughters.index")
+
+                .Define("mc_muons", "FCCAnalyses::MCParticle::sel_pdgID(13, true)(mc_particles)")
+                .Define("n_mc_muons", "FCCAnalyses::MCParticle::get_n(mc_muons)")
+
         )
         return dframe2
 
@@ -147,7 +159,7 @@ class Analysis():
         branch_list = [
             'weight',
             # muons and H(mumu) system:
-            'n_muons', 'n_muons_sel', 
+            'n_muons', 'n_muons_sel', 'n_os_muon_pairs',
             'mu_plus_e', 'mu_plus_pt', 'mu_plus_eta', 'mu_plus_phi',
             'mu_minus_e', 'mu_minus_pt', 'mu_minus_eta', 'mu_minus_phi',
             'm_mumu', 'pT_mumu', 'eta_mumu',
@@ -155,5 +167,7 @@ class Analysis():
             'n_jets', 'E_jets', 'pT_jets', 'eta_jets', 'phi_jets',
             # MET & HT 
             'MET', 'MET_phi', #'HT',
+            #gen level muons for validation
+            'n_mc_muons', 
         ]
         return branch_list
