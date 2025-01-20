@@ -99,6 +99,14 @@ get_first_from_pair(ROOT::VecOps::RVec<RecoParticlePair> pairs);
 ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData>
 get_second_from_pair(ROOT::VecOps::RVec<RecoParticlePair> pairs);
 
+//same for MCParticlePair
+ROOT::VecOps::RVec<edm4hep::MCParticleData>
+merge_pairs(ROOT::VecOps::RVec<MCParticlePair> pairs);
+ROOT::VecOps::RVec<MCParticlePair>
+get_first_pair(ROOT::VecOps::RVec<MCParticlePair>
+                   pairs); // can use to get leading pair if the inputs to pair
+                           // finding fct were pT sorted
+
 // truth filter used to get ZZ(llvv) events from the ZZ(llvv+4l+4v) inclusive
 // signal samples
 bool ZZllvvFilter(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles,
@@ -146,6 +154,11 @@ getTruthZll(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles,
 // find the SFOS pair of reconstructed leptons (electrons or muons)
 ROOT::VecOps::RVec<RecoParticlePair>
 getOSPairs(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> leptons_in);
+
+// find OS pairs in truth particles
+ROOT::VecOps::RVec<MCParticlePair>
+getOSPairs(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts);
+
 ROOT::VecOps::RVec<RecoParticlePair> getDFOSPairs(
     ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> electrons_in,
     ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> muons_in);
@@ -370,6 +383,9 @@ getLepsFromZ(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles,
              ROOT::VecOps::RVec<podio::ObjectID> parent_ids);
 ROOT::VecOps::RVec<edm4hep::MCParticleData>
 getPhotonsFromH(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles,
+                ROOT::VecOps::RVec<podio::ObjectID> parent_ids);
+ROOT::VecOps::RVec<edm4hep::MCParticleData>
+getWFromH(ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles,
                 ROOT::VecOps::RVec<podio::ObjectID> parent_ids);
 ROOT::VecOps::RVec<int> getTruthLepLepFlavour(
     ROOT::VecOps::RVec<edm4hep::MCParticleData> leps_from_tau);

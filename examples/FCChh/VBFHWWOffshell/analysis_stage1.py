@@ -31,8 +31,8 @@ class Analysis():
             # #TESTING
             # 'mgp8_pp_vbf_ww_lvlv_5f_100TeV/events_113865885': {'chunks':1}, #signal
             # FULL
-            # 'mgp8_pp_vbf_ww_lvlv_5f_100TeV':{'chunks':1},
-            # 'mgp8_pp_vbf_h_jjlvlv_5f_100TeV':{'chunks':1},
+            'mgp8_pp_vbf_ww_lvlv_5f_100TeV':{'chunks':1},
+            'mgp8_pp_vbf_h_jjlvlv_5f_100TeV':{'chunks':1},
             'mgp8_pp_vbf_ww_lvlv_SBI_offshell_5f_100TeV':{'chunks':1},
         }
 
@@ -107,12 +107,27 @@ class Analysis():
 
                 #all MC particles
                 .Define("mc_particles", "Particle")
-                # .Alias("mc_parents", "_Particle_parents.index")
-                # .Alias("mc_daughters", "_Particle_daughters.index")
+                .Alias("mc_parents", "_Particle_parents.index")
+                .Alias("mc_daughters", "_Particle_daughters.index")
 
                 .Define("mc_higgses", "FCCAnalyses::MCParticle::sel_pdgID(25, true)(mc_particles)")
                 .Define("n_mc_higgses", "FCCAnalyses::MCParticle::get_n(mc_higgses)")
                 .Define("m_mc_higgses", "FCCAnalyses::MCParticle::get_mass(mc_higgses)")
+
+                .Define("mc_Ws", "FCCAnalyses::MCParticle::sel_pdgID(24, true)(mc_particles)")
+                .Define("n_mc_Ws", "FCCAnalyses::MCParticle::get_n(mc_Ws)")
+                # .Define("m_mc_higgses", "FCCAnalyses::MCParticle::get_mass(mc_higgses)")
+                # make pairs of Ws with zero total charge:
+                .Define("W_pairs", "AnalysisFCChh::getOSPairs(mc_Ws)")
+                .Define("n_W_pairs", "W_pairs.size()")
+                .Define("first_W_pair", "AnalysisFCChh::get_first_pair(W_pairs)")
+                .Define("first_W_pair_merged", "AnalysisFCChh::merge_pairs(first_W_pair)")
+                .Define("m_WW_from_pairs", "FCCAnalyses::MCParticle::get_mass(first_W_pair_merged)")
+                
+
+                #Ws directly from the Higgs decay
+                .Define("Ws_from_Higgs", "AnalysisFCChh::getWFromH(mc_particles, mc_parents)")
+                .Define("n_Ws_from_Higgs", "FCCAnalyses::MCParticle::get_n(Ws_from_Higgs)")
 
         )
         return dframe2
@@ -130,7 +145,10 @@ class Analysis():
             'n_jets', 'E_jets', 'pT_jets', 'eta_jets', 'phi_jets',
             # MET & HT 
             'MET', 'MET_phi', #'HT',
-            #gen level higges for validation
+            #gen level higges and Ws for validation
             'n_mc_higgses', 'm_mc_higgses',
+            'n_Ws_from_Higgs', 'n_mc_Ws', 'n_W_pairs', 
+            'm_WW_from_pairs',
+
         ]
         return branch_list

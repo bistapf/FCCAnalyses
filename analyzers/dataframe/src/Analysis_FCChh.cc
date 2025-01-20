@@ -793,11 +793,44 @@ AnalysisFCChh::merge_pairs(ROOT::VecOps::RVec<RecoParticlePair> pairs) {
   return merged_pairs;
 }
 
+//same for MCParticle Pair
+ROOT::VecOps::RVec<edm4hep::MCParticleData>
+AnalysisFCChh::merge_pairs(ROOT::VecOps::RVec<MCParticlePair> pairs) {
+  ROOT::VecOps::RVec<edm4hep::MCParticleData> merged_pairs;
+
+  for (auto &pair : pairs) {
+    TLorentzVector pair_tlv = pair.merged_TLV();
+
+    // //build a edm4hep reco particle from the  pair:
+    edm4hep::MCParticleData pair_particle;
+    pair_particle.momentum.x = pair_tlv.Px();
+    pair_particle.momentum.y = pair_tlv.Py();
+    pair_particle.momentum.z = pair_tlv.Pz();
+    pair_particle.mass = pair_tlv.M();
+
+    merged_pairs.push_back(pair_particle);
+  }
+
+  return merged_pairs;
+}
+
 // select only the first pair in a vector (and retun as vector with size 1,
 // format needed for the rdf)
 ROOT::VecOps::RVec<RecoParticlePair>
 AnalysisFCChh::get_first_pair(ROOT::VecOps::RVec<RecoParticlePair> pairs) {
   ROOT::VecOps::RVec<RecoParticlePair> first_pair;
+
+  if (pairs.size()) {
+    first_pair.push_back(pairs.at(0));
+  }
+
+  return first_pair;
+}
+
+//same for MCParticlePair
+ROOT::VecOps::RVec<MCParticlePair>
+AnalysisFCChh::get_first_pair(ROOT::VecOps::RVec<MCParticlePair> pairs) {
+  ROOT::VecOps::RVec<MCParticlePair> first_pair;
 
   if (pairs.size()) {
     first_pair.push_back(pairs.at(0));
@@ -1388,34 +1421,72 @@ ROOT::VecOps::RVec<MCParticlePair> AnalysisFCChh::getPairs(
   return pairs;
 }
 
-// make the subleading pair, ie. from particles 3 and 4 in pT order
-ROOT::VecOps::RVec<RecoParticlePair> AnalysisFCChh::getPair_sublead(
-    ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> particles_in) {
+// MC particle pairs that are opposite sign
+// find the lepton pair that likely originates from a Z decay:
+ROOT::VecOps::RVec<MCParticlePair> AnalysisFCChh::getOSPairs(
+    ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts) {
 
-  ROOT::VecOps::RVec<RecoParticlePair> pairs;
+  ROOT::VecOps::RVec<MCParticlePair> OS_pairs;
 
-  // need at least 2 particles in the input
-  if (particles_in.size() < 4) {
-    return pairs;
+  // need at least 2 leptons in the input
+  if (truth_parts.size() < 2) {
+    return OS_pairs;
   }
 
-  // else sort them by pT, and take the only the subleading pair
-  else {
-    auto sort_by_pT = [&](edm4hep::ReconstructedParticleData part_i,
-                          edm4hep::ReconstructedParticleData part_j) {
-      return (getTLV_reco(part_i).Pt() > getTLV_reco(part_j).Pt());
-    };
-    std::sort(particles_in.begin(), particles_in.end(), sort_by_pT);
+  // separate the leptons by charges
+  ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts_pos;
+  ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_parts_neg;
 
-    // new method, dont merge the pair
-    RecoParticlePair pair;
-    pair.particle_1 = particles_in.at(2);
-    pair.particle_2 = particles_in.at(3);
 
-    pairs.push_back(pair);
+
+  for (auto &truth_part : truth_parts) {
+
+    // std::cout << "Checking charges for particle with PDG " << truth_part.PDG << std::endl;
+
+    auto charge = truth_part.charge;
+    if (charge > 0) {
+      truth_parts_pos.push_back(truth_part);
+    } else if (charge < 0) {
+      truth_parts_neg.push_back(truth_part);
+      // std::cout << "is negative" << std::endl;
+    }
+
+    else {
+      std::cout << "Error in function  AnalysisFCChh::getOSPair() with MCParticles - found "
+                   "neutral particle! Function is supposed to be used for "
+                   "charged particls only."
+                << std::endl;
+    }
   }
 
-  return pairs;
+  // check charges: if don't have one of each, cannot build OS pair and if is
+  // only one of each there is no ambiguity
+  if (truth_parts_pos.size() < 1 || truth_parts_neg.size() < 1) {
+    // std::cout << "No OS pairs because missing particle of one charge!" << std::endl;
+    return OS_pairs;
+  }
+
+  for (auto &truthpart_pos : truth_parts_pos) {
+    for (auto &truth_parts_neg : truth_parts_neg) {
+
+      // new code: do not merge the pair but store them separately
+      MCParticlePair OS_pair;
+      OS_pair.particle_1 = truthpart_pos;
+      OS_pair.particle_2 = truth_parts_neg;
+
+      OS_pairs.push_back(OS_pair);
+    }
+  }
+
+  // FOR DEBUG?
+  //  if (OS_pairs.size() > 1){
+  //  	std::cout << "Number of possible OS pairs: " << OS_pairs.size() <<
+  //  std::endl; 	std::cout << "Build from: " << leptons_pos.size() << "
+  //  pos, "
+  //  << leptons_neg.size() << " neg." << std::endl;
+  //  }
+
+  return OS_pairs;
 }
 
 // calculate the transverse mass ob two objects: massless approximation?
@@ -2747,6 +2818,27 @@ ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getPhotonsFromH(
   }
   // std::cout << "Leps from tau-higgs " << counter << std::endl;
   return gamma_list;
+}
+
+// find W bosons that came directly out of the H->WW decay
+ROOT::VecOps::RVec<edm4hep::MCParticleData> AnalysisFCChh::getWFromH(
+    ROOT::VecOps::RVec<edm4hep::MCParticleData> truth_particles,
+    ROOT::VecOps::RVec<podio::ObjectID> parent_ids) {
+
+  ROOT::VecOps::RVec<edm4hep::MCParticleData> w_list;
+
+  for (auto &truth_part : truth_particles) {
+    if (isW(truth_part)) { 
+      bool from_higgs =
+          isFromHiggsDirect(truth_part, parent_ids, truth_particles);
+      if (from_higgs) {
+        // std:: cout << "Status code of W from Higgs: " << truth_part.generatorStatus << std::endl;
+        w_list.push_back(truth_part);
+      }
+    }
+  }
+  // std::cout << "W bosons from Higgs: " << w_list.size() << std::endl;
+  return w_list;
 }
 
 // momentum fraction x for tau decays
