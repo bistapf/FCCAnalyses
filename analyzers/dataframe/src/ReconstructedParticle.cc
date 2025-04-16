@@ -15,26 +15,48 @@ namespace FCCAnalyses{
 
 namespace ReconstructedParticle{
 
-/// sel_type
+//#######################################################################//
+//                                 sel_type                              //
+//#######################################################################//
 sel_type::sel_type(const int type) : m_type(type) {}
 
 ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> sel_type::operator()(
-    ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in) {
+  ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in) {
   ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> result;
   result.reserve(in.size());
   for (size_t i = 0; i < in.size(); ++i) {
 #if edm4hep_VERSION > EDM4HEP_VERSION(0, 10, 5)
-    if (in[i].PDG == m_type) {
+    if (in.at(i).PDG == m_type) {
 #else
-    if (in[i].type == m_type) {
+    if (in.at(i).type == m_type) {
 #endif
-      result.emplace_back(in[i]);
+      result.emplace_back(in.at(i));
     }
   }
   return result;
 }
 
-/// sel_absType
+ROOT::VecOps::RVec<int> sel_type::operator()(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, ROOT::VecOps::RVec<int> idx) {
+  
+  ROOT::VecOps::RVec<int> idx_result;
+  idx_result.reserve(in.size()); 
+  
+  for (size_t i = 0; i < in.size(); ++i) {
+#if edm4hep_VERSION > EDM4HEP_VERSION(0, 10, 5)
+    if (in.at(i).PDG == m_type) {
+#else
+    if (in.at(i).type == m_type) {
+#endif
+      idx_result.emplace_back(idx.at(i));
+    }
+  }
+  return idx_result;
+}
+
+//#######################################################################//
+//                               sel_absType                             //
+//#######################################################################//
+
 sel_absType::sel_absType(const int type) : m_type(type) {
   if (m_type < 0) {
     throw std::invalid_argument(
@@ -48,37 +70,70 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> sel_absType::operator()(
   result.reserve(in.size());
   for (size_t i = 0; i < in.size(); ++i) {
 #if edm4hep_VERSION > EDM4HEP_VERSION(0, 10, 5)
-    if (std::abs(in[i].PDG) == m_type) {
+    if (std::abs(in.at(i).PDG) == m_type) {
 #else
-    if (std::abs(in[i].type) == m_type) {
+    if (std::abs(in.at(i).type) == m_type) {
 #endif
-      result.emplace_back(in[i]);
+      result.emplace_back(in.at(i));
     }
   }
 
   return result;
 }
 
-/// sel_pt
+ROOT::VecOps::RVec<int> sel_absType::operator() (ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, ROOT::VecOps::RVec<int> idx) {
+  
+  ROOT::VecOps::RVec<int> idx_result;
+  idx_result.reserve(in.size());
+  for (size_t i = 0; i < in.size(); ++i) {
+#if edm4hep_VERSION > EDM4HEP_VERSION(0, 10, 5)
+    if (std::abs(in.at(i).PDG) == m_type) {
+#else
+    if (std::abs(in.at(i).type) == m_type) {
+#endif
+      idx_result.emplace_back(idx.at(i));
+    }
+  }
+  return idx_result;
+}
+
+//#######################################################################//
+//                                  sel_pt                               //
+//#######################################################################//
 sel_pt::sel_pt(float arg_min_pt) : m_min_pt(arg_min_pt) {};
 ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData>  sel_pt::operator() (ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in) {
   ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> result;
   result.reserve(in.size());
   for (size_t i = 0; i < in.size(); ++i) {
-    auto & p = in[i];
+    auto & p = in.at(i);
     if (std::sqrt(std::pow(p.momentum.x,2) + std::pow(p.momentum.y,2)) > m_min_pt) {
       result.emplace_back(p);
     }
   }
   return result;
 }
+ROOT::VecOps::RVec<int>  sel_pt::operator() (ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, ROOT::VecOps::RVec<int> idx) {
+  assert (in.size() == idx.size());
+  ROOT::VecOps::RVec<int> idx_result;
+  idx_result.reserve(in.size());
+  for (size_t i = 0; i < in.size(); ++i) {
+    auto & p = in.at(i);
+    if (std::sqrt(std::pow(p.momentum.x,2) + std::pow(p.momentum.y,2)) > m_min_pt) {
+      idx_result.emplace_back(idx.at(i));
+    }
+  }
+  return idx_result;
+}
 
+//#######################################################################//
+//                                 sel_eta                               //
+//#######################################################################//
 sel_eta::sel_eta(float arg_min_eta) : m_min_eta(arg_min_eta) {};
 ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData>  sel_eta::operator() (ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in) {
   ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> result;
   result.reserve(in.size());
   for (size_t i = 0; i < in.size(); ++i) {
-    auto & p = in[i];
+    auto & p = in.at(i);
     TLorentzVector tv1;
     tv1.SetXYZM(p.momentum.x, p.momentum.y, p.momentum.z, p.mass);
     if (abs(tv1.Eta()) < abs(m_min_eta)){
@@ -88,13 +143,29 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData>  sel_eta::operator() (ROO
   return result;
 }
 
+ROOT::VecOps::RVec<int>  sel_eta::operator() (ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, ROOT::VecOps::RVec<int> idx) {
+  ROOT::VecOps::RVec<int> idx_result;
+  idx_result.reserve(in.size());
+  for (size_t i = 0; i < idx.size(); ++i) {
+    auto & p = in.at(i);
+    TLorentzVector tv1;
+    tv1.SetXYZM(p.momentum.x, p.momentum.y, p.momentum.z, p.mass);
+    if (abs(tv1.Eta()) < abs(m_min_eta)){
+      idx_result.emplace_back(idx.at(i));
+    }
+  }
+  return idx_result;
+}
 
+//#######################################################################//
+//                                  sel_p                                //
+//#######################################################################//
 sel_p::sel_p(float arg_min_p, float arg_max_p) : m_min_p(arg_min_p), m_max_p(arg_max_p)  {};
 ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData>  sel_p::operator() (ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in) {
   ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> result;
   result.reserve(in.size());
   for (size_t i = 0; i < in.size(); ++i) {
-    auto & p = in[i];
+    auto & p = in.at(i);
     float momentum = std::sqrt(   std::pow(p.momentum.x,2)
                                 + std::pow(p.momentum.y,2)
                                 + std::pow(p.momentum.z,2) );
@@ -105,20 +176,53 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData>  sel_p::operator() (ROOT:
   return result;
 }
 
-sel_charge::sel_charge(int arg_charge, bool arg_abs){m_charge = arg_charge; m_abs = arg_abs;};
+ROOT::VecOps::RVec<int>  sel_p::operator() (ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, ROOT::VecOps::RVec<int> idx) {
+  ROOT::VecOps::RVec<int> idx_result; 
+  idx_result.reserve(in.size());
+  for (size_t i = 0; i < in.size(); ++i) {
+    auto & p = in.at(i);
+    float momentum = std::sqrt(   std::pow(p.momentum.x,2)
+                                + std::pow(p.momentum.y,2)
+                                + std::pow(p.momentum.z,2) );
+    if ( momentum > m_min_p && momentum < m_max_p ) {
+      idx_result.emplace_back(idx.at(i));
+    }
+  }
+  return idx_result;
+}
 
+
+//#######################################################################//
+//                               sel_charge                              //
+//#######################################################################//
+sel_charge::sel_charge(int arg_charge, bool arg_abs){m_charge = arg_charge; m_abs = arg_abs;};
 ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData>  sel_charge::operator() (ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in) {
   ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> result;
   result.reserve(in.size());
   for (size_t i = 0; i < in.size(); ++i) {
-    auto & p = in[i];
-    if ((m_abs && abs(in[i].charge)==m_charge) || (m_charge==in[i].charge) ) {
+    auto & p = in.at(i);
+    if ((m_abs && abs(in.at(i).charge)==m_charge) || (m_charge==in.at(i).charge) ) {
       result.emplace_back(p);
     }
   }
   return result;
 }
 
+ROOT::VecOps::RVec<int>  sel_charge::operator() (ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, ROOT::VecOps::RVec<int> idx) {
+  ROOT::VecOps::RVec<int> idx_result;
+  idx_result.reserve(in.size());
+  for (size_t i = 0; i < in.size(); ++i) {
+    auto & p = in.at(i);
+    if ((m_abs && abs(in.at(i).charge)==m_charge) || (m_charge==in.at(i).charge) ) {
+      idx_result.emplace_back(idx.at(i));
+    }
+  }
+  return idx_result;
+}
+
+//#######################################################################//
+//                            ResonanceBuilder                           //
+//#######################################################################//
 resonanceBuilder::resonanceBuilder(float arg_resonance_mass) {m_resonance_mass = arg_resonance_mass;}
 ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> resonanceBuilder::operator()(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> legs) {
   ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> result;
@@ -130,10 +234,10 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> resonanceBuilder::operato
       edm4hep::ReconstructedParticleData reso;
       TLorentzVector reso_lv;
       for (int i = 0; i < n; ++i) {
-          if (v[i]) {
-            reso.charge += legs[i].charge;
+          if (v.at(i)) {
+            reso.charge += legs.at(i).charge;
             TLorentzVector leg_lv;
-            leg_lv.SetXYZM(legs[i].momentum.x, legs[i].momentum.y, legs[i].momentum.z, legs[i].mass);
+            leg_lv.SetXYZM(legs.at(i).momentum.x, legs.at(i).momentum.y, legs.at(i).momentum.z, legs.at(i).mass);
             reso_lv += leg_lv;
           }
       }
@@ -239,11 +343,29 @@ float angular_separationBuilder::operator() ( ROOT::VecOps::RVec<edm4hep::Recons
  return result;
 }
 
+ROOT::VecOps::RVec<int> get_idx(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in){
+  ROOT::VecOps::RVec<int> result;
+  for (size_t i = 0; i < in.size(); ++i) {
+    result.push_back(i);
+  }
+  return result;
+ }
+
+ ROOT::VecOps::RVec<int> get_idx_clean(ROOT::VecOps::RVec<int> indices){
+  ROOT::VecOps::RVec<int> result;
+  for (size_t i = 0; i < indices.size(); ++i) {
+    if (indices.at(i)>-1)
+      result.push_back(indices.at(i, -1));
+    //else
+    //  std::cout << "electron index negative " << index.at(i)<<std::endl;
+  }
+  return result;
+ }
 
 ROOT::VecOps::RVec<float> get_pt(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in){
  ROOT::VecOps::RVec<float> result;
  for (size_t i = 0; i < in.size(); ++i) {
-   result.push_back(sqrt(in[i].momentum.x * in[i].momentum.x + in[i].momentum.y * in[i].momentum.y));
+   result.push_back(sqrt(in.at(i).momentum.x * in.at(i).momentum.x + in.at(i).momentum.y * in.at(i).momentum.y));
  }
  return result;
 }
@@ -295,13 +417,28 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> remove(
 ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> get(ROOT::VecOps::RVec<int> index, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in){
   ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> result;
   for (size_t i = 0; i < index.size(); ++i) {
-    if (index[i]>-1)
-      result.push_back(in.at(index[i]));
+    if (index.at(i)>-1)
+      result.push_back(in.at(index.at(i)));
     //else
-    //  std::cout << "electron index negative " << index[i]<<std::endl;
+    //  std::cout << "electron index negative " << index.at(i)<<std::endl;
   }
   return result;
 }
+
+ROOT::VecOps::RVec<float> get(ROOT::VecOps::RVec<int> index, ROOT::VecOps::RVec<float> in){
+
+  ROOT::VecOps::RVec<float> result;
+  // assert(*std::max_element(index.begin(),index.end()) < in.size());
+
+  for (size_t i = 0; i < index.size(); ++i) {
+    if (index.at(i)>-1)
+      result.push_back(in.at(index.at(i)));
+    //else
+    //  std::cout << "electron index negative " << index.at(i)<<std::endl;
+  }
+  return result;
+}
+
 
 TLorentzVector get_P4vis(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in) {
     TLorentzVector P4sum;

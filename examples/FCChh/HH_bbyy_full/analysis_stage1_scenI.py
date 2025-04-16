@@ -162,7 +162,7 @@ class Analysis():
             .Define("sel_gamma_unsort", "FCCAnalyses::ReconstructedParticle::sel_eta(4)(selpt_gamma)")
             .Define("sel_gamma", "AnalysisFCChh::SortParticleCollection(sel_gamma_unsort)") #sort by pT
 
-            .Define("n_gamma",  "FCCAnalyses::ReconstructedParticle::get_n(sel_gamma)") 
+            .Define("ngamma",  "FCCAnalyses::ReconstructedParticle::get_n(sel_gamma)") 
             .Define("g1_e",  "FCCAnalyses::ReconstructedParticle::get_e(sel_gamma)[0]")
             .Define("g1_pt",  "FCCAnalyses::ReconstructedParticle::get_pt(sel_gamma)[0]")
             .Define("g1_eta",  "FCCAnalyses::ReconstructedParticle::get_eta(sel_gamma)[0]")

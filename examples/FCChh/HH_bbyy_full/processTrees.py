@@ -22,14 +22,17 @@ print("Process ID: ",ID)
 #print("Number of submitted jobs: ", JN)
  
 #resonant signals only
-file_name = ['mgp8_pp_Htohh_mH_300GeV_84TeV_hhbbaa', 'mgp8_pp_Htohh_mH_350GeV_84TeV_hhbbaa', 
-            'mgp8_pp_Htohh_mH_400GeV_84TeV_hhbbaa', 'mgp8_pp_Htohh_mH_450GeV_84TeV_hhbbaa',
-            'mgp8_pp_Htohh_mH_500GeV_84TeV_hhbbaa', 'mgp8_pp_Htohh_mH_550GeV_84TeV_hhbbaa',
-            'mgp8_pp_Htohh_mH_600GeV_84TeV_hhbbaa', 'mgp8_pp_Htohh_mH_650GeV_84TeV_hhbbaa',
-            'mgp8_pp_Htohh_mH_700GeV_84TeV_hhbbaa', 'mgp8_pp_Htohh_mH_750GeV_84TeV_hhbbaa',
-            'mgp8_pp_Htohh_mH_800GeV_84TeV_hhbbaa', 'mgp8_pp_Htohh_mH_850GeV_84TeV_hhbbaa',
-            'mgp8_pp_Htohh_mH_800GeV_84TeV_hhbbaa', 'mgp8_pp_Htohh_mH_850GeV_84TeV_hhbbaa',
-            'mgp8_pp_Htohh_mH_1000GeV_84TeV_hhbbaa', 
+file_name = [
+            # 'mgp8_pp_Htohh_mH_300GeV_84TeV_hhbbaa', 'mgp8_pp_Htohh_mH_350GeV_84TeV_hhbbaa', 
+            # 'mgp8_pp_Htohh_mH_400GeV_84TeV_hhbbaa', 'mgp8_pp_Htohh_mH_450GeV_84TeV_hhbbaa',
+            # 'mgp8_pp_Htohh_mH_500GeV_84TeV_hhbbaa', 'mgp8_pp_Htohh_mH_550GeV_84TeV_hhbbaa',
+            # 'mgp8_pp_Htohh_mH_600GeV_84TeV_hhbbaa', 'mgp8_pp_Htohh_mH_650GeV_84TeV_hhbbaa',
+            # 'mgp8_pp_Htohh_mH_700GeV_84TeV_hhbbaa', 'mgp8_pp_Htohh_mH_750GeV_84TeV_hhbbaa',
+            # 'mgp8_pp_Htohh_mH_800GeV_84TeV_hhbbaa', 'mgp8_pp_Htohh_mH_850GeV_84TeV_hhbbaa',
+            # 'mgp8_pp_Htohh_mH_800GeV_84TeV_hhbbaa', 'mgp8_pp_Htohh_mH_850GeV_84TeV_hhbbaa',
+            'mgp8_pp_Htohh_mH_900GeV_84TeV_hhbbaa', 'mgp8_pp_Htohh_mH_950GeV_84TeV_hhbbaa',
+            # 'mgp8_pp_Htohh_mH_1000GeV_84TeV_hhbbaa', 
+            'mgp8_pp_Htohh_mH_550GeV_84TeV_hhbbaa', 
 ]
 
 # file_name = ['mgp8_pp_h012j_5f_haa', 'mgp8_pp_vh012j_5f_haa', 'mgp8_pp_vbf_h01j_5f_haa', 'mgp8_pp_tth01j_5f_haa','pwp8_pp_hh_lambda000_5f_hhbbaa', 'pwp8_pp_hh_lambda100_5f_hhbbaa', 'pwp8_pp_hh_lambda240_5f_hhbbaa','pwp8_pp_hh_lambda300_5f_hhbbaa', 'mgp8_pp_jjaa_5f']#,'mgp8_pp_tt012j_5f']

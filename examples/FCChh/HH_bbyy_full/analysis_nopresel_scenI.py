@@ -14,89 +14,49 @@ class Analysis():
         parser = ArgumentParser(
             description='Additional analysis arguments',
             usage='Provide additional arguments after analysis script path')
-        parser.add_argument('--energy', default='100TeV',
-            help='Energy point to run at. Options: 100TeV, 84TeV') #60 and 120 TeV to be added
-
+        # parser.add_argument('--bjet-pt', default='10.', type=float,
+        #                     help='Minimal pT of the selected b-jets.')
+        # Parse additional arguments not known to the FCCAnalyses parsers
+        # All command line arguments know to fccanalysis are provided in the
+        # `cmdline_arg` dictionary.
         self.ana_args, _ = parser.parse_known_args(cmdline_args['unknown'])
+
+        # Mandatory: List of processes to run over
+        self.process_list = {
+            # # Add your processes like this: 
+            ## '<name of process>':{'fraction':<fraction of events to run over>, 'chunks':<number of chunks to split the output into>, 'output':<name of the output file> }, 
+            # # - <name of process> needs to correspond either the name of the input .root file, or the name of a directory containing root files 
+            # # If you want to process only part of the events, split the output into chunks or give a different name to the output use the optional arguments
+            # # or leave blank to use defaults = run the full statistics in one output file named the same as the process:
+            # 'pwp8_pp_hh_lambda100_5f_hhbbaa': {'chunks':200},
+            # 'pwp8_pp_hh_lambda240_5f_hhbbaa': {'chunks':200},
+            # 'pwp8_pp_hh_lambda300_5f_hhbbaa': {'chunks':200},
+            # 'pwp8_pp_hh_lambda000_5f_hhbbaa': {'chunks':200},
+            #single Higgs bkgs
+            'mgp8_pp_h012j_5f_haa': {'chunks':100},
+            'mgp8_pp_vbf_h01j_5f_haa': {'chunks':100},
+            'mgp8_pp_tth01j_5f_haa': {'chunks':200},
+            'mgp8_pp_vh012j_5f_haa': {'chunks':100},
+            #yy+jets continuum bkg
+            # 'mgp8_pp_jjaa_5f': {'chunks':250},
+
+        }
 
         # Mandatory: Input directory where to find the samples, or a production tag when running over the centrally produced
         # samples (this points to the yaml files for getting sample statistics)
-        self.input_dir = '/eos/experiment/fcc/hh/generation/DelphesEvents/fcc_v07/II/'
+        self.input_dir = '/eos/experiment/fcc/hh/generation/DelphesEvents/fcc_v07/I/'
 
         # Optional: output directory, default is local running directory
-        self.output_dir = '/eos/experiment/fcc/hh/analysis_ntuples/fcc_v07/II/bbyy_analysis/'
+        self.output_dir = '/eos/experiment/fcc/hh/analysis_ntuples/fcc_v07/I/'
 
         # Optional: analysisName, default is ''
-        self.analysis_name = 'FCC-hh bbyy analysis, with Delphes scenario II'
-
-        # Mandatory: List of processes to run over
-        if self.ana_args.energy == "100TeV":
-            self.process_list = {
-                # # Add your processes like this: 
-                ## '<name of process>':{'fraction':<fraction of events to run over>, 'chunks':<number of chunks to split the output into>, 'output':<name of the output file> }, 
-                # # - <name of process> needs to correspond either the name of the input .root file, or the name of a directory containing root files 
-                # # If you want to process only part of the events, split the output into chunks or give a different name to the output use the optional arguments
-                # # # or leave blank to use defaults = run the full statistics in one output file named the same as the process:
-                'pwp8_pp_hh_lambda100_5f_hhbbaa': {'chunks':200},
-                'pwp8_pp_hh_lambda240_5f_hhbbaa': {'chunks':200},
-                'pwp8_pp_hh_lambda300_5f_hhbbaa': {'chunks':200},
-                'pwp8_pp_hh_lambda000_5f_hhbbaa': {'chunks':200},
-                #single Higgs bkgs
-                'mgp8_pp_h012j_5f_haa': {'chunks':100},
-                'mgp8_pp_vbf_h01j_5f_haa': {'chunks':100},
-                'mgp8_pp_tth01j_5f_haa': {'chunks':200},
-                'mgp8_pp_vh012j_5f_haa': {'chunks':100},
-                #yy+jets continuum bkg
-                'mgp8_pp_jjaa_5f': {'chunks':250},
-
-            }
-        
-        elif self.ana_args.energy == "84TeV" or self.ana_args.energy == "120TeV":
-            self.process_list = {
-                 #TESTER:
-                #   'mgp8_pp_Htohh_mH_300GeV_{}_hhbbaa/events_013337457'.format(self.ana_args.energy): {},   
-                
-                # 'pwp8_pp_hh_lambda100_5f_{}_SA_hhbbaa'.format(self.ana_args.energy): {'chunks':200}, 
-                # 'pwp8_pp_hh_lambda240_5f_{}_SA_hhbbaa'.format(self.ana_args.energy): {'chunks':200},
-                # 'pwp8_pp_hh_lambda300_5f_{}_SA_hhbbaa'.format(self.ana_args.energy): {'chunks':200},
-                # # 'pwp8_pp_hh_lambda000_5f_hhbbaa': {'chunks':200},
-                # #single Higgs bkgs
-                # 'mgp8_pp_h012j_5f_{}_haa'.format(self.ana_args.energy): {'chunks':100},
-                # 'mgp8_pp_vbf_h01j_5f_{}_haa'.format(self.ana_args.energy): {'chunks':100},
-                # 'mgp8_pp_tth01j_5f_{}_haa'.format(self.ana_args.energy): {'chunks':200},
-                # 'mgp8_pp_vh012j_5f_{}_haa'.format(self.ana_args.energy): {'chunks':100},
-                # #yy+jets continuum bkg
-                # 'mgp8_pp_jjaa_5f_{}'.format(self.ana_args.energy): {'chunks':250},
-
-                #resonant Htohh 
-                'mgp8_pp_Htohh_mH_300GeV_{}_hhbbaa'.format(self.ana_args.energy): {'chunks':50},
-                'mgp8_pp_Htohh_mH_350GeV_{}_hhbbaa'.format(self.ana_args.energy): {'chunks':50},
-                'mgp8_pp_Htohh_mH_400GeV_{}_hhbbaa'.format(self.ana_args.energy): {'chunks':50},
-                'mgp8_pp_Htohh_mH_450GeV_{}_hhbbaa'.format(self.ana_args.energy): {'chunks':50},
-                'mgp8_pp_Htohh_mH_500GeV_{}_hhbbaa'.format(self.ana_args.energy): {'chunks':50},
-                'mgp8_pp_Htohh_mH_550GeV_{}_hhbbaa'.format(self.ana_args.energy): {'chunks':50},
-                'mgp8_pp_Htohh_mH_600GeV_{}_hhbbaa'.format(self.ana_args.energy): {'chunks':50},                
-                'mgp8_pp_Htohh_mH_650GeV_{}_hhbbaa'.format(self.ana_args.energy): {'chunks':50},
-                'mgp8_pp_Htohh_mH_700GeV_{}_hhbbaa'.format(self.ana_args.energy): {'chunks':50},                
-                'mgp8_pp_Htohh_mH_750GeV_{}_hhbbaa'.format(self.ana_args.energy): {'chunks':50},
-                'mgp8_pp_Htohh_mH_800GeV_{}_hhbbaa'.format(self.ana_args.energy): {'chunks':50},                
-                'mgp8_pp_Htohh_mH_850GeV_{}_hhbbaa'.format(self.ana_args.energy): {'chunks':50},
-                'mgp8_pp_Htohh_mH_900GeV_{}_hhbbaa'.format(self.ana_args.energy): {'chunks':50},
-                'mgp8_pp_Htohh_mH_950GeV_{}_hhbbaa'.format(self.ana_args.energy): {'chunks':50},
-                'mgp8_pp_Htohh_mH_1000GeV_{}_hhbbaa'.format(self.ana_args.energy): {'chunks':50},
-
-            }
-    
-        else:
-            raise Exception("Unsupported argument for energy! Currently only support 100TeV, 84TeV and 120TeV!")
-
+        self.analysis_name = 'FCC-hh bbyy analysis, with Delphes scenario I'
 
         # Optional: number of threads to run on, default is 'all available'
         # self.n_threads = 4
 
         # Optional: running on HTCondor, default is False
-        self.run_batch = False
-        # self.run_batch = True
+        self.run_batch = True
 
         # Optional: Use weighted events
         self.do_weighted = True 
@@ -124,16 +84,7 @@ class Analysis():
 
             # generator event weight
             .Define("weight",  "EventHeader.weight")
-            # event number
-            .Define("event_number", "EventHeader.eventNumber")
-            .Define("run_number", "EventHeader.runNumber")
 
-            ################################## RECO TO TRUTH ASSOCIATIONS ##################################
-            # reco-to-MC particle association
-            .Alias("MCRecoAssociations0", "_MCRecoAssociations_from.index")
-            .Alias("MCRecoAssociations1", "_MCRecoAssociations_to.index")
-            .Define("RP2MC_index", "FCCAnalyses::ReconstructedParticle2MC::getRP2MC_index(MCRecoAssociations0, MCRecoAssociations1, ReconstructedParticles)")
-            
             ########################################### JETS ########################################### 
 
             # jets after overlap removal is performed between jets and isolated electrons, muons and photons
@@ -205,26 +156,8 @@ class Analysis():
 
 
             ########################################### PHOTONS ########################################### 
-            #Old: uncorrected versions
-            .Define("gamma_uncorr",  "FCCAnalyses::ReconstructedParticle::get(Photon_objIdx.index, ReconstructedParticles)")
-            .Define("selpt_gamma_uncorr", "FCCAnalyses::ReconstructedParticle::sel_pt(30.)(gamma_uncorr)")
-            .Define("sel_gamma_unsort_uncorr", "FCCAnalyses::ReconstructedParticle::sel_eta(4)(selpt_gamma_uncorr)")
-            .Define("sel_gamma_uncorr", "AnalysisFCChh::SortParticleCollection(sel_gamma_unsort_uncorr)") #sort by pT
 
-            .Define("ngamma_uncorr",  "FCCAnalyses::ReconstructedParticle::get_n(sel_gamma_uncorr)") 
-            .Define("g1_e_uncorr",  "FCCAnalyses::ReconstructedParticle::get_e(sel_gamma_uncorr)[0]")
-            .Define("g1_pt_uncorr",  "FCCAnalyses::ReconstructedParticle::get_pt(sel_gamma_uncorr)[0]")
-            .Define("g1_eta_uncorr",  "FCCAnalyses::ReconstructedParticle::get_eta(sel_gamma_uncorr)[0]")
-            .Define("g1_phi_uncorr",  "FCCAnalyses::ReconstructedParticle::get_phi(sel_gamma_uncorr)[0]")
-            .Define("g2_e_uncorr",  "FCCAnalyses::ReconstructedParticle::get_e(sel_gamma_uncorr)[1]")
-            .Define("g2_pt_uncorr",  "FCCAnalyses::ReconstructedParticle::get_pt(sel_gamma_uncorr)[1]")
-            .Define("g2_eta_uncorr",  "FCCAnalyses::ReconstructedParticle::get_eta(sel_gamma_uncorr)[1]")
-            .Define("g2_phi_uncorr",  "FCCAnalyses::ReconstructedParticle::get_phi(sel_gamma_uncorr)[1]")
-
-            #now get also the corrected photons:
-            # all photons passing particle ID
-            .Define("photon_indices", "FCCAnalyses::ReconstructedParticle::get_idx_clean(Photon_objIdx.index)")
-            .Define("gamma", "FCCAnalyses::SmearObjects::SmearedReconstructedParticle(1, 22, 2, event_number[0], false)(ReconstructedParticles, RP2MC_index, Particle, photon_indices)")
+            .Define("gamma",  "FCCAnalyses::ReconstructedParticle::get(Photon_objIdx.index, ReconstructedParticles)")
             .Define("selpt_gamma", "FCCAnalyses::ReconstructedParticle::sel_pt(30.)(gamma)")
             .Define("sel_gamma_unsort", "FCCAnalyses::ReconstructedParticle::sel_eta(4)(selpt_gamma)")
             .Define("sel_gamma", "AnalysisFCChh::SortParticleCollection(sel_gamma_unsort)") #sort by pT
@@ -249,23 +182,17 @@ class Analysis():
 
 
             #H(yy) if it exists, if there are no 2 selected photons, doesnt get filled 
-            #old uncorrected:
-            .Define("yy_pairs_unmerged_uncorr", "AnalysisFCChh::getPairs(sel_gamma_uncorr)")
-            .Define("yy_pairs_uncorr", "AnalysisFCChh::merge_pairs(yy_pairs_unmerged_uncorr)")
-            .Define("m_yy_uncorr", "FCCAnalyses::ReconstructedParticle::get_mass(yy_pairs_uncorr)")
-
-            #with the correction for m_yy through smearing of angles
             .Define("yy_pairs_unmerged", "AnalysisFCChh::getPairs(sel_gamma)")
             .Define("yy_pairs", "AnalysisFCChh::merge_pairs(yy_pairs_unmerged)")
             .Define("m_yy", "FCCAnalyses::ReconstructedParticle::get_mass(yy_pairs)")
 
             # Filter at least one candidate
-            .Filter("sel_bjets.size()>1")
-            .Filter("sel_gamma.size()>1") 
-            .Filter("m_bb[0] < 200.") 
-            .Filter("m_bb[0] > 80.") 
-            .Filter("m_yy[0] < 180.")  
-            .Filter("m_yy[0] > 100.")        
+            # .Filter("sel_bjets.size()>1")
+            # .Filter("sel_gamma.size()>1") 
+            # .Filter("m_bb[0] < 200.") 
+            # .Filter("m_bb[0] > 80.") 
+            # .Filter("m_yy[0] < 180.") 
+            # .Filter("m_yy[0] > 100.")          
 
         )
         return dframe2
@@ -277,7 +204,7 @@ class Analysis():
         Output variables which will be saved to output root file.
         '''
         branch_list = [
-                        "weight", "event_number",
+                        "weight",
                         # Jets:             
                         "njets", "j1_e", "j1_pt", "j1_eta", "j1_phi",
                         "j2_e", "j2_pt", "j2_eta", "j2_phi",
@@ -291,15 +218,11 @@ class Analysis():
                         "nmu", "m1_e", "m1_pt", "m1_eta", "m1_phi",
                         "m2_e", "m2_pt", "m2_eta", "m2_phi",             
                         # Photons:
-                        "ngamma", "g1_e", "g1_pt", "g1_eta", "g1_phi", 
+                        "ngamma", "g1_e", "g1_pt", "g1_eta", "g1_phi",
                         "g2_e", "g2_pt", "g2_eta", "g2_phi",
-                        #uncorrected versions:
-                        "ngamma_uncorr", "g1_e_uncorr", "g1_pt_uncorr", "g1_eta_uncorr", "g1_phi_uncorr",
-                        "g2_e_uncorr", "g2_pt_uncorr", "g2_eta_uncorr", "g2_phi_uncorr",
                         # Hbb decay:
                         "m_bb", 
                         #Hyy decay:
-                        "m_yy" , 
-                        "m_yy_uncorr"    
+                        "m_yy"     
         ]
         return branch_list
