@@ -5,8 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import json
-import copy
 from argparse import ArgumentParser
+import copy
 
 ROOT.gROOT.SetBatch()
 ROOT.gStyle.SetOptTitle(0)
@@ -201,99 +201,108 @@ def get_SF_for_min_pT_cuts(process, base_inpath, base_plotpath, pT_step = 50, pT
 	dict_SF_vs_pT = {}
 
 	for pT_cut in range(pT_range_min, pT_range_max, pT_step):
-			print("Getting Scalefactors for pT cut = ", pT_cut)
+		print("Getting Scalefactors for pT cut = ", pT_cut)
 
-			#histogram templates for totals to fill:
-			total_hist_nom = None
-			total_hist_up = None
-			total_hist_down = None
-			for process in processes:
-				print("Processing sample: ", process)
+		#histogram templates for totals to fill:
+		total_hist_nom = None
+		total_hist_up = None
+		total_hist_down = None
 
-				infilename = "{}_sel3_pTH{}.root".format(process, pT_cut)
-				infilepath = os.path.join(base_inpath, infilename)
-				outfilename_up = "{}_sel3_pTH{}_SYST1UP.root".format(process, pT_cut)
-				outfilepath_up = os.path.join(base_inpath, outfilename_up)
-				outfilename_down = "{}_sel3_pTH{}_SYST1DOWN.root".format(process, pT_cut)
-				outfilepath_down = os.path.join(base_inpath, outfilename_down)
-				rdf = get_rdf(infilepath)
+		for process in processes:
+			print("Processing sample: ", process)
+		
+			infilename = "{}_sel3_pTH{}.root".format(process, pT_cut)
+			infilepath = os.path.join(base_inpath, infilename)
+			outfilename_up = "{}_sel3_pTH{}_SYST1UP.root".format(process, pT_cut)
+			outfilepath_up = os.path.join(base_inpath, outfilename_up)
+			outfilename_down = "{}_sel3_pTH{}_SYST1DOWN.root".format(process, pT_cut)
+			outfilepath_down = os.path.join(base_inpath, outfilename_down)
+			rdf = get_rdf(infilepath)
 
-				if not rdf:
-					continue
+			if not rdf:
+				continue
 
-				rdf_up = (rdf.Define("SF_up_muplus", "GetEfficiencyScaleFactorUp(mu_plus_pt[0])")
-						.Define("SF_up_muminus", "GetEfficiencyScaleFactorUp(mu_minus_pt[0])")
-						.Define("SF_up_muons", "SF_up_muplus*SF_up_muminus")
-					)
+			rdf_up = (rdf.Define("SF_up_lead_lep1", "GetEfficiencyScaleFactorUp(leading_pair_lep1_pt)")
+					.Define("SF_up_lead_lep2", "GetEfficiencyScaleFactorUp(leading_pair_lep2_pt)")
+					.Define("SF_up_sublead_lep1", "GetEfficiencyScaleFactorUp(subleading_pair_lep1_pt)")
+					.Define("SF_up_sublead_lep2", "GetEfficiencyScaleFactorUp(subleading_pair_lep2_pt)")
+					.Define("SF_up_muons", "SF_up_lead_lep1*SF_up_lead_lep2*SF_up_sublead_lep1*SF_up_sublead_lep2")
+				)
 
-				rdf_up.Snapshot("events", outfilepath_up, ["SF_up_muons", "SF_up_muplus", "SF_up_muminus", "mu_plus_pt", "mu_minus_pt", "m_mumu"])
-				
-				hist_base_name = "{}_pTH{}_hist_".format(process, pT_cut)
-				plot_histo(rdf_up, "SF_up_muons", base_plotpath, hist_base_name+"SF_up_muons")
-				plot_histo(rdf_up, "SF_up_muplus", base_plotpath, hist_base_name+"SF_up_muplus")
-				plot_histo(rdf_up, "SF_up_muminus", base_plotpath, hist_base_name+"SF_up_muminus")
+			rdf_up.Snapshot("events", outfilepath_up, ["SF_up_muons", "SF_up_lead_lep1", "SF_up_lead_lep2", "SF_up_sublead_lep1", "SF_up_sublead_lep2", "leading_pair_lep1_pt", "leading_pair_lep2_pt", "subleading_pair_lep1_pt", "subleading_pair_lep2_pt", "m_llll"])
+			
+			hist_base_name = "{}_pTH{}_hist_".format(process, pT_cut)
+			plot_histo(rdf_up, "SF_up_muons", base_plotpath, hist_base_name+"SF_up_muons")
+			plot_histo(rdf_up, "SF_up_lead_lep1", base_plotpath, hist_base_name+"SF_up_lead_lep1")
+			plot_histo(rdf_up, "SF_up_lead_lep2", base_plotpath, hist_base_name+"SF_up_lead_lep2")
+			plot_histo(rdf_up, "SF_up_sublead_lep1", base_plotpath, hist_base_name+"SF_up_sublead_lep1")
+			plot_histo(rdf_up, "SF_up_sublead_lep2", base_plotpath, hist_base_name+"SF_up_sublead_lep2")
 
-				#same for down
-				rdf_down = (rdf.Define("SF_down_muplus", "GetEfficiencyScaleFactorDown(mu_plus_pt[0])")
-						.Define("SF_down_muminus", "GetEfficiencyScaleFactorDown(mu_minus_pt[0])")
-						.Define("SF_down_muons", "SF_down_muplus*SF_down_muminus")
-					)
+			#same for down
+			rdf_down = (rdf.Define("SF_down_lead_lep1", "GetEfficiencyScaleFactorDown(leading_pair_lep1_pt)")
+					.Define("SF_down_lead_lep2", "GetEfficiencyScaleFactorDown(leading_pair_lep2_pt)")
+					.Define("SF_down_sublead_lep1", "GetEfficiencyScaleFactorDown(subleading_pair_lep1_pt)")
+					.Define("SF_down_sublead_lep2", "GetEfficiencyScaleFactorDown(subleading_pair_lep2_pt)")
+					.Define("SF_down_muons", "SF_down_lead_lep1*SF_down_lead_lep2*SF_down_sublead_lep1*SF_down_sublead_lep2")
+				)
 
-				rdf_down.Snapshot("events", outfilepath_down, ["SF_down_muons", "SF_down_muplus", "SF_down_muminus", "mu_plus_pt", "mu_minus_pt", "m_mumu"])
-				
-				hist_base_name = "{}_pTH{}_hist_down".format(process, pT_cut)
-				plot_histo(rdf_down, "SF_down_muons", base_plotpath, hist_base_name+"SF_down_muons")
-				plot_histo(rdf_down, "SF_down_muplus", base_plotpath, hist_base_name+"SF_down_muplus")
-				plot_histo(rdf_down, "SF_down_muminus", base_plotpath, hist_base_name+"SF_down_muminus")
+			rdf_down.Snapshot("events", outfilepath_down, ["SF_down_muons", "SF_down_lead_lep1", "SF_down_lead_lep2", "SF_down_sublead_lep1", "SF_down_sublead_lep2", "leading_pair_lep1_pt", "leading_pair_lep2_pt", "subleading_pair_lep1_pt", "subleading_pair_lep2_pt", "m_llll"])
+			
+			hist_base_name = "{}_pTH{}_hist_".format(process, pT_cut)
+			plot_histo(rdf_down, "SF_down_muons", base_plotpath, hist_base_name+"SF_down_muons")
+			plot_histo(rdf_down, "SF_down_lead_lep1", base_plotpath, hist_base_name+"SF_down_lead_lep1")
+			plot_histo(rdf_down, "SF_down_lead_lep2", base_plotpath, hist_base_name+"SF_down_lead_lep2")
+			plot_histo(rdf_down, "SF_down_sublead_lep1", base_plotpath, hist_base_name+"SF_down_sublead_lep1")
+			plot_histo(rdf_down, "SF_down_sublead_lep2", base_plotpath, hist_base_name+"SF_down_sublead_lep2")
 
-				#fill the histogram of the observable with the new SF and divide by nominal 
-				hist_m_mumu_model = ROOT.RDF.TH1DModel("m_mumu_fitrange","m_mumu_fitrange", 30, 110., 140.)
-				hist_m_mumu_nom = rdf.Histo1D(hist_m_mumu_model, "m_mumu")
-				hist_m_mumu_up = rdf_up.Histo1D(hist_m_mumu_model, "m_mumu", "SF_up_muons")
-				hist_m_mumu_down = rdf_down.Histo1D(hist_m_mumu_model, "m_mumu", "SF_down_muons")
+			#fill the histogram of the observable with the new SF and divide by nominal 
+			hist_m_4mu_model = ROOT.RDF.TH1DModel("m_4mu_fitrange","m_4mu_fitrange", 30, 110., 140.)
+			hist_m_4mu_nom = rdf.Histo1D(hist_m_4mu_model, "m_llll")
+			hist_m_4mu_up = rdf_up.Histo1D(hist_m_4mu_model, "m_llll", "SF_up_muons")
+			hist_m_4mu_down = rdf_down.Histo1D(hist_m_4mu_model, "m_llll", "SF_down_muons")
 
-				#add to totals:
-				if not total_hist_nom:
-					total_hist_nom = copy.deepcopy(hist_m_mumu_nom.GetValue())
-					total_hist_nom.SetTitle("total_hist_nom")
-					total_hist_nom.SetName("total_hist_nom")
+			#add to totals:
+			if not total_hist_nom:
+				total_hist_nom = copy.deepcopy(hist_m_4mu_nom.GetValue())
+				total_hist_nom.SetTitle("total_hist_nom")
+				total_hist_nom.SetName("total_hist_nom")
 
-				else:
-					total_hist_nom.Add(hist_m_mumu_nom.GetValue())
-				
-				if not total_hist_up:
-					total_hist_up = copy.deepcopy(hist_m_mumu_up.GetValue())
-					total_hist_up.SetTitle("total_hist_up")
-					total_hist_up.SetName("total_hist_up")
+			else:
+				total_hist_nom.Add(hist_m_4mu_nom.GetValue())
+			
+			if not total_hist_up:
+				total_hist_up = copy.deepcopy(hist_m_4mu_up.GetValue())
+				total_hist_up.SetTitle("total_hist_up")
+				total_hist_up.SetName("total_hist_up")
 
-				else:
-					total_hist_up.Add(hist_m_mumu_up.GetValue())
-				
-				if not total_hist_down:
-					total_hist_down = copy.deepcopy(hist_m_mumu_down.GetValue())
-					total_hist_down.SetTitle("total_hist_down")
-					total_hist_down.SetName("total_hist_down")
+			else:
+				total_hist_up.Add(hist_m_4mu_up.GetValue())
+			
+			if not total_hist_down:
+				total_hist_down = copy.deepcopy(hist_m_4mu_down.GetValue())
+				total_hist_down.SetTitle("total_hist_down")
+				total_hist_down.SetName("total_hist_down")
 
-				else:
-					total_hist_down.Add(hist_m_mumu_down.GetValue())
+			else:
+				total_hist_down.Add(hist_m_4mu_down.GetValue())
 
-			#calculate: 
-			nominal_yield = total_hist_nom.Integral()
-			up_yield = total_hist_up.Integral()
-			down_yield = total_hist_down.Integral()
-			syst_var_up = up_yield/nominal_yield
-			syst_var_down = down_yield/nominal_yield
-			print("Nominal yield: {:.2f}".format(nominal_yield))
-			print("Up syst yield: {:.2f}".format(up_yield))
-			print("Down syst yield: {:.2f}".format(down_yield))
-			print("Up systematic variation: {:.6f}".format(syst_var_up))
-			print("Down systematic variation: {:.6f}".format(syst_var_down))
+		#calculate: 
+		nominal_yield = total_hist_nom.Integral()
+		up_yield = total_hist_up.Integral()
+		down_yield = total_hist_down.Integral()
+		syst_var_up = up_yield/nominal_yield
+		syst_var_down = down_yield/nominal_yield
+		print("Nominal yield: {:.2f}".format(nominal_yield))
+		print("Up syst yield: {:.2f}".format(up_yield))
+		print("Down syst yield: {:.2f}".format(down_yield))
+		print("Up systematic variation: {:.6f}".format(syst_var_up))
+		print("Down systematic variation: {:.6f}".format(syst_var_down))
 
-			#plot everything
-			plot_syst_hist_compare(total_hist_nom, total_hist_up, total_hist_down, "hists_m_mumu_pT{}".format(pT_cut), base_plotpath)
+		#plot everything
+		plot_syst_hist_compare(total_hist_nom, total_hist_up, total_hist_down, "hists_m_4mu_pT{}".format(pT_cut), base_plotpath)
 
-			dict_SF_vs_pT[pT_cut] = syst_var_up
-
+		dict_SF_vs_pT[pT_cut] = syst_var_up
+	
 	return dict_SF_vs_pT
 
 def get_SF_for_excl_pT_bins(processes, base_inpath, base_plotpath, pT_step = 50, pT_range_min= 50, pT_range_max=550):
@@ -309,9 +318,10 @@ def get_SF_for_excl_pT_bins(processes, base_inpath, base_plotpath, pT_step = 50,
 		total_hist_nom = None
 		total_hist_up = None
 		total_hist_down = None
+
 		for process in processes:
 			print("Processing sample: ", process)
-
+		
 			infilename = "{}_sel3_pTH{}_{}.root".format(process, pT_cut_min, pT_cut_max)
 			infilepath = os.path.join(base_inpath, infilename)
 			outfilename_up = "{}_sel3_pTH{}_{}_SYST1UP.root".format(process, pT_cut_min, pT_cut_max)
@@ -323,61 +333,69 @@ def get_SF_for_excl_pT_bins(processes, base_inpath, base_plotpath, pT_step = 50,
 			if not rdf:
 				continue
 
-			rdf_up = (rdf.Define("SF_up_muplus", "GetEfficiencyScaleFactorUp(mu_plus_pt[0])")
-					.Define("SF_up_muminus", "GetEfficiencyScaleFactorUp(mu_minus_pt[0])")
-					.Define("SF_up_muons", "SF_up_muplus*SF_up_muminus")
+			rdf_up = (rdf.Define("SF_up_lead_lep1", "GetEfficiencyScaleFactorUp(leading_pair_lep1_pt)")
+					.Define("SF_up_lead_lep2", "GetEfficiencyScaleFactorUp(leading_pair_lep2_pt)")
+					.Define("SF_up_sublead_lep1", "GetEfficiencyScaleFactorUp(subleading_pair_lep1_pt)")
+					.Define("SF_up_sublead_lep2", "GetEfficiencyScaleFactorUp(subleading_pair_lep2_pt)")
+					.Define("SF_up_muons", "SF_up_lead_lep1*SF_up_lead_lep2*SF_up_sublead_lep1*SF_up_sublead_lep2")
 				)
 
-			rdf_up.Snapshot("events", outfilepath_up, ["SF_up_muons", "SF_up_muplus", "SF_up_muminus", "mu_plus_pt", "mu_minus_pt", "m_mumu"])
+			rdf_up.Snapshot("events", outfilepath_up, ["SF_up_muons", "SF_up_lead_lep1", "SF_up_lead_lep2", "SF_up_sublead_lep1", "SF_up_sublead_lep2", "leading_pair_lep1_pt", "leading_pair_lep2_pt", "subleading_pair_lep1_pt", "subleading_pair_lep2_pt", "m_llll"])
 			
 			hist_base_name = "{}_pTH{}_{}_hist_up".format(process, pT_cut_min, pT_cut_max)
 			plot_histo(rdf_up, "SF_up_muons", base_plotpath, hist_base_name+"SF_up_muons")
-			plot_histo(rdf_up, "SF_up_muplus", base_plotpath, hist_base_name+"SF_up_muplus")
-			plot_histo(rdf_up, "SF_up_muminus", base_plotpath, hist_base_name+"SF_up_muminus")
+			plot_histo(rdf_up, "SF_up_lead_lep1", base_plotpath, hist_base_name+"SF_up_lead_lep1")
+			plot_histo(rdf_up, "SF_up_lead_lep2", base_plotpath, hist_base_name+"SF_up_lead_lep2")
+			plot_histo(rdf_up, "SF_up_sublead_lep1", base_plotpath, hist_base_name+"SF_up_sublead_lep1")
+			plot_histo(rdf_up, "SF_up_sublead_lep2", base_plotpath, hist_base_name+"SF_up_sublead_lep2")
 
 			#same for down
-			rdf_down = (rdf.Define("SF_down_muplus", "GetEfficiencyScaleFactorDown(mu_plus_pt[0])")
-					.Define("SF_down_muminus", "GetEfficiencyScaleFactorDown(mu_minus_pt[0])")
-					.Define("SF_down_muons", "SF_down_muplus*SF_down_muminus")
+			rdf_down = (rdf.Define("SF_down_lead_lep1", "GetEfficiencyScaleFactorDown(leading_pair_lep1_pt)")
+					.Define("SF_down_lead_lep2", "GetEfficiencyScaleFactorDown(leading_pair_lep2_pt)")
+					.Define("SF_down_sublead_lep1", "GetEfficiencyScaleFactorDown(subleading_pair_lep1_pt)")
+					.Define("SF_down_sublead_lep2", "GetEfficiencyScaleFactorDown(subleading_pair_lep2_pt)")
+					.Define("SF_down_muons", "SF_down_lead_lep1*SF_down_lead_lep2*SF_down_sublead_lep1*SF_down_sublead_lep2")
 				)
 
-			rdf_down.Snapshot("events", outfilepath_down, ["SF_down_muons", "SF_down_muplus", "SF_down_muminus", "mu_plus_pt", "mu_minus_pt", "m_mumu"])
+			rdf_down.Snapshot("events", outfilepath_down, ["SF_down_muons", "SF_down_lead_lep1", "SF_down_lead_lep2", "SF_down_sublead_lep1", "SF_down_sublead_lep2", "leading_pair_lep1_pt", "leading_pair_lep2_pt", "subleading_pair_lep1_pt", "subleading_pair_lep2_pt", "m_llll"])
 			
 			hist_base_name = "{}_pTH{}_{}_hist_down".format(process, pT_cut_min, pT_cut_max)
 			plot_histo(rdf_down, "SF_down_muons", base_plotpath, hist_base_name+"SF_down_muons")
-			plot_histo(rdf_down, "SF_down_muplus", base_plotpath, hist_base_name+"SF_down_muplus")
-			plot_histo(rdf_down, "SF_down_muminus", base_plotpath, hist_base_name+"SF_down_muminus")
+			plot_histo(rdf_down, "SF_down_lead_lep1", base_plotpath, hist_base_name+"SF_down_lead_lep1")
+			plot_histo(rdf_down, "SF_down_lead_lep2", base_plotpath, hist_base_name+"SF_down_lead_lep2")
+			plot_histo(rdf_down, "SF_down_sublead_lep1", base_plotpath, hist_base_name+"SF_down_sublead_lep1")
+			plot_histo(rdf_down, "SF_down_sublead_lep2", base_plotpath, hist_base_name+"SF_down_sublead_lep2")
 
 			#fill the histogram of the observable with the new SF and divide by nominal 
-			hist_m_mumu_model = ROOT.RDF.TH1DModel("m_mumu_fitrange","m_mumu_fitrange", 30, 110., 140.)
-			hist_m_mumu_nom = rdf.Histo1D(hist_m_mumu_model, "m_mumu")
-			hist_m_mumu_up = rdf_up.Histo1D(hist_m_mumu_model, "m_mumu", "SF_up_muons")
-			hist_m_mumu_down = rdf_down.Histo1D(hist_m_mumu_model, "m_mumu", "SF_down_muons")
+			hist_m_4mu_model = ROOT.RDF.TH1DModel("m_4mu_fitrange","m_4mu_fitrange", 30, 110., 140.)
+			hist_m_4mu_nom = rdf.Histo1D(hist_m_4mu_model, "m_llll")
+			hist_m_4mu_up = rdf_up.Histo1D(hist_m_4mu_model, "m_llll", "SF_up_muons")
+			hist_m_4mu_down = rdf_down.Histo1D(hist_m_4mu_model, "m_llll", "SF_down_muons")
 
 			#add to totals:
 			if not total_hist_nom:
-				total_hist_nom = copy.deepcopy(hist_m_mumu_nom.GetValue())
+				total_hist_nom = copy.deepcopy(hist_m_4mu_nom.GetValue())
 				total_hist_nom.SetTitle("total_hist_nom")
 				total_hist_nom.SetName("total_hist_nom")
 
 			else:
-				total_hist_nom.Add(hist_m_mumu_nom.GetValue())
+				total_hist_nom.Add(hist_m_4mu_nom.GetValue())
 			
 			if not total_hist_up:
-				total_hist_up = copy.deepcopy(hist_m_mumu_up.GetValue())
+				total_hist_up = copy.deepcopy(hist_m_4mu_up.GetValue())
 				total_hist_up.SetTitle("total_hist_up")
 				total_hist_up.SetName("total_hist_up")
 
 			else:
-				total_hist_up.Add(hist_m_mumu_up.GetValue())
+				total_hist_up.Add(hist_m_4mu_up.GetValue())
 			
 			if not total_hist_down:
-				total_hist_down = copy.deepcopy(hist_m_mumu_down.GetValue())
+				total_hist_down = copy.deepcopy(hist_m_4mu_down.GetValue())
 				total_hist_down.SetTitle("total_hist_down")
 				total_hist_down.SetName("total_hist_down")
 
 			else:
-				total_hist_down.Add(hist_m_mumu_down.GetValue())
+				total_hist_down.Add(hist_m_4mu_down.GetValue())
 
 		#calculate: 
 		nominal_yield = total_hist_nom.Integral()
@@ -392,8 +410,7 @@ def get_SF_for_excl_pT_bins(processes, base_inpath, base_plotpath, pT_step = 50,
 		print("Down systematic variation: {:.6f}".format(syst_var_down))
 
 		#plot everything
-		plot_syst_hist_compare(total_hist_nom, total_hist_up, total_hist_down, "hists_m_mumu_pT{}".format(pT_bin_identifier), base_plotpath)
-
+		plot_syst_hist_compare(total_hist_nom, total_hist_up, total_hist_down, "hists_m_4mu_pT{}".format(pT_bin_identifier), base_plotpath)
 		dict_SF_vs_pT[pT_bin_identifier] = syst_var_up
 	
 	return dict_SF_vs_pT
@@ -412,17 +429,16 @@ if __name__ == "__main__":
 	parser.add_argument('--energy', default='100TeV', help='Energy point to run at. Options: 100TeV (default), 84TeV, 72TeV')
 	parser.add_argument('--prodTag', default='fcc_v07', help='Production tag to run with. Options: fcc_v07 (default), fcc_v06')
 	parser.add_argument('--detector', default='II', help='Detector scenario to run with. Options: I, II (default)')
-	parser.add_argument('-o,' '--output', default='/eos/user/b/bistapf/plots_Hmumu_eff_SF/', dest="output", help='Base name for the output directory')
+	parser.add_argument('-o,' '--output', default='/eos/user/b/bistapf/plots_H4mu_eff_SF/', dest="output", help='Base name for the output directory')
 	parser.add_argument('--doExclBins', action='store_true', help="Use exclusive pT bins (rather than min pT cuts) for the inputs to simultaneous fit.")
 	args = parser.parse_args()
 
 	#input and output dirs
-	base_inpath = "/eos/experiment/fcc/hh/analysis_ntuples/{}/{}/Hmumu_analysis/{}/final/".format( args.prodTag, args.detector, args.energy)
+	base_inpath = "/eos/experiment/fcc/hh/analysis_ntuples/{}/{}/H4l_analysis/{}/final/".format( args.prodTag, args.detector, args.energy)
 	print(base_inpath)
 
 	base_outpath = base_inpath
 	base_plotpath = os.path.join(args.output, args.energy)
-	dict_of_SFs={}
 
 	if args.doExclBins:
 		base_plotpath += "_exclPTBins"
@@ -432,39 +448,40 @@ if __name__ == "__main__":
 
 	if args.energy == "100TeV":
 		processes = [
-						"mgp8_pp_h012j_5f_hmumu", #SIGNAL
-						"mgp8_pp_vbf_h01j_5f_hmumu",
-						"mgp8_pp_tth01j_5f_hmumu",
-						"mgp8_pp_vh012j_5f_hmumu",
+						"mgp8_pp_h012j_5f_hllll", #SIGNAL
+						"mgp8_pp_vbf_h01j_5f_hllll",
+						"mgp8_pp_tth01j_5f_hllll",
+						"mgp8_pp_vh012j_5f_hllll",
 					]
 	elif args.energy == "84TeV" or args.energy == "72TeV" or args.energy == "120TeV":
 		processes = [
-						"mgp8_pp_h012j_5f_{}_hmumu".format(args.energy), #SIGNAL
-						"mgp8_pp_vbf_h01j_5f_{}_hmumu".format(args.energy),
-						"mgp8_pp_tth01j_5f_{}_hmumu".format(args.energy),
-						"mgp8_pp_vh012j_5f_{}_hmumu".format(args.energy),
+						"mgp8_pp_h012j_5f_{}_hllll".format(args.energy), #SIGNAL
+						"mgp8_pp_vbf_h01j_5f_{}_hllll".format(args.energy),
+						"mgp8_pp_tth01j_5f_{}_hllll".format(args.energy),
+						"mgp8_pp_vh012j_5f_{}_hllll".format(args.energy),
 					]
 	else:
 		raise Exception("Unsupported energy option! Choose from 100TeV, 84TeV, 72TeV or 120TeV!")
-	
+	dict_of_SFs = {}
+
 	if args.doExclBins:
 		dict_SF_vs_pT = get_SF_for_excl_pT_bins(processes, base_inpath, base_plotpath)
 	else:
 		dict_SF_vs_pT = get_SF_for_min_pT_cuts(processes, base_inpath, base_plotpath)
 
-	dict_of_SFs["Hmumu_signal_{}".format(args.energy)] = dict_SF_vs_pT
-	plot_scalefactors("Hmumu_signal_merged", dict_SF_vs_pT, base_plotpath)
-
+	dict_of_SFs["H4mu_signal_{}".format(args.energy)] = dict_SF_vs_pT
+	plot_scalefactors("H4mu_signal_merged", dict_SF_vs_pT, base_plotpath)
+	
 	print(dict_of_SFs)
-
-	json_filepath = "/afs/cern.ch/user/b/bistapf/combine_EL9/Hmumu_analysis/"
+	
+	json_filepath = "/afs/cern.ch/user/b/bistapf/combine_EL9/H4mu_analysis/"
 	json_filename = "SF_eff_vs_pT_{}_scen{}_merged".format(args.energy, args.detector)
 	if args.doExclBins:
 		json_filename+="_exclPTbins"
 	json_filepath = os.path.join(json_filepath, json_filename+".json")
 	print("Writing file:", json_filepath)
 	with open(json_filepath, 'w') as json_file:
-			json.dump(dict_of_SFs, json_file)
+		json.dump(dict_of_SFs, json_file)
 
    
    

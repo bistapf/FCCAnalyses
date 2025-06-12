@@ -1,22 +1,30 @@
 #Temporary hack to support command line argument at this stage:
 energy_point = "100TeV"
+detector = "II"
 import sys
 
 if len(sys.argv) < 4:
     print("Missing command line argument for the energy point - going to use 100 TeV as default.")
 
+elif len(sys.argv) < 5:
+    print("Using energy point", sys.argv[3])
+    energy_point = sys.argv[3]
+    print("Missing command line argument for the detector - going to use II as default.")
+
 else:
     print("Using energy point", sys.argv[3])
     energy_point = sys.argv[3]
+    print("Using detector scenario", sys.argv[4])
+    detector = sys.argv[4]
 
 
 #Input directory where the files produced at the pre-selection level are
 # inputDir  = "/eos/experiment/fcc/hh/analysis_ntuples/fcc_v06/II/Hmumu_valid/"
-inputDir  = "/eos/experiment/fcc/hh/analysis_ntuples/fcc_v07/II/Hmumu_analysis/{}".format(energy_point)
+inputDir  = "/eos/experiment/fcc/hh/analysis_ntuples/fcc_v07/{}/Hmumu_analysis/{}".format(detector, energy_point)
 
 #Input directory where the files produced at the pre-selection level are
 # outputDir  = "/eos/experiment/fcc/hh/analysis_ntuples/fcc_v06/II/Hmumu_valid/final/"
-outputDir  = "/eos/experiment/fcc/hh/analysis_ntuples/fcc_v07/II/Hmumu_analysis/{}/final/".format(energy_point)
+outputDir  = "/eos/experiment/fcc/hh/analysis_ntuples/fcc_v07/{}/Hmumu_analysis/{}/final/".format(detector, energy_point)
 
 processList = {}
 
@@ -39,52 +47,20 @@ if energy_point == "100TeV":
         # "mgp8_pp_mumu012j_mhcut_5f_HT_100_300_100TeV":{},
     }
 
-elif energy_point == "84TeV":
+elif energy_point == "84TeV" or energy_point == "72TeV" or energy_point == "120TeV":
     processList = {
         # @ 84 TeV
-        'mgp8_pp_h012j_5f_84TeV_hmumu':{}, 
-        'mgp8_pp_vbf_h01j_5f_84TeV_hmumu':{}, 
-        'mgp8_pp_tth01j_5f_84TeV_hmumu':{}, 
-        'mgp8_pp_vh012j_5f_84TeV_hmumu':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_0_100_84TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_100_300_84TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_300_500_84TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_500_700_84TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_700_900_84TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_900_1100_84TeV':{},  
-        'mgp8_pp_mumu012j_mhcut_5f_HT_1100_100000_84TeV':{},
-    }
-
-elif energy_point == "72TeV":
-    processList = {
-        # @ 72 TeV
-        'mgp8_pp_h012j_5f_72TeV_hmumu':{}, 
-        'mgp8_pp_vbf_h01j_5f_72TeV_hmumu':{}, 
-        'mgp8_pp_tth01j_5f_72TeV_hmumu':{}, 
-        'mgp8_pp_vh012j_5f_72TeV_hmumu':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_0_100_72TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_100_300_72TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_300_500_72TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_500_700_72TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_700_900_72TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_900_1100_72TeV':{},  
-        'mgp8_pp_mumu012j_mhcut_5f_HT_1100_100000_72TeV':{},
-    }
-
-elif energy_point == "120TeV":
-    processList = {
-        # @ 120 TeV
-        'mgp8_pp_h012j_5f_120TeV_hmumu':{},
-        'mgp8_pp_vbf_h01j_5f_120TeV_hmumu':{}, 
-        'mgp8_pp_tth01j_5f_120TeV_hmumu':{}, 
-        'mgp8_pp_vh012j_5f_120TeV_hmumu':{},  
-        'mgp8_pp_mumu012j_mhcut_5f_HT_0_100_120TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_100_300_120TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_300_500_120TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_500_700_120TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_700_900_120TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_900_1100_120TeV':{},  
-        'mgp8_pp_mumu012j_mhcut_5f_HT_1100_100000_120TeV':{},
+        'mgp8_pp_h012j_5f_{}_hmumu'.format(energy_point):{}, 
+        'mgp8_pp_vbf_h01j_5f_{}_hmumu'.format(energy_point):{}, 
+        'mgp8_pp_tth01j_5f_{}_hmumu'.format(energy_point):{}, 
+        'mgp8_pp_vh012j_5f_{}_hmumu'.format(energy_point):{}, 
+        'mgp8_pp_mumu012j_mhcut_5f_HT_0_100_{}'.format(energy_point):{}, 
+        'mgp8_pp_mumu012j_mhcut_5f_HT_100_300_{}'.format(energy_point):{}, 
+        'mgp8_pp_mumu012j_mhcut_5f_HT_300_500_{}'.format(energy_point):{}, 
+        'mgp8_pp_mumu012j_mhcut_5f_HT_500_700_{}'.format(energy_point):{}, 
+        'mgp8_pp_mumu012j_mhcut_5f_HT_700_900_{}'.format(energy_point):{}, 
+        'mgp8_pp_mumu012j_mhcut_5f_HT_900_1100_{}'.format(energy_point):{},  
+        'mgp8_pp_mumu012j_mhcut_5f_HT_1100_100000_{}'.format(energy_point):{},
     }
 
 else:
@@ -109,7 +85,6 @@ if energy_point == "120TeV":
     print("Rescaling lumi to 120 TeV F20 scenario!")
     intLumi = 30e+06*370./940. #using the F12PU scenario
 
-
 # Whether to scale to expected integrated luminosity
 doScale = True
 
@@ -128,16 +103,16 @@ do_weighted = False
 cutList = {
             "sel1_mumupair":"n_os_muon_pairs > 0", 
             "sel2_mH":"(n_os_muon_pairs > 0)", #FIX THE NAMES !!!!
-            "sel3_pTH50":"(n_os_muon_pairs > 0) &&  (pT_mumu[0] > 50.) ", # increasing pT cuts on the pTmumu 
-            "sel3_pTH100":"(n_os_muon_pairs > 0) &&  (pT_mumu[0] > 100.) ", # increasing pT cuts on the pTmumu 
-            "sel3_pTH150":"(n_os_muon_pairs > 0) && (pT_mumu[0] > 150.) ", # increasing pT cuts on the pTmumu 
-            "sel3_pTH200":"(n_os_muon_pairs > 0) && (pT_mumu[0] > 200.) ", # increasing pT cuts on the pTmumu 
-            "sel3_pTH250":"(n_os_muon_pairs > 0) && (pT_mumu[0] > 250.) ", # increasing pT cuts on the pTmumu 
-            "sel3_pTH300":"(n_os_muon_pairs > 0) && (pT_mumu[0] > 300.) ", # increasing pT cuts on the pTmumu 
-            "sel3_pTH350":"(n_os_muon_pairs > 0) &&  (pT_mumu[0] > 350.) ", # increasing pT cuts on the pTmumu 
-            "sel3_pTH400":"(n_os_muon_pairs > 0) && (pT_mumu[0] > 400.) ", # increasing pT cuts on the pTmumu 
-            "sel3_pTH450":"(n_os_muon_pairs > 0) && (pT_mumu[0] > 450.) ", # increasing pT cuts on the pTmumu 
-            "sel3_pTH500":"(n_os_muon_pairs > 0) && (pT_mumu[0] > 500.) ", # increasing pT cuts on the pTmumu 
+            "sel3_pTH50_100":"(n_os_muon_pairs > 0) &&  (pT_mumu[0] > 50.) && (pT_mumu[0] < 100.)", # increasing pT cuts on the pTmumu 
+            "sel3_pTH100_150":"(n_os_muon_pairs > 0) &&  (pT_mumu[0] > 100.) && (pT_mumu[0] < 150.)", # increasing pT cuts on the pTmumu 
+            "sel3_pTH150_200":"(n_os_muon_pairs > 0) && (pT_mumu[0] > 150.) && (pT_mumu[0] < 200.)", # increasing pT cuts on the pTmumu 
+            "sel3_pTH200_250":"(n_os_muon_pairs > 0) && (pT_mumu[0] > 200.) && (pT_mumu[0] < 250.)", # increasing pT cuts on the pTmumu 
+            "sel3_pTH250_300":"(n_os_muon_pairs > 0) && (pT_mumu[0] > 250.) && (pT_mumu[0] < 300.)", # increasing pT cuts on the pTmumu 
+            "sel3_pTH300_350":"(n_os_muon_pairs > 0) && (pT_mumu[0] > 300.) && (pT_mumu[0] < 350.)", # increasing pT cuts on the pTmumu 
+            "sel3_pTH350_400":"(n_os_muon_pairs > 0) &&  (pT_mumu[0] > 350.) && (pT_mumu[0] < 400.)", # increasing pT cuts on the pTmumu 
+            "sel3_pTH400_450":"(n_os_muon_pairs > 0) && (pT_mumu[0] > 400.) && (pT_mumu[0] < 450.)", # increasing pT cuts on the pTmumu 
+            "sel3_pTH450_500":"(n_os_muon_pairs > 0) && (pT_mumu[0] > 450.) && (pT_mumu[0] < 500.)", # increasing pT cuts on the pTmumu 
+            "sel3_pTH500_550":"(n_os_muon_pairs > 0) && (pT_mumu[0] > 500.) ", # increasing pT cuts on the pTmumu 
             # "sel_extra_njets0":"(n_os_muon_pairs > 0) && (n_jets == 0)", # tester selection for the split HT samples
             # "sel_extra_njets1":"(n_os_muon_pairs > 0) && (n_jets > 0)", # tester selection for the split HT samples
             }

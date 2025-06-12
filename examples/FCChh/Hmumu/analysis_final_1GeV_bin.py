@@ -43,9 +43,6 @@ elif energy_point == "84TeV":
     processList = {
         # @ 84 TeV
         'mgp8_pp_h012j_5f_84TeV_hmumu':{}, 
-        'mgp8_pp_vbf_h01j_5f_84TeV_hmumu':{}, 
-        'mgp8_pp_tth01j_5f_84TeV_hmumu':{}, 
-        'mgp8_pp_vh012j_5f_84TeV_hmumu':{}, 
         'mgp8_pp_mumu012j_mhcut_5f_HT_0_100_84TeV':{}, 
         'mgp8_pp_mumu012j_mhcut_5f_HT_100_300_84TeV':{}, 
         'mgp8_pp_mumu012j_mhcut_5f_HT_300_500_84TeV':{}, 
@@ -59,9 +56,6 @@ elif energy_point == "72TeV":
     processList = {
         # @ 72 TeV
         'mgp8_pp_h012j_5f_72TeV_hmumu':{}, 
-        'mgp8_pp_vbf_h01j_5f_72TeV_hmumu':{}, 
-        'mgp8_pp_tth01j_5f_72TeV_hmumu':{}, 
-        'mgp8_pp_vh012j_5f_72TeV_hmumu':{}, 
         'mgp8_pp_mumu012j_mhcut_5f_HT_0_100_72TeV':{}, 
         'mgp8_pp_mumu012j_mhcut_5f_HT_100_300_72TeV':{}, 
         'mgp8_pp_mumu012j_mhcut_5f_HT_300_500_72TeV':{}, 
@@ -71,24 +65,8 @@ elif energy_point == "72TeV":
         'mgp8_pp_mumu012j_mhcut_5f_HT_1100_100000_72TeV':{},
     }
 
-elif energy_point == "120TeV":
-    processList = {
-        # @ 120 TeV
-        'mgp8_pp_h012j_5f_120TeV_hmumu':{},
-        'mgp8_pp_vbf_h01j_5f_120TeV_hmumu':{}, 
-        'mgp8_pp_tth01j_5f_120TeV_hmumu':{}, 
-        'mgp8_pp_vh012j_5f_120TeV_hmumu':{},  
-        'mgp8_pp_mumu012j_mhcut_5f_HT_0_100_120TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_100_300_120TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_300_500_120TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_500_700_120TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_700_900_120TeV':{}, 
-        'mgp8_pp_mumu012j_mhcut_5f_HT_900_1100_120TeV':{},  
-        'mgp8_pp_mumu012j_mhcut_5f_HT_1100_100000_120TeV':{},
-    }
-
 else:
-    raise Exception("Unsupported argumente for energy! Currently only support 100TeV, 84TeV, 72TeV and 120TeV!")
+    raise Exception("Unsupported argumente for energy! Currently only support 100TeV, 84TeV and 72TeV!")
 
 #Link to the dictonary that contains all the cross section informations etc...
 # procDict = "/afs/cern.ch/user/b/bistapf/main_FCCAnalyses/FCCAnalyses/FCChh_dict_local.json" #old handwritten
@@ -100,15 +78,6 @@ procDict = "/eos/experiment/fcc/hh/utils/FCCDicts/FCChh_procDict_fcc_v07_II.json
 
 # Expected integrated luminosity
 intLumi = 30e+06  # pb-1
-
-if energy_point == "72TeV":
-    print("Rescaling lumi to 72 TeV F12PU scenario!")
-    intLumi = 30e+06*1300./940. #using the F12PU scenario
-
-if energy_point == "120TeV":
-    print("Rescaling lumi to 120 TeV F20 scenario!")
-    intLumi = 30e+06*370./940. #using the F12PU scenario
-
 
 # Whether to scale to expected integrated luminosity
 doScale = True
@@ -145,8 +114,7 @@ cutList = {
 # Dictionary for the output variable/histograms. The key is the name of the variable in the output files. "name" is the name of the variable in the input file, "title" is the x-axis label of the histogram, "bin" the number of bins of the histogram, "xmin" the minimum x-axis value and "xmax" the maximum x-axis value.
 histoList = {
     "m_mumu":{"name":"m_mumu","title":"m_{#mu#mu} [GeV]","bin":50,"xmin":75,"xmax":200},
-    "m_mumu_zoom":{"name":"m_mumu","title":"m_{#mu#mu} [GeV]","bin":100,"xmin":120,"xmax":130},
-    "m_mumu_fitrange":{"name":"m_mumu","title":"m_{#mu#mu} [GeV]","bin":30,"xmin":110,"xmax":140},
+    "m_mumu_zoom":{"name":"m_mumu","title":"m_{#mu#mu} [GeV]","bin":100,"xmin":110,"xmax":140},
     "m_mumu_1bin":{"name":"m_mumu","title":"m_{#mu#mu} [GeV]","bin":1,"xmin":124,"xmax":126},
     "pT_mumu":{"name":"pT_mumu","title":"pT_{#mu#mu} [GeV]","bin":50,"xmin":0.,"xmax":500.},
     "pT_mumu_full":{"name":"pT_mumu","title":"pT_{#mu#mu} [GeV]","bin":12,"xmin":0.,"xmax":1200.},

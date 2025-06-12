@@ -1,5 +1,5 @@
 '''
-Single Higgs @FCC-hh : Hmumu analysis
+Single Higgs @FCC-hh : Validation of newly produced (background) LHE
 '''
 from argparse import ArgumentParser
 
@@ -14,116 +14,28 @@ class Analysis():
         parser = ArgumentParser(
             description='Additional analysis arguments',
             usage='Provide additional arguments after analysis script path')
-        parser.add_argument('--energy', default='100TeV',
-                            help='Energy point to run at. Options: 100TeV, 84TeV, 72TeV')
-        parser.add_argument('--detector', default='II',
-                            help='FCC-hh Delphes detector scenario to run with. Options: I and II (default)')
+        # parser.add_argument('--bjet-pt', default='10.', type=float,
+        #                     help='Minimal pT of the selected b-jets.')
         # Parse additional arguments not known to the FCCAnalyses parsers
         # All command line arguments know to fccanalysis are provided in the
         # `cmdline_arg` dictionary.
         self.ana_args, _ = parser.parse_known_args(cmdline_args['unknown'])
 
-        if not (self.ana_args.detector == "I" or self.ana_args.detector == "II"):
-            raise Exception("ERROR! Unsupported detector scenario. Options are I or II only.")
+        # Mandatory: List of processes to run over
+        self.process_list = {
+            # Small testers of the first two HT slices :
+            'mgp8_pp_mumu012j_mhcut_5f_HT_0_100': {'chunks':10, 'fraction':0.1}, 
+            'mgp8_pp_mumu012j_mhcut_5f_HT_0_100_100TeV': {'chunks':10, 'fraction':1.0}, 
+            'mgp8_pp_mumu012j_mhcut_5f_HT_100_300': {'chunks':10, 'fraction':0.1}, 
+            'mgp8_pp_mumu012j_mhcut_5f_HT_100_300_100TeV': {'chunks':10, 'fraction':1.0}, 
+        }
 
         # Mandatory: Input directory where to find the samples, or a production tag when running over the centrally produced
         # samples (this points to the yaml files for getting sample statistics)
-        self.input_dir = '/eos/experiment/fcc/hh/generation/DelphesEvents/fcc_v07/{}/'.format(self.ana_args.detector)
+        self.input_dir = '/eos/experiment/fcc/hh/generation/DelphesEvents/fcc_v06/II/'
 
         # Optional: output directory, default is local running directory
-        self.output_dir = '/eos/experiment/fcc/hh/analysis_ntuples/fcc_v07/{}/Hmumu_analysis/'.format(self.ana_args.detector)
-
-        # Mandatory: List of processes to run over
-        if self.ana_args.energy == "100TeV":
-            self.process_list = {
-                 #FULL @ 100 TeV
-                'mgp8_pp_h012j_5f_hmumu': {'chunks':50}, #signal 
-                'mgp8_pp_vbf_h01j_5f_hmumu': {'chunks':50}, #signal 
-                'mgp8_pp_tth01j_5f_hmumu': {'chunks':50}, #signal 
-                'mgp8_pp_vh012j_5f_hmumu': {'chunks':50}, #signal 
-                'mgp8_pp_mumu012j_mhcut_5f_HT_0_100': {'chunks':50}, #mumu cont. bkg
-                'mgp8_pp_mumu012j_mhcut_5f_HT_100_300': {'chunks':50}, #mumu cont. bkg
-                'mgp8_pp_mumu012j_mhcut_5f_HT_300_500': {'chunks':50}, #mumu cont. bkg
-                'mgp8_pp_mumu012j_mhcut_5f_HT_500_700': {'chunks':50}, #mumu cont. bkg
-                'mgp8_pp_mumu012j_mhcut_5f_HT_700_900': {'chunks':50}, #mumu cont. bkg
-                'mgp8_pp_mumu012j_mhcut_5f_HT_900_1100': {'chunks':50}, #mumu cont. bkg
-                'mgp8_pp_mumu012j_mhcut_5f_HT_1100_100000': {'chunks':50}, #mumu cont. bkg
-            }
-             
-            self.output_dir = self.output_dir+"/100TeV/"
-
-        # elif self.ana_args.energy == "84TeV":
-        #     self.process_list = {
-        #          #FULL @ 84 TeV
-        #         'mgp8_pp_h012j_5f_84TeV_hmumu': {'chunks':50}, #signal 
-        #         'mgp8_pp_vbf_h01j_5f_84TeV_hmumu': {'chunks':50}, #signal 
-        #         'mgp8_pp_tth01j_5f_84TeV_hmumu': {'chunks':50}, #signal 
-        #         'mgp8_pp_vh012j_5f_84TeV_hmumu': {'chunks':100}, #signal 
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_0_100_84TeV': {'chunks':100}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_100_300_84TeV': {'chunks':100}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_300_500_84TeV': {'chunks':100}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_500_700_84TeV': {'chunks':100}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_700_900_84TeV': {'chunks':100}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_900_1100_84TeV': {'chunks':100}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_1100_100000_84TeV': {'chunks':100}, #mumu cont. bkg
-        #     }
-
-        #     self.output_dir = self.output_dir+"/84TeV/"
-        
-        # elif self.ana_args.energy == "72TeV":
-        #     self.process_list = {
-        #          #FULL @ 72 TeV
-        #         'mgp8_pp_h012j_5f_72TeV_hmumu': {'chunks':50}, #signal 
-        #         'mgp8_pp_vbf_h01j_5f_72TeV_hmumu': {'chunks':50}, #signal 
-        #         'mgp8_pp_tth01j_5f_72TeV_hmumu': {'chunks':50}, #signal 
-        #         'mgp8_pp_vh012j_5f_72TeV_hmumu': {'chunks':50}, #signal 
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_0_100_72TeV': {'chunks':50}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_100_300_72TeV': {'chunks':50}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_300_500_72TeV': {'chunks':50}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_500_700_72TeV': {'chunks':50}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_700_900_72TeV': {'chunks':50}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_900_1100_72TeV': {'chunks':50}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_1100_100000_72TeV': {'chunks':50}, #mumu cont. bkg
-        #     }
-        
-        # elif self.ana_args.energy == "120TeV":
-        #     self.process_list = {
-        #          #FULL @ 120 TeV
-        #         'mgp8_pp_h012j_5f_120TeV_hmumu': {'chunks':50}, #signal 
-        #         'mgp8_pp_vbf_h01j_5f_120TeV_hmumu': {'chunks':50}, #signal 
-        #         'mgp8_pp_tth01j_5f_120TeV_hmumu': {'chunks':50}, #signal 
-        #         'mgp8_pp_vh012j_5f_120TeV_hmumu': {'chunks':50}, #signal 
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_0_100_120TeV': {'chunks':50}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_100_300_120TeV': {'chunks':50}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_300_500_120TeV': {'chunks':50}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_500_700_120TeV': {'chunks':50}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_700_900_120TeV': {'chunks':50}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_900_1100_120TeV': {'chunks':50}, #mumu cont. bkg
-        #         'mgp8_pp_mumu012j_mhcut_5f_HT_1100_100000_120TeV': {'chunks':50}, #mumu cont. bkg
-        #     }
-            
-        #     self.output_dir = self.output_dir+"/120TeV/"
-        
-        elif self.ana_args.energy == "84TeV" or self.ana_args.energy == "72TeV" or self.ana_args.energy == "120TeV":
-            self.process_list =  {
-                                
-                'mgp8_pp_h012j_5f_{}_hmumu'.format(self.ana_args.energy): {'chunks':50}, #signal 
-                'mgp8_pp_vbf_h01j_5f_{}_hmumu'.format(self.ana_args.energy): {'chunks':50}, #signal 
-                'mgp8_pp_tth01j_5f_{}_hmumu'.format(self.ana_args.energy): {'chunks':50}, #signal 
-                'mgp8_pp_vh012j_5f_{}_hmumu'.format(self.ana_args.energy): {'chunks':50}, #signal 
-                'mgp8_pp_mumu012j_mhcut_5f_HT_0_100_{}'.format(self.ana_args.energy): {'chunks':50}, #mumu cont. bkg
-                'mgp8_pp_mumu012j_mhcut_5f_HT_100_300_{}'.format(self.ana_args.energy): {'chunks':50}, #mumu cont. bkg
-                'mgp8_pp_mumu012j_mhcut_5f_HT_300_500_{}'.format(self.ana_args.energy): {'chunks':50}, #mumu cont. bkg
-                'mgp8_pp_mumu012j_mhcut_5f_HT_500_700_{}'.format(self.ana_args.energy): {'chunks':50}, #mumu cont. bkg
-                'mgp8_pp_mumu012j_mhcut_5f_HT_700_900_{}'.format(self.ana_args.energy): {'chunks':50}, #mumu cont. bkg
-                'mgp8_pp_mumu012j_mhcut_5f_HT_900_1100_{}'.format(self.ana_args.energy): {'chunks':50}, #mumu cont. bkg
-                'mgp8_pp_mumu012j_mhcut_5f_HT_1100_100000_{}'.format(self.ana_args.energy): {'chunks':50}, #mumu cont. bkg
-
-            }
-            self.output_dir = self.output_dir+"/{}/".format(self.ana_args.energy)
-        
-        else:
-            raise Exception("Unsupported argument for energy! Currently only support 100TeV, 84TeV, 72TeV and 120TeV!")
+        self.output_dir = '/eos/experiment/fcc/hh/analysis_ntuples/fcc_v06/II/Hmumu_valid/'
 
         # Optional: analysisName, default is ''
         self.analysis_name = 'FCC-hh Hmumu analysis'
@@ -132,11 +44,11 @@ class Analysis():
         self.n_threads = 4
 
         # Optional: running on HTCondor, default is False
-        # self.run_batch = False
-        self.run_batch = True
+        self.run_batch = False
+        # self.run_batch = True
 
         # Optional: Use weighted events
-        self.do_weighted = False 
+        self.do_weighted = True 
 
         # Optional: read the input files with podio::DataSource 
         self.use_data_source = False # explicitly use old way in this version 
